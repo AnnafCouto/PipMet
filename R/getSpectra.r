@@ -1,8 +1,9 @@
-#' Spectra definition
+#' getSpectra
 #'
 #' This function computes the first subsetp of third step of the workflow. It defines the spectra to proper annotate in NIST MS Search Software.
 #' @export
 #' @param xdata4 A 'xcmsSet' or 'XCMSnExp' object.
+#' @return A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom methods as
 #' @importFrom CAMERA xsAnnotate groupFWHM groupCorr
@@ -11,9 +12,10 @@
 #' @importFrom utils memory.limit
 #' @importFrom tcltk tkmessageBox
 #' @examples
-#' read_data()
-#' process()
-#' spectra_def()
+#' \dontrun{
+#' getSpectra (xdata4)
+#' }
+
 getSpectra <- function(xdata4) {
   if (class(xdata4)[1] == "XCMSnExp") {
     xset <- as(xdata4, "xcmsSet")
@@ -33,7 +35,7 @@ getSpectra <- function(xdata4) {
   rm(anF)
 
   # extract spectra with minimum of 5 peaks
-  pslist <- exctractSpectra(anIC, min_peaks = 5)
+  pslist <- exctractSpectra(anIC)
 
   # create 'pre_anno.csv' where the user annotates the spectra
   # contains id and retention time of each spectra
@@ -56,7 +58,7 @@ getSpectra <- function(xdata4) {
     result[[i]]$CAS <- "Unknown"
     result[[i]]$ChemSpiderID <- "Unknown"
     result[[i]]$Class <- "Unknown"
-    result[[i]]$Date <- Sys.Date()
+    result[[i]]$Date <- as.character(Sys.Date())
   }
   write.msp(result, "spectra.msp", newFile = TRUE)
   tkmessageBox(title = "Annotatation step", message = "The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.", icon = "info", type = "ok")

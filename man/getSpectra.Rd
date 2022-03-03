@@ -2,18 +2,21 @@
 % Please edit documentation in R/getSpectra.r
 \name{getSpectra}
 \alias{getSpectra}
-\title{Spectra definition}
+\title{getSpectra}
 \usage{
 getSpectra(xdata4)
 }
 \arguments{
 \item{xdata4}{A 'xcmsSet' or 'XCMSnExp' object.}
 }
+\value{
+A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format.
+}
 \description{
 This function computes the first subsetp of third step of the workflow. It defines the spectra to proper annotate in NIST MS Search Software.
 }
 \examples{
-read_data()
-process()
-spectra_def()
+\dontrun{
+getSpectra (xdata4)
+}
 }

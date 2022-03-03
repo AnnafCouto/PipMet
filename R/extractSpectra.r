@@ -10,7 +10,7 @@
 #' @keywords pseudoespectra CAMERA spectra spectrum.
 #' @export
 
-exctractSpectra <- function(x, min_peaks) { # intensidade: integral do pico
+exctractSpectra <- function(x, min_peaks = 5) { # intensidade: integral do pico
   if (is(x, "xsAnnotate")) {
     if (sum(grepl("X", colnames(x@groupInfo)) == TRUE) == 0) { # for database, theres is no sample column in x@groupInfo
       sv <- which(colnames(x@groupInfo) == "into")

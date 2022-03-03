@@ -1,14 +1,15 @@
-#' Read data
+#' read_data
 #'
 #' This function creates a sheet for the user to fill with the experiment design in order to create categories for the files to be processed. Also creates images of preprocessed data.
 #' @keywords metadata
 #' @export
+#' @return A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.
 #' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
 #' @importFrom grDevices dev.off png tiff
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
-#' @importFrom utils choose.dir menu read.csv select.list write.csv write.table
+#' @importFrom utils choose.dir menu read.csv write.csv write.table
 #' @importFrom svDialogs dlgInput dlg_message
 #' @importFrom xcms chromatogram
 #' @importFrom MSnbase readMSData fromFile intensity bin
@@ -16,7 +17,10 @@
 #' @importFrom tcltk tkmessageBox
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
-#' read <- read_data()
+#' \dontrun{
+#' read_data()
+#' }
+
 read_data <- function(EIC = 2, ions = NULL) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
@@ -27,6 +31,7 @@ read_data <- function(EIC = 2, ions = NULL) {
   dir.create(myDir)
   setwd(myDir)
   myDir <- getwd()
+  extensao <- '.mzML' # default
   extensao <- menu(c(".mzML", ".mzXML"), graphics = TRUE, title = "Files extension:")
   if (extensao == 1) {
     extensao <- ".mzML"
@@ -41,7 +46,7 @@ read_data <- function(EIC = 2, ions = NULL) {
   metadata[, "file"] <- files
   metadata[, "sample"] <- sub(basename(files), pattern = extensao, replacement = "", fixed = TRUE)
   write.csv(metadata, "metadata.csv", row.names = FALSE)
-  tkmessageBox(title = "Phenodata", message = "A file 'metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", icon = "info", type = "ok")
+  tkmessageBox(title = "Metadata", message = "A file 'metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", icon = "info", type = "ok")
   while (file.exists("metadata.csv") == FALSE) {
     dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
   }
@@ -134,11 +139,11 @@ read_data <- function(EIC = 2, ions = NULL) {
     names(ant) <- names(colors)[i]
     # tiff
     tiff(paste0(names(colors)[i], "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
-    pheatmap(cormat, annotation = ann, annotation_color = ant, border_color = "NA", cluster_rows = FALSE, )
+    pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
     dev.off()
     # png
     png(paste0(names(colors)[i], "_cluster.png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
-    pheatmap(cormat, annotation = ann, annotation_color = ant, border_color = "NA", cluster_rows = FALSE, )
+    pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
     dev.off()
   }
   rm(tic_bin)

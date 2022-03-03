@@ -2,7 +2,7 @@
 % Please edit documentation in R/process.R
 \name{process}
 \alias{process}
-\title{Processing data}
+\title{process}
 \usage{
 process(dados_brutos, metadata, myDir, colors, EIC = 2, ions = NULL)
 }
@@ -19,10 +19,15 @@ process(dados_brutos, metadata, myDir, colors, EIC = 2, ions = NULL)
 
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
 }
+\value{
+A 'xcmsSet' or a 'XCMSnExp' object with detected, grouped and filled peaks with retention time corrected.
+}
 \description{
 This function computes the second step of workflow (peak picking, RT correction and peak grouping) and build images for visualization of data using functions from xcms package.
 }
 \examples{
+\dontrun{
 read_data()
-process()
+xdata4 <- process(dados_brutos, metadata, myDir, colors)
+}
 }

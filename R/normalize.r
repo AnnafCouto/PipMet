@@ -6,6 +6,7 @@
 #' @param pslist List of spectra.
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param anIC A 'xsAnnotate' CAMER object with grouped spectra.
+#' @return A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
 #' @importFrom methods as new
@@ -15,7 +16,10 @@
 #' @import NormalyzerDE
 #' @import ggplot2
 #' @examples
-#' normlized <- normalize(anIC, pslist, metadata, myDir)
+#' \dontrun{
+#' normalized <- normalize(anIC, pslist, metadata, myDir)
+#' }
+ 
 normalize <- function(anIC, pslist, metadata, myDir) {
   # check if representative ions are ok
   okay <- 2

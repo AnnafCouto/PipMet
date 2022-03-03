@@ -13,14 +13,14 @@ vol_lvl1(n, metadata, myDir)
 
 \item{myDir}{Path to the directory of work.}
 }
+\value{
+A list comprising a matrix with the normalized intensities for each spectrum produced and the path to the volcano plot folder.
+}
 \description{
 This function plots volcanos .
 }
 \examples{
-read_data()
-process()
-spectra_def()
-annot_images()
-normalize()
+\dontrun{
 vol_lvl1()
+}
 }

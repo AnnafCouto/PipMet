@@ -1,4 +1,4 @@
-#' Processing data
+#' process
 #'
 #' This function computes the second step of workflow (peak picking, RT correction and peak grouping) and build images for visualization of data using functions from xcms package.
 #' @export
@@ -8,6 +8,7 @@
 #' @param colors A list with colors generated from "read_data()".
 #' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
+#' @return A 'xcmsSet' or a 'XCMSnExp' object with detected, grouped and filled peaks with retention time corrected.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
 #' @importFrom methods as new
@@ -15,8 +16,11 @@
 #' @importFrom xcms MatchedFilterParam findChromPeaks refineChromPeaks FilterIntensityParam adjustRtime ObiwarpParam groupChromPeaks PeakDensityParam fillChromPeaks ChromPeakAreaParam plotChromPeakImage chromPeaks plotAdjustedRtime chromatogram fillPeaks
 #' @importFrom utils choose.dir memory.limit menu read.csv select.list write.csv write.table
 #' @examples
+#' \dontrun{
 #' read_data()
-#' process()
+#' xdata4 <- process(dados_brutos, metadata, myDir, colors)
+#' }
+
 process <- function(dados_brutos, metadata, myDir, colors, EIC = 2, ions = NULL) {
   # create and set folder for images
   dir.create("peakProcessing_results")

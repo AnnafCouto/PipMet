@@ -11,12 +11,14 @@ annot_images(pslist, myDir)
 
 \item{myDir}{Path to the directory of work.}
 }
+\value{
+A 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package).
+}
 \description{
 This function creates network, hierarchy and heatmap plots of the spectra (annotated or not).
 }
 \examples{
-read_data()
-process()
-spectra_def()
-annot_images()
+\dontrun{
+annot_images(pslist, myDir)
+}
 }

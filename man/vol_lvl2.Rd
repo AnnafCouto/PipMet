@@ -17,15 +17,14 @@ vol_lvl2(mat, n, metadata, myDir, volDir)
 
 \item{volDir}{Path to the directory to plot the volcano plots}
 }
+\value{
+None.
+}
 \description{
 This function plots volcanos with two levels of comparison.
 }
 \examples{
-read_data()
-process()
-spectra_def()
-annot_images()
-normalize()
-vol_lvl1()
+\dontrun{
 vol_lvl2()
+}
 }

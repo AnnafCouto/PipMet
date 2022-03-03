@@ -4,7 +4,7 @@
 \alias{exctractSpectra}
 \title{Extract Spectra}
 \usage{
-exctractSpectra(x, min_peaks)
+exctractSpectra(x, min_peaks = 5)
 }
 \arguments{
 \item{x}{A 'CAMERA' xsAnnotate object.}

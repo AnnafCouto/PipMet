@@ -3,15 +3,19 @@
 #' Main function for GC data processing.
 #' @keywords metadata
 #' @export
+#' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities matrix
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput
 #' @importFrom ddpcr quiet
-#' @importFrom utils choose.dir menu read.csv select.list write.csv write.table
+#' @importFrom utils choose.dir menu read.csv write.csv write.table
 #' @importFrom metaMS addRI write.msp
 #' @importFrom BiocParallel register SerialParam SnowParam MulticoreParam
 #' @importFrom tcltk tkmessageBox
 #' @examples
-#' GC_dataProcess()
+#' \dontrun{
+#' result <- GC_dataProcess()
+#' }
+
 GC_dataProcess <- function() {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
@@ -97,4 +101,6 @@ GC_dataProcess <- function() {
 
   # plot heatmaps
   quiet(heatmap(mat, n, metadata, myDir, colors))
+
+  return (list (myDir, metadata, apslist, dados_brutos, xdata4, anIC, colors, n))
 }

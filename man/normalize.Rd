@@ -15,9 +15,14 @@ normalize(anIC, pslist, metadata, myDir)
 
 \item{myDir}{Path to the directory of work.}
 }
+\value{
+A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
+}
 \description{
 This function normalize data.
 }
 \examples{
-normlized <- normalize(anIC, pslist, metadata, myDir)
+\dontrun{
+normalized <- normalize(anIC, pslist, metadata, myDir)
+}
 }

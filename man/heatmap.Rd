@@ -17,9 +17,14 @@ heatmap(mat, n, metadata, myDir, colors)
 
 \item{colors}{A list with colors generated from "read_data()".}
 }
+\value{
+None.
+}
 \description{
 This function plots heatmaps dos metabólitos.
 }
 \examples{
-heatmap(mat, metadata, myDir)
+\dontrun{
+heatmap(mat, metadata, myDir, colors)
+}
 }

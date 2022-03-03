@@ -4,15 +4,16 @@
 #' @export
 #' @param pslist List of spectra.
 #' @param myDir Path to the directory of work.
+#' @return A 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package).
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics par
 #' @importFrom utils read.csv
 #' @importFrom CluMSID addAnnotations distanceMatrix networkplot HCplot
 #' @examples
-#' read_data()
-#' process()
-#' spectra_def()
-#' annot_images()
+#' \dontrun{
+#' annot_images(pslist, myDir)
+#' }
+
 annot_images <- function(pslist, myDir) {
   r <- read.csv("pre_anno.csv", sep = ";", dec = ",")
   apslist <- addAnnotations(featlist = pslist, annolist = r) ### add annotations from 'pre_anno.csv' file

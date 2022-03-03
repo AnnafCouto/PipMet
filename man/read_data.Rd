@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_data.r
 \name{read_data}
 \alias{read_data}
-\title{Read data}
+\title{read_data}
 \usage{
 read_data(EIC = 2, ions = NULL)
 }
@@ -11,10 +11,15 @@ read_data(EIC = 2, ions = NULL)
 
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
 }
+\value{
+A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.
+}
 \description{
 This function creates a sheet for the user to fill with the experiment design in order to create categories for the files to be processed. Also creates images of preprocessed data.
 }
 \examples{
-read <- read_data()
+\dontrun{
+read_data()
+}
 }
 \keyword{metadata}

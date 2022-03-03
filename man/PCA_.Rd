@@ -15,9 +15,14 @@ PCA_(mat, metadata, myDir, colors)
 
 \item{colors}{A list with colors generated from "read_data()".}
 }
+\value{
+None.
+}
 \description{
 This function plots PCA.
 }
 \examples{
+\dontrun{
 PCA_(mat, metadata, myDir, colors)
+}
 }
