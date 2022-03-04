@@ -28,13 +28,13 @@
 read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c('.mzML', '.mzXML')) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
-  if (!exists('sample_dir')) {sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")}
-  if (!exists('myDir')) {
+  if (missing(sample_dir)) {sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")}
+  if (missing(myDir)) {
     myDir <- dlgInput("Name your project", Sys.info()["user"])$res
     dir.create(myDir, showWarnings = FALSE)}
   setwd(myDir)
   myDir <- getwd()
-  if (!exists('extensao')) {
+  if (missing(extensao)) {
     extensao <- menu(c(".mzML", ".mzXML"), graphics = TRUE, title = "Files extension:")
     if (extensao == 1) {
       extensao <- ".mzML"
@@ -44,7 +44,11 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   }
 
   # set metadata table up
-  if (!exists('metadata')) {
+  if (!missing(metadata)) {
+    metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
+    metadata$file <- file.path(sample_dir, metadata$file)
+  }
+  if (missing(metadata)) {
     files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)
     metadata <- matrix(nrow = length(files), ncol = 6)
     colnames(metadata) <- c("sample", "group", "class", "tec_rep", "bio_rep", "file")
@@ -55,8 +59,9 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     while (file.exists("metadata.csv") == FALSE) {
       dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
     }
-    metadata <- 'metadava.csv'}
-  metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
+    metadata <- 'metadava.csv'
+    metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
+  }
   if (!sum((is.na(metadata))) == 0) {
     metadata <- metadata[, -which(is.na(metadata), arr.ind = TRUE)[, 2]]  # remove empty columns
   }
@@ -155,10 +160,10 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   rm(tic_bin)
 
   # extracted ion chromatogram based on mz and rt asked previously by user
-  dir.create("Monitoring ions")
-  setwd("Monitoring ions")
-
   if (EIC == 1) {
+    dir.create("Monitoring ions")
+    setwd("Monitoring ions")
+
     for (ii in 1:length(ions)) {
       crom <- chromatogram(dados_brutos, rt = c(as.numeric(ions[[ii]][["rt"]] - 5), as.numeric(ions[[ii]][["rt"]] + 5)), mz = as.numeric(ions[[ii]][["mz"]]))
       for (i in 1:length(colors)) {
