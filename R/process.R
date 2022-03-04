@@ -42,8 +42,10 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
   xdata2 <- adjustRtime(xdata, param = ObiwarpParam(binSize = 0.6))
   save(xdata2, file = "xdata2.RData")
 
+
+  x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ") # ask condition to compare from the metadata table
   # grouping peaks
-  xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = xdata2$group, bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
+  xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[,x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
   save(xdata3, file = "xdata3.RData")
 
   # fill missing peaks
