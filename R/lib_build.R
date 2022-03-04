@@ -142,7 +142,7 @@ lib_build <- function() {
   # write .msp structure for each spectrum
   spectra <- list()
   for (i in 1:length(pslist)) {
-    x <- cbind(pslist[pslist]@spectrum[, 1], (pad[[i]]@spectrum[, 2] / max(pad[[i]]@spectrum[, 2]))) # padronizo dividindo todas as intensidades de um mesmo espectro pela maior intensidade no mesmo (fica tipo 1 e 0,X ou seja, porcentagens)
+    x <- cbind(pslist[pslist]@spectrum[, 1], (pslist[[i]]@spectrum[, 2] / max(pslist[[i]]@spectrum[, 2]))) # pslistronizo dividindo todas as intensidades de um mesmo espectro pela maior intensidade no mesmo (fica tipo 1 e 0,X ou seja, porcentagens)
     x <- data.frame(x)
     colnames(x) <- c("mz", "into")
     spectra[[i]] <- x
@@ -157,7 +157,7 @@ lib_build <- function() {
     result[[i]]$Formula <- metadata[grep(names(pslist)[i], metadata[, 1], value = FALSE), "Formula"]
     result[[i]]$monoMW <- metadata[grep(names(pslist)[i], metadata[, 1], value = FALSE), "monoMW"]
     result[[i]]$CAS <- metadata[grep(names(pslist)[i], metadata[, 1], value = FALSE), "CAS"]
-    result[[i]]$ChemSpiderID <- pslimetadata[grep(names(pad)[i], metadata[, 1], value = FALSE), "ChemSpiderID"]
+    result[[i]]$ChemSpiderID <- metadata[grep(names(pslist)[i], metadata[, 1], value = FALSE), "ChemSpiderID"]
     if ("Class" %in% colnames(metadata)) {
       result[[i]]$Class <- metadata[i, "Class"]
     } else {

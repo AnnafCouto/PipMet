@@ -7,7 +7,7 @@
 normalize(anIC, pslist, metadata, myDir)
 }
 \arguments{
-\item{anIC}{A 'xsAnnotate' CAMER object with grouped spectra.}
+\item{anIC}{A 'xsAnnotate' CAMERA object with grouped spectra.}
 
 \item{pslist}{List of spectra.}
 

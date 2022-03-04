@@ -3,6 +3,10 @@
 #' Main function for GC data processing.
 #' @keywords metadata
 #' @export
+#' @param myDir Path to working directory. Default to none. Only for example used.
+#' @param sample_dir Path to sample directory. Default to none. Only for example used.
+#' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included. Default to none. Only for example used.
+#' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none. Only for example used.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities matrix
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput

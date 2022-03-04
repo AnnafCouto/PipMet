@@ -61,7 +61,7 @@ vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
   de$Relative_abundance[de$foldchange < -0.6 & de$rawpvalue < 0.05] <- "Down"
 
   # plots
-  a <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = Relative_abundance)) +
+  a <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance)) +
     geom_point() +
     theme_minimal() +
     geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
@@ -82,7 +82,7 @@ vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
   # name the changed metabolites
   de$delabel <- NA
   de$delabel[de$Relative_abundance != "Unchanged"] <- de$spcId[de$Relative_abundance != "Unchanged"]
-  b <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = Relative_abundance, label = delabel)) +
+  b <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance, label = de$delabel)) +
     geom_point() +
     ggtitle(label = paste0(opt[1], ": ", opt2[1], " X ", opt2[2])) +
     theme_minimal() +
@@ -139,7 +139,7 @@ vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
   de$Relative_abundance[de$foldchange < -0.6 & de$rawpvalue < 0.05] <- "Down"
 
   # plots
-  a <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = Relative_abundance)) +
+  a <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance)) +
     geom_point() +
     theme_minimal() +
     geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
@@ -159,7 +159,7 @@ vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
   # changed metabolite with names
   de$delabel <- NA
   de$delabel[de$Relative_abundance != "Unchanged"] <- de$spcId[de$Relative_abundance != "Unchanged"]
-  b <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = Relative_abundance, label = delabel)) +
+  b <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance, label = de$delabel)) +
     geom_point() +
     ggtitle(label = paste0(opt[2], ": ", opt2[1], " X ", opt2[2])) +
     theme_minimal() +

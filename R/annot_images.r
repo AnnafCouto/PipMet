@@ -23,15 +23,15 @@ annot_images <- function(pslist, myDir) {
   dir.create("Statistics")
   setwd("Statistics")
 
-  # network plot
+  # network plot - not working
   # tiff
-  tiff("network_plot_0.7.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
-  networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
-  dev.off()
+  #tiff("network_plot_0.7.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  #networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
+  #dev.off()
   # png
-  png("network_plot_0.7.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
-  networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
-  dev.off()
+  #png("network_plot_0.7.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  #networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
+  #dev.off()
 
   # hierarchy plot
   # tiff

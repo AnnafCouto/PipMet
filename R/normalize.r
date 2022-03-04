@@ -114,13 +114,13 @@ normalize <- function(anIC, pslist, metadata, myDir) {
       ggtitle("Variance Distribution") +
       xlab("Variance") +
       ylab("Frequency") +
-      theme(rect = element_rect(fill = "transparent")) # histograma da variância. O ideal é que tenha pouca variância alta
+      theme(rect = element_rect(fill = "transparent")) # histograma da variÃ¢ncia. O ideal Ã© que tenha pouca variÃ¢ncia alta
     b <- ggplot(y, aes(x = y[, nrow(metadata) + 2])) +
       geom_histogram() +
       ggtitle("Standard Deviation") +
       xlab("Standard Deviation") +
       ylab("Frequency") +
-      theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrão.
+      theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrÃ£o.
 
     # plot histogram of variance and standard deviation
     png("variance_dp.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")

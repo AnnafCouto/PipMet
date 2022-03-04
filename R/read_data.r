@@ -30,6 +30,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   # ask user about samples and folders path and create a new folder named after a "Project"
   if (missing(sample_dir)) {sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")}
   if (missing(myDir)) {
+    setwd(sample_dir)
     myDir <- dlgInput("Name your project", Sys.info()["user"])$res
     dir.create(myDir, showWarnings = FALSE)}
   setwd(myDir)
@@ -59,8 +60,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     while (file.exists("metadata.csv") == FALSE) {
       dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
     }
-    metadata <- 'metadava.csv'
-    metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
+    metadata <- read.csv('metadata.csv', na.string = c("NA", ""), colClasses = "character", sep = ",")
   }
   if (!sum((is.na(metadata))) == 0) {
     metadata <- metadata[, -which(is.na(metadata), arr.ind = TRUE)[, 2]]  # remove empty columns
@@ -73,13 +73,18 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       x <- x[-which(x == i)]
     }
   }
-  for (i in 1:nrow(metadata)) {
-    f <- metadata[i, x[[1]]]
-    for (ii in 2:length(x)) {
-      f <- paste0(f, "_", metadata[i, x[[ii]]])
+  if (length(x) > 1) {
+    for (i in 1:nrow(metadata)) {
+      f <- metadata[i, x[[1]]]
+      for (ii in 2:length(x)) {
+        f <- paste0(f, "_", metadata[i, x[[ii]]])
+      }
+      metadata[i, "all"] <- f
+      metadata$all2[i] <- paste0(i, " - ", metadata$all[i])
     }
-    metadata[i, "all"] <- f
-    metadata$all2[i] <- paste0(i, " - ", metadata$all[i])
+  } else {
+    metadata$all <- metadata [,x]
+    metadata$all2 <- paste0(c(1:nrow(metadata))," - ", metadata$all)
   }
 
   # colors for each column in metadata except 'sample' and 'tec_rep'

@@ -37,6 +37,7 @@ vol_lvl1 <- function(n, metadata, myDir) {
   setwd(paste0(opt[1], " X ", opt[2]))
   # rawpvalue <- apply(mat, 1, ttest, grp1 = first, grp2 = sec) # calculate ttest
 
+  rawpvalue <- matrix (nrow = nrow(mat), ncol = 1)
   # calculate t test
   for (i in 1:nrow(mat)) {
     rawpvalue[[i]] <- t.test(as.numeric(mat[i, first]), as.numeric(mat[i, sec]))$p.value
