@@ -3,7 +3,7 @@
 #' This function computes the second step of workflow (peak picking, RT correction and peak grouping) and build images for visualization of data using functions from xcms package.
 #' @export
 #' @param myDir Path to the directory of work.
-#' @param dados_brutos A 'MSnExp' from MSnbase package.
+#' @param raw_data A 'MSnExp' from MSnbase package.
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param colors A list with colors generated from "read_data()".
 #' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
@@ -18,17 +18,17 @@
 #' @examples
 #' \dontrun{
 #' read_data()
-#' xdata4 <- process(dados_brutos, metadata, myDir, colors)
+#' xdata4 <- process(raw_data, metadata, myDir, colors)
 #' }
 
-process <- function(dados_brutos, metadata, myDir, colors, EIC = 2, ions = NULL) {
+process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
   # create and set folder for images
   dir.create("peakProcessing_results")
   setwd("peakProcessing_results")
 
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
-  xdata <- findChromPeaks(dados_brutos, param = mfp)
+  xdata <- findChromPeaks(raw_data, param = mfp)
   save(xdata, file = "xdata.RData")
 
   # apply intensity filter? how much?

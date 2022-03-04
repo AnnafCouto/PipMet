@@ -97,13 +97,13 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   }
 
   # read data into R
-  dados_brutos <- readMSData(metadata$file, pdata = new("NAnnotatedDataFrame", metadata), mode = "onDisk")
+  raw_data <- readMSData(metadata$file, pdata = new("NAnnotatedDataFrame", metadata), mode = "onDisk")
 
   # images of pre-processing
   dir.create("Visualization_results")
   setwd("Visualization_results")
-  bpc <- chromatogram(dados_brutos, aggregationFun = "max")
-  tic <- chromatogram(dados_brutos, aggregationFun = "sum")
+  bpc <- chromatogram(raw_data, aggregationFun = "max")
+  tic <- chromatogram(raw_data, aggregationFun = "sum")
 
   # chromatograms
   for (i in 1:length(colors)) {
@@ -126,9 +126,9 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   }
 
   # boxplot of total ion current
-  tic_por_arquivo <- split(tic(dados_brutos), f = fromFile(dados_brutos))
+  tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
   for (i in 1:length(colors)) {
-    tic_por_arquivo <- split(tic(dados_brutos), f = fromFile(dados_brutos))
+    tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
     # tiff
     tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
     boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
@@ -170,7 +170,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     setwd("Monitoring ions")
 
     for (ii in 1:length(ions)) {
-      crom <- chromatogram(dados_brutos, rt = c(as.numeric(ions[[ii]][["rt"]] - 5), as.numeric(ions[[ii]][["rt"]] + 5)), mz = as.numeric(ions[[ii]][["mz"]]))
+      crom <- chromatogram(raw_data, rt = c(as.numeric(ions[[ii]][["rt"]] - 5), as.numeric(ions[[ii]][["rt"]] + 5)), mz = as.numeric(ions[[ii]][["mz"]]))
       for (i in 1:length(colors)) {
         # tiff
         tiff(paste0(names(colors)[i], "_", ii, "_prePross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
@@ -191,5 +191,5 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   setwd(myDir)
 
   # return results
-  return(list(colors, metadata, dados_brutos, myDir))
+  return(list(colors, metadata, raw_data, myDir))
 }

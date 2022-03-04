@@ -55,12 +55,12 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   quiet(read <- read_data(EIC, ions))
   colors <- read[[1]]
   metadata <- read[[2]]
-  dados_brutos <- read[[3]]
+  raw_data <- read[[3]]
   myDir <- read[[4]]
   rm(read)
 
   # process samples
-  quiet(xdata4 <- process(dados_brutos, metadata, myDir, colors))
+  quiet(xdata4 <- process(raw_data, metadata, myDir, colors))
 
   # define spectra and create .msp files
   quiet(spectra <- getSpectra(xdata4))
@@ -108,5 +108,5 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
 
   dlg_message("Processing done!")$res
 
-  return (list (myDir, metadata, apslist, dados_brutos, xdata4, anIC, colors, n))
+  return (list (myDir, metadata, apslist, raw_data, xdata4, anIC, colors, n))
 }
