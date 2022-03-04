@@ -16,7 +16,7 @@
 #' result <- GC_dataProcess()
 #' }
 
-GC_dataProcess <- function() {
+GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c('.mzML', '.mzXML')) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
@@ -46,7 +46,6 @@ GC_dataProcess <- function() {
   if (parallel == 3) {
     register(MulticoreParam(), default = TRUE)
   }
-  register(parallel, default = TRUE)
 
   # ask informations and read files
   quiet(read <- read_data(EIC, ions))
@@ -72,8 +71,9 @@ GC_dataProcess <- function() {
     result <- addRI(result, RI)
     write.msp(result, "spectra.msp", newFile = TRUE)
     tkmessageBox(title = "Retention index", message = "The retention index for the spectra was calculated and added to the .msp file.", icon = "info", type = "ok")
+    rm(RI)
   }
-  rm(spectra, result, ri, RI)
+  rm(spectra, result, ri)
 
   # update annotated spectra and plot images
   quiet(apslist <- annot_images(pslist, myDir))

@@ -47,7 +47,8 @@ process <- function(dados_brutos, metadata, myDir, colors, EIC = 2, ions = NULL)
   save(xdata3, file = "xdata3.RData")
 
   # fill missing peaks
-  xdata4 <- fillChromPeaks(xdata3, param = ChromPeakAreaParam())
+  get_data2 <- possibly(get_data, otherwise = NA)
+  xdata4 <- possibly(fillChromPeaks(xdata3, param = ChromPeakAreaParam()), otherwise = NA)
 
   # imagens dos dados em processamento e pós processamento (padrões, cromatogramas de íon extraído)
 
@@ -119,10 +120,10 @@ process <- function(dados_brutos, metadata, myDir, colors, EIC = 2, ions = NULL)
     }
 
     # cromatograma de íons extraído
-    dir.create("Monitoring ions")
-    setwd("Monitoring ions")
-
     if (EIC == 1) {
+      dir.create("Monitoring ions")
+      setwd("Monitoring ions")
+      
       for (ii in 1:length(ions)) {
         crom <- chromatogram(xdata4, rt = c(ions[[ii]][["rt"]] - 5, ions[[ii]][["rt"]] + 5), mz = ions[[ii]][["mz"]], include = "none")
         for (i in 1:length(colors)) {

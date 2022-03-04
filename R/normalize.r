@@ -5,7 +5,7 @@
 #' @param myDir Path to the directory of work.
 #' @param pslist List of spectra.
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
-#' @param anIC A 'xsAnnotate' CAMER object with grouped spectra.
+#' @param anIC A 'xsAnnotate' CAMERA object with grouped spectra.
 #' @return A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
@@ -24,9 +24,9 @@ normalize <- function(anIC, pslist, metadata, myDir) {
   # check if representative ions are ok
   okay <- 2
   while (okay == 2) {
-    pre_anno <- read.csv("pre_anno.csv", sep = ";", dec = ",", na.string = c("NA, "))
+    pre_anno <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA, "))
     quant <- matrix(nrow = nrow(pre_anno), ncol = 5 + (2 * nrow(metadata)))
-    colnames(quant) <- c("id, Fragment Ion (m/z Quant), Compound Name, Chemical Formula, Metabolic Class", metadata$sample, metadata$sample)
+    colnames(quant) <- c('id', 'Fragment Ion (m/z Quant)', 'Compound Name', 'Chemical Formula', 'Metabolic Class', metadata$sample, metadata$sample)
     quant[, "id"] <- pre_anno[, "id"]
     quant[, "Compound Name"] <- pre_anno[, "annotation"]
 
@@ -34,7 +34,7 @@ normalize <- function(anIC, pslist, metadata, myDir) {
     setwd("Statistics")
 
     # ask about derivatizations
-    der <- menu(c("Yes, No"), graphics = TRUE, title = "Are those samples derivatized with trimethylsilyl?")
+    der <- menu(c('Yes', 'No'), graphics = TRUE, title = "Are those samples derivatized with trimethylsilyl?")
     for (i in 1:nrow(quant)) {
       temp <- anIC@pspectra[[as.integer(quant[i, 1])]]
       if (der == 1 && 73 %in% pslist[[i]]@spectrum[, 1]) { # if der=1, ion m/z 73 is present
@@ -44,7 +44,7 @@ normalize <- function(anIC, pslist, metadata, myDir) {
       }
       y <- rbind(anIC@groupInfo[temp, ])
       z <- rbind(y[which(y == x[1], arr.ind = TRUE)[, 1], ], y[which(y == x[2], arr.ind = TRUE)[, 1], ])
-      quant[i, 2] <- paste0(z[1, 1], , , z[2, 1])
+      quant[i, 2] <- paste0(z[1, 1],',', z[2, 1])
       quant[i, 6:(5 + nrow(metadata))] <- z[1, which(colnames(z) == "X1"):which(colnames(z) == paste0("X", nrow(metadata)))]
       quant[i, (6 + nrow(metadata)):(5 + 2 * nrow(metadata))] <- z[2, which(colnames(z) == "X1"):which(colnames(z) == paste0("X", nrow(metadata)))]
     }
@@ -64,10 +64,11 @@ normalize <- function(anIC, pslist, metadata, myDir) {
     # set up for NormalyzerDE
     designFp <- file_path_as_absolute("design.tsv")
     dataFp <- file_path_as_absolute("data.tsv")
-    normalyzer(jobName = "Normalyzer_results", designPath = designFp, dataPath = dataFp, outputDir = myDir, sampleColName = "sample", groupColName = "tec_rep", requireReplicates = FALSE)
+    x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group for normalization: ") # ask condition to compare from the metadata table
+    normalyzer(jobName = "Normalyzer_results", designPath = designFp, dataPath = dataFp, outputDir = myDir, sampleColName = "sample", groupColName = colnames(metadata)[x], requireReplicates = FALSE)
 
     # Pick method and apply
-    fill <- list.files(paste0(myDir, "/, Normalyzer_results"), full.names = TRUE, pattern = "-normalized.txt", recursive = TRUE)
+    fill <- list.files(paste0(myDir, "/Normalyzer_results"), full.names = TRUE, pattern = "-normalized.txt", recursive = TRUE)
     norms <- sub("-normalized.txt", replacement = "", fixed = TRUE, x = basename(fill))
     bestNormMat <- menu(norms, graphics = TRUE, title = "Choose the best normalization")
     if (norms[bestNormMat] == "CycLoess") {
@@ -128,7 +129,7 @@ normalize <- function(anIC, pslist, metadata, myDir) {
     tiff("variance_dp.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
     gridExtra::grid.arrange(a, b, ncol = 1)
     dev.off()
-    okay <- menu(c("OK, keep going, No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")
+    okay <- menu(c("OK, keep going", "No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")
   }
 
   n <- n[, 1:(5 + nrow(metadata))] # as everything is ok, use only first most intense ions for representative

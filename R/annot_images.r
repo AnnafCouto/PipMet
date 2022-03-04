@@ -15,7 +15,7 @@
 #' }
 
 annot_images <- function(pslist, myDir) {
-  r <- read.csv("pre_anno.csv", sep = ";", dec = ",")
+  r <- read.csv("pre_anno.csv", sep = ",")
   apslist <- addAnnotations(featlist = pslist, annolist = r) ### add annotations from 'pre_anno.csv' file
   pseudodistmat <- distanceMatrix(apslist, mz_tolerance = 0.02) ### calculates distance matrix; takes a while
 
