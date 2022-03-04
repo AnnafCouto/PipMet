@@ -2,7 +2,6 @@
 #'
 #' Main function for GC internal library building. This function process files from internal standards or FAMEs and build a .msp library to be uploaded in NIST MSSearch software. A table of metadata is required containing information about each of the compounds to be processed, such as CAS and SpiderChemID numbers and retention index. If the user does not provide retention index information, the function will search in NIST database for a retention index through CAS number. Therefore, the CAS number must be filled.
 #' @keywords library, internal standards, FAMEs
-#' @details
 #' @export
 #' @return None.
 #' @importFrom methods as new
@@ -166,7 +165,7 @@ lib_build <- function() {
     }
     result[[i]]$Date <- as.character(Sys.Date())
     result[[i]]$RI <- metadata[grep(names(pslist)[i], metadata[, "RI"], value = FALSE), "CAS"]
-    result[[i]]$Collision Energy <- paste0(colEnergy, 'eV')
+    result[[i]]$CollisionEnergy <- paste0(colEnergy, 'eV')
   }
   names(result) <- names(pslist)
   write.msp(result, "Database_[date].msp", newFile = TRUE)

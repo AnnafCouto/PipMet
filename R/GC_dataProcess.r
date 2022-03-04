@@ -102,5 +102,7 @@ GC_dataProcess <- function() {
   # plot heatmaps
   quiet(heatmap(mat, n, metadata, myDir, colors))
 
+  dlg_message("Processing done!")$res
+
   return (list (myDir, metadata, apslist, dados_brutos, xdata4, anIC, colors, n))
 }

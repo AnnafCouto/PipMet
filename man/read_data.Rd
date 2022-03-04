@@ -4,12 +4,27 @@
 \alias{read_data}
 \title{read_data}
 \usage{
-read_data(EIC = 2, ions = NULL)
+read_data(
+  EIC = 2,
+  ions = NULL,
+  myDir = NULL,
+  sample_dir = NULL,
+  metadata = NULL,
+  extensao = c(".mzML", ".mzXML")
+)
 }
 \arguments{
 \item{EIC}{Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.}
 
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
+
+\item{myDir}{Path to working directory}
+
+\item{sample_dir}{Path to sample directory.}
+
+\item{metadata}{Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included.}
+
+\item{extensao}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.}
 }
 \value{
 A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.

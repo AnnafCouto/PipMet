@@ -6,6 +6,10 @@
 #' @return A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.
 #' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
+#' @param myDir Path to working directory
+#' @param sample_dir Path to sample directory.
+#' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included.
+#' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.
 #' @importFrom grDevices dev.off png tiff
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
@@ -21,39 +25,41 @@
 #' read_data()
 #' }
 
-read_data <- function(EIC = 2, ions = NULL) {
+read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c('.mzML', '.mzXML')) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
-  sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
-  setwd(sample_dir)
-  sample_dir <- getwd()
-  myDir <- dlgInput("Name your project", Sys.info()["user"])$res
-  dir.create(myDir)
+  if (!exists('sample_dir')) {sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")}
+  if (!exists('myDir')) {
+    myDir <- dlgInput("Name your project", Sys.info()["user"])$res
+    dir.create(myDir, showWarnings = FALSE)}
   setwd(myDir)
   myDir <- getwd()
-  extensao <- '.mzML' # default
-  extensao <- menu(c(".mzML", ".mzXML"), graphics = TRUE, title = "Files extension:")
-  if (extensao == 1) {
-    extensao <- ".mzML"
-  } else {
-    extensao <- ".mzXML"
+  if (!exists('extensao')) {
+    extensao <- menu(c(".mzML", ".mzXML"), graphics = TRUE, title = "Files extension:")
+    if (extensao == 1) {
+      extensao <- ".mzML"
+    } else {
+      extensao <- ".mzXML"
+    }
   }
 
   # set metadata table up
-  files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)
-  metadata <- matrix(nrow = length(files), ncol = 6)
-  colnames(metadata) <- c("sample", "group", "class", "tec_rep", "bio_rep", "file")
-  metadata[, "file"] <- files
-  metadata[, "sample"] <- sub(basename(files), pattern = extensao, replacement = "", fixed = TRUE)
-  write.csv(metadata, "metadata.csv", row.names = FALSE)
-  tkmessageBox(title = "Metadata", message = "A file 'metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", icon = "info", type = "ok")
-  while (file.exists("metadata.csv") == FALSE) {
-    dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
-  }
-  metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ";")
+  if (!exists('metadata')) {
+    files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)
+    metadata <- matrix(nrow = length(files), ncol = 6)
+    colnames(metadata) <- c("sample", "group", "class", "tec_rep", "bio_rep", "file")
+    metadata[, "file"] <- files
+    metadata[, "sample"] <- sub(basename(files), pattern = extensao, replacement = "", fixed = TRUE)
+    write.csv(metadata, "metadata.csv", row.names = FALSE)
+    tkmessageBox(title = "Metadata", message = "A file 'metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", icon = "info", type = "ok")
+    while (file.exists("metadata.csv") == FALSE) {
+      dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
+    }
+    metadata <- 'metadava.csv'}
+  metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
   if (!sum((is.na(metadata))) == 0) {
-    metadata <- metadata[, -which(is.na(metadata), arr.ind = TRUE)[, 2]]
-  } # remove empty columns
+    metadata <- metadata[, -which(is.na(metadata), arr.ind = TRUE)[, 2]]  # remove empty columns
+  }
 
   # create 'metadata$all' 1 and 2 for identification
   x <- colnames(metadata)
