@@ -27,4 +27,5 @@ This function plots heatmaps dos metabólitos.
 \dontrun{
 heatmap(mat, metadata, myDir, colors)
 }
+
 }

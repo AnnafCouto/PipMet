@@ -17,6 +17,7 @@ This function computes the first subsetp of third step of the workflow. It defin
 }
 \examples{
 \dontrun{
-getSpectra (xdata4)
+getSpectra(xdata4)
 }
+
 }

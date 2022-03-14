@@ -27,4 +27,5 @@ This function plots volcanos with two levels of comparison.
 \dontrun{
 vol_lvl2()
 }
+
 }

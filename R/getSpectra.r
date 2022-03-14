@@ -13,9 +13,9 @@
 #' @importFrom tcltk tkmessageBox
 #' @examples
 #' \dontrun{
-#' getSpectra (xdata4)
+#' getSpectra(xdata4)
 #' }
-
+#'
 getSpectra <- function(xdata4) {
   if (class(xdata4)[1] == "XCMSnExp") {
     xset <- as(xdata4, "xcmsSet")

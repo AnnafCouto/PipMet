@@ -17,8 +17,9 @@
 #' @importFrom utils choose.dir memory.limit menu read.csv select.list write.csv write.table
 #' @examples
 #' \dontrun{
-#' read_data()
-#' xdata4 <- process(raw_data, metadata, myDir, colors)
+#' load(system.file("extdata", c("raw_data.R", "metadata.R", "colors.R"), package = "PipMet"))
+#' myDir <- getwd()
+#' xdata4 <- process(raw_data, metadata, myDir, colors, myDir)
 #' }
 
 process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
@@ -29,7 +30,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
   xdata <- findChromPeaks(raw_data, param = mfp)
-  save(xdata, file = "xdata.RData")
+  # save(xdata, file = "xdata.RData")
 
   # apply intensity filter? how much?
   filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
@@ -40,13 +41,13 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
 
   # retention time correction
   xdata2 <- adjustRtime(xdata, param = ObiwarpParam(binSize = 0.6))
-  save(xdata2, file = "xdata2.RData")
+  # save(xdata2, file = "xdata2.RData")
 
 
   x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ") # ask condition to compare from the metadata table
   # grouping peaks
-  xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[,x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
-  save(xdata3, file = "xdata3.RData")
+  xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
+  # save(xdata3, file = "xdata3.RData")
 
   # fill missing peaks
   xdata4 <- fillChromPeaks(xdata3, param = ChromPeakAreaParam())

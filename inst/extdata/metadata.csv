@@ -1,3 +1,5 @@
-sample,group,class,hour,file
-20009cg05_1,Ethephon,Sugar,48,20009cg05_1.mzML
-20009cg06_1,Ethephon,Sugar,0,20009cg06_1.mzML
+sample,group,bio_rep,file
+20009cg08_1,0,1,C:\Users\Anna\Documents\Teste/20009cg08_1.mzML
+20009cg09_1,0,1,C:\Users\Anna\Documents\Teste/20009cg09_1.mzML
+20009cg24_1,48,2,C:\Users\Anna\Documents\Teste/20009cg24_1.mzML
+20011cg05_1,48,2,C:\Users\Anna\Documents\Teste/20011cg05_1.mzML

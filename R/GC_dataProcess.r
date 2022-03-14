@@ -17,10 +17,15 @@
 #' @importFrom tcltk tkmessageBox
 #' @examples
 #' \dontrun{
-#' result <- GC_dataProcess()
+#' result <- GC_dataProcess(
+#'   sample_dir = system.file("extdata", package = "PipMet"),
+#'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
+#'   extensao = ".mzML"
+#' )
 #' }
+#'
 
-GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c('.mzML', '.mzXML')) {
+GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML")) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
@@ -83,7 +88,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   quiet(apslist <- annot_images(pslist, myDir))
 
   # normalize, choose peaks and plot images
-  quiet(n <- normalize(anIC, pslist, metadata, myDir))
+  quiet(n <- normalize_data(anIC, pslist, metadata, myDir))
 
   # plot volcanos
   okay <- 1
@@ -108,5 +113,5 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
 
   dlg_message("Processing done!")$res
 
-  return (list (myDir, metadata, apslist, raw_data, xdata4, anIC, colors, n))
+  return(list(myDir, metadata, apslist, raw_data, xdata4, anIC, colors, n))
 }

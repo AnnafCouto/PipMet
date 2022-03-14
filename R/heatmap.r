@@ -18,7 +18,7 @@
 #' \dontrun{
 #' heatmap(mat, metadata, myDir, colors)
 #' }
-
+#'
 heatmap <- function(mat, n, metadata, myDir, colors) {
 
   # set to statistic pictures folder
@@ -35,7 +35,11 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   dev.off()
 
   # only annotated metabolites per sample
-  mat_ident <- mat[-which(is.na(n[, 3])), ]
+  if (!sum(is.na(n[, 3])) <= 0) {
+    mat_ident <- mat[-which(is.na(n[, 3])), ]
+  } else {
+    mat_ident <- mat
+  }
   mat_ident_scaled <- scale(mat_ident)
   colnames(mat_ident_scaled) <- metadata$all
   rownames(mat_ident_scaled) <- n[-which(is.na(n[, 3])), 3]
@@ -47,52 +51,54 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   dev.off()
 
   # calculate mean os technical replicates
-  nhmedia <- matrix(nrow = nrow(mat), ncol = length(unique(metadata$tec_rep)))
-  colnames(nhmedia) <- unique(metadata$tec_rep)
-  for (i in unique(metadata$tec_rep)) {
-    x <- grep(i, metadata$tec_rep)
-    for (ii in 1:nrow(mat)) {
-      nhmedia[ii, i] <- sum(mat[ii, x]) / length(x)
+  if ("tec_rep" %in% colnames(metadata)) {
+    nhmedia <- matrix(nrow = nrow(mat), ncol = length(unique(metadata$tec_rep)))
+    colnames(nhmedia) <- unique(metadata$tec_rep)
+    for (i in unique(metadata$tec_rep)) {
+      x <- grep(i, metadata$tec_rep)
+      for (ii in 1:nrow(mat)) {
+        nhmedia[ii, i] <- sum(mat[ii, x]) / length(x)
+      }
     }
-  }
-  nhmedia_scaled <- scale(nhmedia) # scale
+    nhmedia_scaled <- scale(nhmedia) # scale
 
-  # add names of replicates
-  for (i in 1:ncol(nhmedia_scaled)) {
-    colnames(nhmedia_scaled)[i] <- metadata[(grep(colnames(nhmedia_scaled)[i], metadata$tec_rep))[1], "all"]
-  }
-
-  # plot heatmaps for ident + non_ident metabolites (MEAN)
-  png("heatmap_repMean_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
-  dev.off()
-  tiff("heatmap_repMean_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
-  dev.off()
-
-  # only annotated metabolites (MEAN)
-  mat_ident <- mat[-which(is.na(n[, 3])), ]
-  nhmedia_ident <- matrix(nrow = nrow(mat_ident), ncol = length(unique(metadata$tec_rep)))
-  colnames(nhmedia_ident) <- unique(metadata$all)
-  rownames(nhmedia_ident) <- n[-which(is.na(n[, 3])), 3]
-  for (i in unique(metadata$tec_rep)) {
-    x <- grep(i, metadata$tec_rep)
-    for (ii in 1:nrow(mat_ident)) {
-      nhmedia_ident[ii, i] <- sum(mat_ident[ii, x]) / length(x)
+    # add names of replicates
+    for (i in 1:ncol(nhmedia_scaled)) {
+      colnames(nhmedia_scaled)[i] <- metadata[(grep(colnames(nhmedia_scaled)[i], metadata$tec_rep))[1], "all"]
     }
-  }
-  nhmedia_scaled_ident <- scale(nhmedia_ident) # scale
 
-  # plot heatmaps
-  for (i in 1:length(colors)) {
-    # png
-    png(paste0("heatmap_repMean_scaled_ident_unique", names(colors)[i], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 5, fontsize_col = 5, annotation_colors = list(class = colors[[i]][[2]]), border_color = "NA")
+    # plot heatmaps for ident + non_ident metabolites (MEAN)
+    png("heatmap_repMean_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
     dev.off()
-    # tiff
-    tiff(paste0("heatmap_repMean_scaled_ident_unique", names(colors)[i], ".tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 5, fontsize_col = 5, annotation_colors = list(class = colors[[i]][[2]]), border_color = "NA")
+    tiff("heatmap_repMean_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
     dev.off()
+
+    # only annotated metabolites (MEAN)
+    mat_ident <- mat[-which(is.na(n[, 3])), ]
+    nhmedia_ident <- matrix(nrow = nrow(mat_ident), ncol = length(unique(metadata$tec_rep)))
+    colnames(nhmedia_ident) <- unique(metadata$all)
+    rownames(nhmedia_ident) <- n[-which(is.na(n[, 3])), 3]
+    for (i in unique(metadata$tec_rep)) {
+      x <- grep(i, metadata$tec_rep)
+      for (ii in 1:nrow(mat_ident)) {
+        nhmedia_ident[ii, i] <- sum(mat_ident[ii, x]) / length(x)
+      }
+    }
+    nhmedia_scaled_ident <- scale(nhmedia_ident) # scale
+
+    # plot heatmaps
+    for (i in 1:length(colors)) {
+      # png
+      png(paste0("heatmap_repMean_scaled_ident_unique", names(colors)[i], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 5, fontsize_col = 5, annotation_colors = list(class = colors[[i]][[2]]), border_color = "NA")
+      dev.off()
+      # tiff
+      tiff(paste0("heatmap_repMean_scaled_ident_unique", names(colors)[i], ".tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 5, fontsize_col = 5, annotation_colors = list(class = colors[[i]][[2]]), border_color = "NA")
+      dev.off()
+    }
   }
 
   # back to main folder

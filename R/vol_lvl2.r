@@ -18,7 +18,7 @@
 #' \dontrun{
 #' vol_lvl2()
 #' }
-
+#'
 vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
 
   ### ask for user inputs

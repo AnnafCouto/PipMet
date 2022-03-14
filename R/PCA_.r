@@ -18,7 +18,7 @@
 #' \dontrun{
 #' PCA_(mat, metadata, myDir, colors)
 #' }
-
+#'
 PCA_ <- function(mat, metadata, myDir, colors) {
 
   # new folder for PCA results

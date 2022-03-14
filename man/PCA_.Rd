@@ -25,4 +25,5 @@ This function plots PCA.
 \dontrun{
 PCA_(mat, metadata, myDir, colors)
 }
+
 }

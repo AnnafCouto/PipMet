@@ -22,17 +22,25 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
 #' \dontrun{
-#' read_data()
+#' read <- read_data(sample_dir = system.file("extdata", package = "PipMet"), metadata = system.file("extdata", "metadata.csv", package = "PipMet"), extensao = ".mzML")
+#' colors <- read[[1]]
+#' metadata <- read[[2]]
+#' raw_data <- read[[3]]
+#' myDir <- read[[4]]
+#' rm(read)
 #' }
-
-read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c('.mzML', '.mzXML')) {
+#'
+read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML")) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
-  if (missing(sample_dir)) {sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")}
+  if (missing(sample_dir)) {
+    sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
+  }
   if (missing(myDir)) {
     setwd(sample_dir)
     myDir <- dlgInput("Name your project", Sys.info()["user"])$res
-    dir.create(myDir, showWarnings = FALSE)}
+    dir.create(myDir, showWarnings = FALSE)
+  }
   setwd(myDir)
   myDir <- getwd()
   if (missing(extensao)) {
@@ -60,10 +68,10 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     while (file.exists("metadata.csv") == FALSE) {
       dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
     }
-    metadata <- read.csv('metadata.csv', na.string = c("NA", ""), colClasses = "character", sep = ",")
+    metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
   }
   if (!sum((is.na(metadata))) == 0) {
-    metadata <- metadata[, -which(is.na(metadata), arr.ind = TRUE)[, 2]]  # remove empty columns
+    metadata <- metadata[, -which(is.na(metadata), arr.ind = TRUE)[, 2]] # remove empty columns
   }
 
   # create 'metadata$all' 1 and 2 for identification
@@ -83,8 +91,8 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       metadata$all2[i] <- paste0(i, " - ", metadata$all[i])
     }
   } else {
-    metadata$all <- metadata [,x]
-    metadata$all2 <- paste0(c(1:nrow(metadata))," - ", metadata$all)
+    metadata$all <- metadata[, x]
+    metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
   }
 
   # colors for each column in metadata except 'sample' and 'tec_rep'

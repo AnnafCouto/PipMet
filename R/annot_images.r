@@ -13,12 +13,16 @@
 #' \dontrun{
 #' annot_images(pslist, myDir)
 #' }
-
+#'
 annot_images <- function(pslist, myDir) {
   r <- read.csv("pre_anno.csv", sep = ",")
 
   ### add annotations from 'pre_anno.csv' file (if there is annotation)
-  if (sum(is.na(r$annotation))==nrow(r)) {apslist <- pslist} else {apslist <- addAnnotations(featlist = pslist, annolist = r)}
+  if (sum(is.na(r$annotation)) == nrow(r)) {
+    apslist <- pslist
+  } else {
+    apslist <- addAnnotations(featlist = pslist, annolist = r)
+  }
   pseudodistmat <- distanceMatrix(apslist, mz_tolerance = 0.02) ### calculates distance matrix; takes a while
 
   # creates a folder for images
@@ -27,13 +31,13 @@ annot_images <- function(pslist, myDir) {
 
   # network plot - not working
   # tiff
-  #tiff("network_plot_0.7.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  #networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
-  #dev.off()
+  # tiff("network_plot_0.7.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+  # networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
+  # dev.off()
   # png
-  #png("network_plot_0.7.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  #networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
-  #dev.off()
+  # png("network_plot_0.7.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+  # networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
+  # dev.off()
 
   # hierarchy plot
   # tiff

@@ -165,7 +165,7 @@ lib_build <- function() {
     }
     result[[i]]$Date <- as.character(Sys.Date())
     result[[i]]$RI <- metadata[grep(names(pslist)[i], metadata[, "RI"], value = FALSE), "CAS"]
-    result[[i]]$CollisionEnergy <- paste0(colEnergy, 'eV')
+    result[[i]]$CollisionEnergy <- paste0(colEnergy, "eV")
   }
   names(result) <- names(pslist)
   write.msp(result, "Database_[date].msp", newFile = TRUE)

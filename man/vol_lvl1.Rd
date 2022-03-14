@@ -23,4 +23,5 @@ This function plots volcanos .
 \dontrun{
 vol_lvl1()
 }
+
 }

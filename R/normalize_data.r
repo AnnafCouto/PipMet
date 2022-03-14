@@ -17,16 +17,16 @@
 #' @import ggplot2
 #' @examples
 #' \dontrun{
-#' normalized <- normalize(anIC, pslist, metadata, myDir)
+#' normalized <- normalize_data(anIC, pslist, metadata, myDir)
 #' }
- 
-normalize <- function(anIC, pslist, metadata, myDir) {
+#'
+normalize_data <- function(anIC, pslist, metadata, myDir) {
   # check if representative ions are ok
   okay <- 2
   while (okay == 2) {
     pre_anno <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA, "))
     quant <- matrix(nrow = nrow(pre_anno), ncol = 5 + (2 * nrow(metadata)))
-    colnames(quant) <- c('id', 'Fragment Ion (m/z Quant)', 'Compound Name', 'Chemical Formula', 'Metabolic Class', metadata$sample, metadata$sample)
+    colnames(quant) <- c("id", "Fragment Ion (m/z Quant)", "Compound Name", "Chemical Formula", "Metabolic Class", metadata$sample, metadata$sample)
     quant[, "id"] <- pre_anno[, "id"]
     quant[, "Compound Name"] <- pre_anno[, "annotation"]
 
@@ -34,7 +34,7 @@ normalize <- function(anIC, pslist, metadata, myDir) {
     setwd("Statistics")
 
     # ask about derivatizations
-    der <- menu(c('Yes', 'No'), graphics = TRUE, title = "Are those samples derivatized with trimethylsilyl?")
+    der <- menu(c("Yes", "No"), graphics = TRUE, title = "Are those samples derivatized with trimethylsilyl?")
     for (i in 1:nrow(quant)) {
       temp <- anIC@pspectra[[as.integer(quant[i, 1])]]
       if (der == 1 && 73 %in% pslist[[i]]@spectrum[, 1]) { # if der=1, ion m/z 73 is present
@@ -44,7 +44,7 @@ normalize <- function(anIC, pslist, metadata, myDir) {
       }
       y <- rbind(anIC@groupInfo[temp, ])
       z <- rbind(y[which(y == x[1], arr.ind = TRUE)[, 1], ], y[which(y == x[2], arr.ind = TRUE)[, 1], ])
-      quant[i, 2] <- paste0(z[1, 1],',', z[2, 1])
+      quant[i, 2] <- paste0(z[1, 1], ",", z[2, 1])
       quant[i, 6:(5 + nrow(metadata))] <- z[1, which(colnames(z) == "X1"):which(colnames(z) == paste0("X", nrow(metadata)))]
       quant[i, (6 + nrow(metadata)):(5 + 2 * nrow(metadata))] <- z[2, which(colnames(z) == "X1"):which(colnames(z) == paste0("X", nrow(metadata)))]
     }

@@ -27,7 +27,8 @@ This function computes the second step of workflow (peak picking, RT correction 
 }
 \examples{
 \dontrun{
-read_data()
-xdata4 <- process(raw_data, metadata, myDir, colors)
+load(system.file("extdata", c("raw_data.R", "metadata.R", "colors.R"), package = "PipMet"))
+myDir <- getwd()
+xdata4 <- process(raw_data, metadata, myDir, colors, myDir)
 }
 }
