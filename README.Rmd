@@ -35,6 +35,5 @@ The package is constituted of one main function with pre-set parameters and algo
 
 ```{r example}
 library(PipMet)
-{GC_dataProcess()}
 ```
 
