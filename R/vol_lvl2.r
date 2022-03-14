@@ -70,12 +70,12 @@ vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
     theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black"))
 
   # tiff
-  tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(a)
   dev.off()
 
   # png
-  png("volcano.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("volcano.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(a)
   dev.off()
 
@@ -94,12 +94,12 @@ vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
     ylab("-Log10 pValue")
 
   # tiff
-  tiff("volcano_ident.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("volcano_ident.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(b)
   dev.off()
 
   # png
-  png("volcano_ident.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("volcano_ident.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(b)
   dev.off()
   setwd(volDir)
@@ -148,11 +148,11 @@ vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
     theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black"))
 
   # tiff
-  tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(a)
   dev.off()
   # png
-  png("volcano.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("volcano.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(a)
   dev.off()
 
@@ -171,12 +171,12 @@ vol_lvl2 <- function(mat, n, metadata, myDir, volDir) {
     ylab("-Log10 pValue")
 
   # tiff
-  tiff("volcano_ident.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("volcano_ident.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(b)
   dev.off()
 
   # png
-  png("volcano_ident.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("volcano_ident.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(b)
   dev.off()
   setwd(volDir)

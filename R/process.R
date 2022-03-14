@@ -57,12 +57,12 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
   if (exists("xdata4")) {
     # heatmap of identified peaks per region of chromatogram
     # tiff
-    tiff("plotChromPeakImage.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    tiff("plotChromPeakImage.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(5, 9, 4, 1) + .1)
     plotChromPeakImage(xdata4)
     dev.off()
     # png
-    png("plotChromPeakImage.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    png("plotChromPeakImage.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(5, 9, 4, 1) + .1)
     plotChromPeakImage(xdata4)
     dev.off()
@@ -74,7 +74,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
     names(ints) <- metadata$all2
     for (i in 1:length(colors)) {
       # tiff
-      tiff(paste0(names(colors)[i], "_boxplotLog2Postprocessed.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+      tiff(paste0(names(colors)[i], "_boxplotLog2Postprocessed.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
       par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1)
       boxplot(ints,
         varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
@@ -86,7 +86,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
       )
       dev.off()
       # png
-      png(paste0(names(colors)[i], "_boxplotLog2Postprocessed.png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+      png(paste0(names(colors)[i], "_boxplotLog2Postprocessed.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
       par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1)
       boxplot(ints,
         varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
@@ -103,7 +103,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
     bpc_after <- chromatogram(xdata4, aggregationFun = "max", include = "none")
     for (i in 1:length(colors)) {
       # tiff
-      tiff(paste0(names(colors)[i], "_postprocessedChromatogram.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+      tiff(paste0(names(colors)[i], "_postprocessedChromatogram.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
       par(mfrow = c(2, 1), mar = c(4.5, 4.2, 1, 0.5))
       plot(bpc_after, col = colors[[i]][[2]][colors[[i]][[1]]])
       legend("topright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
@@ -111,7 +111,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
       legend("bottomright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
       dev.off()
       # png
-      png(paste0(names(colors)[i], "_postprocessedChromatogram.png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+      png(paste0(names(colors)[i], "_postprocessedChromatogram.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
       par(mfrow = c(2, 1), mar = c(4.5, 4.2, 1, 0.5))
       plot(bpc_after, col = colors[[i]][[2]][colors[[i]][[1]]])
       legend("topright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
@@ -129,12 +129,12 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
         crom <- chromatogram(xdata4, rt = c(ions[[ii]][["rt"]] - 5, ions[[ii]][["rt"]] + 5), mz = ions[[ii]][["mz"]], include = "none")
         for (i in 1:length(colors)) {
           # tiff
-          tiff(paste0(names(colors)[i], "_", ii, "_postPross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+          tiff(paste0(names(colors)[i], "_", ii, "_postPross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
           plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
           legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
           dev.off()
           # png
-          png(paste0(names(colors)[i], "_", ii, "_postPross_EIC.png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+          png(paste0(names(colors)[i], "_", ii, "_postPross_EIC.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
           plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
           legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
           dev.off()

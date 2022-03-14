@@ -4,10 +4,10 @@
 \alias{process}
 \title{process}
 \usage{
-process(dados_brutos, metadata, myDir, colors, EIC = 2, ions = NULL)
+process(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL)
 }
 \arguments{
-\item{dados_brutos}{A 'MSnExp' from MSnbase package.}
+\item{raw_data}{A 'MSnExp' from MSnbase package.}
 
 \item{metadata}{A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.}
 
@@ -28,6 +28,6 @@ This function computes the second step of workflow (peak picking, RT correction 
 \examples{
 \dontrun{
 read_data()
-xdata4 <- process(dados_brutos, metadata, myDir, colors)
+xdata4 <- process(raw_data, metadata, myDir, colors)
 }
 }

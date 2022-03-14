@@ -30,7 +30,7 @@ PCA_ <- function(mat, metadata, myDir, colors) {
   pcSummary <- summary(pc)
   for (i in 1:length(colors)) {
     # png
-    png(paste0("PCA_", names(colors)[[i]], ".png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    png(paste0("PCA_", names(colors)[[i]], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], color = colors[[i]][[1]])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +
@@ -38,7 +38,7 @@ PCA_ <- function(mat, metadata, myDir, colors) {
       stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]]), alpha = 0.25) +
       theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black", size = 16, face = "bold")))
     dev.off()
-    png(paste0("PCA_named_", names(colors)[[i]], ".png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    png(paste0("PCA_named_", names(colors)[[i]], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], label = metadata$all, color = colors[[i]][[1]])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +
@@ -48,7 +48,7 @@ PCA_ <- function(mat, metadata, myDir, colors) {
       geom_text_repel())
     dev.off()
     # tiff
-    tiff(paste0("PCA_", names(colors)[[i]], ".tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    tiff(paste0("PCA_", names(colors)[[i]], ".tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], color = colors[[i]][[1]])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +
@@ -56,7 +56,7 @@ PCA_ <- function(mat, metadata, myDir, colors) {
       stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]]), alpha = 0.25) +
       theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black", size = 16, face = "bold")))
     dev.off()
-    tiff(paste0("PCA_named_", names(colors)[[i]], ".tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    tiff(paste0("PCA_named_", names(colors)[[i]], ".tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], label = metadata$all, color = colors[[i]][[1]])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +

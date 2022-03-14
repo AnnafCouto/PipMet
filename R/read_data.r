@@ -108,7 +108,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   # chromatograms
   for (i in 1:length(colors)) {
     # tiff
-    tiff(paste0(names(colors)[i], "_chromatograms.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    tiff(paste0(names(colors)[i], "_chromatograms.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mfrow = c(2, 1))
     plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
     legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
@@ -116,7 +116,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
     dev.off()
     # png
-    png(paste0(names(colors)[i], "_chromatograms.png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    png(paste0(names(colors)[i], "_chromatograms.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mfrow = c(2, 1))
     plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
     legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
@@ -130,11 +130,11 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   for (i in 1:length(colors)) {
     tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
     # tiff
-    tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
     dev.off()
     # png
-    png(paste0(names(colors)[i], "_ticBoxplot.png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    png(paste0(names(colors)[i], "_ticBoxplot.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
     dev.off()
   }
@@ -154,11 +154,11 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     ant <- list(colors[[i]][[2]])
     names(ant) <- names(colors)[i]
     # tiff
-    tiff(paste0(names(colors)[i], "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    tiff(paste0(names(colors)[i], "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
     dev.off()
     # png
-    png(paste0(names(colors)[i], "_cluster.png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    png(paste0(names(colors)[i], "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
     dev.off()
   }
@@ -173,13 +173,13 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       crom <- chromatogram(raw_data, rt = c(as.numeric(ions[[ii]][["rt"]] - 5), as.numeric(ions[[ii]][["rt"]] + 5)), mz = as.numeric(ions[[ii]][["mz"]]))
       for (i in 1:length(colors)) {
         # tiff
-        tiff(paste0(names(colors)[i], "_", ii, "_prePross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+        tiff(paste0(names(colors)[i], "_", ii, "_prePross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
         plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
         legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
         dev.off()
 
         # png
-        png(paste0(names(colors)[i], "_", ii, "_prePross_EIC.png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+        png(paste0(names(colors)[i], "_", ii, "_prePross_EIC.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
         plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
         legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
         dev.off()

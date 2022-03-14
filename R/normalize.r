@@ -123,10 +123,10 @@ normalize <- function(anIC, pslist, metadata, myDir) {
       theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrÃ£o.
 
     # plot histogram of variance and standard deviation
-    png("variance_dp.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    png("variance_dp.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     gridExtra::grid.arrange(a, b, ncol = 1)
     dev.off()
-    tiff("variance_dp.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    tiff("variance_dp.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     gridExtra::grid.arrange(a, b, ncol = 1)
     dev.off()
     okay <- menu(c("OK, keep going", "No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")

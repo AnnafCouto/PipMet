@@ -27,10 +27,10 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   # plot heatmap of metabolites per sample
   mat_scaled <- scale(mat)
   colnames(mat_scaled) <- metadata$all
-  png("heatmap_scaled_geral.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("heatmap_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
   dev.off()
-  tiff("heatmap_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("heatmap_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
   dev.off()
 
@@ -39,10 +39,10 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   mat_ident_scaled <- scale(mat_ident)
   colnames(mat_ident_scaled) <- metadata$all
   rownames(mat_ident_scaled) <- n[-which(is.na(n[, 3])), 3]
-  png("heatmap_scaled_ident.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("heatmap_scaled_ident.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA")
   dev.off()
-  tiff("heatmap_scaled_ident.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("heatmap_scaled_ident.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA")
   dev.off()
 
@@ -63,10 +63,10 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   }
 
   # plot heatmaps for ident + non_ident metabolites (MEAN)
-  png("heatmap_repMean_scaled_geral.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("heatmap_repMean_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
   dev.off()
-  tiff("heatmap_repMean_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("heatmap_repMean_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
   dev.off()
 
@@ -86,11 +86,11 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   # plot heatmaps
   for (i in 1:length(colors)) {
     # png
-    png(paste0("heatmap_repMean_scaled_ident_unique", names(colors)[i], ".png"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    png(paste0("heatmap_repMean_scaled_ident_unique", names(colors)[i], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 5, fontsize_col = 5, annotation_colors = list(class = colors[[i]][[2]]), border_color = "NA")
     dev.off()
     # tiff
-    tiff(paste0("heatmap_repMean_scaled_ident_unique", names(colors)[i], ".tiff"), units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+    tiff(paste0("heatmap_repMean_scaled_ident_unique", names(colors)[i], ".tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 5, fontsize_col = 5, annotation_colors = list(class = colors[[i]][[2]]), border_color = "NA")
     dev.off()
   }

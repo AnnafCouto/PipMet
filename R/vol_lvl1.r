@@ -70,10 +70,10 @@ vol_lvl1 <- function(n, metadata, myDir) {
     ggtitle(label = paste0(opt[1], " X ", opt[2])) +
     theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black"))
 
-  png("volcano.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("volcano.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(a)
   dev.off()
-  tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(a)
   dev.off()
 
@@ -90,10 +90,10 @@ vol_lvl1 <- function(n, metadata, myDir) {
     theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
     xlab("Log2 Mean Fold Change") +
     ylab("-Log10 pValue")
-  png("volcano_identified.png", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  png("volcano_identified.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(b)
   dev.off()
-  tiff("volcano_identified.tiff", units = "cm", width = 16, height = 16, res = 1500, bg = "NA")
+  tiff("volcano_identified.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(b)
   dev.off()
 
