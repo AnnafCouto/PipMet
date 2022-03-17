@@ -21,7 +21,7 @@
 #' myDir <- getwd()
 #' xdata4 <- process(raw_data, metadata, myDir, colors, myDir)
 #' }
-
+#'
 process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
   # create and set folder for images
   dir.create("peakProcessing_results")

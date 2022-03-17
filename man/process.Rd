@@ -31,4 +31,5 @@ load(system.file("extdata", c("raw_data.R", "metadata.R", "colors.R"), package =
 myDir <- getwd()
 xdata4 <- process(raw_data, metadata, myDir, colors, myDir)
 }
+
 }

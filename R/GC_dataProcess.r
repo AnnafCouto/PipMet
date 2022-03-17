@@ -24,7 +24,6 @@
 #' )
 #' }
 #'
-
 GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML")) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
@@ -57,7 +56,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   }
 
   # ask informations and read files
-  quiet(read <- read_data(EIC, ions))
+  quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extensao = extensao))
   colors <- read[[1]]
   metadata <- read[[2]]
   raw_data <- read[[3]]
