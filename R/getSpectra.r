@@ -14,6 +14,7 @@
 #' @importFrom svDialogs dlg_message
 #' @examples
 #' \dontrun{
+#' load(system.file("extdata", 'xdata4.R', package = "PipMet"))
 #' getSpectra(xdata4)
 #' }
 #'

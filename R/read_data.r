@@ -21,15 +21,19 @@
 #' @importFrom tcltk tkmessageBox
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
-#' read <- read_data(sample_dir = system.file("extdata", package = "PipMet"), 
-#'                  metadata = system.file("extdata", "metadata.csv", package = "PipMet"), 
-#'                  extensao = ".mzML")
+#' \dontrun{
+#' read <- read_data(
+#'   sample_dir = system.file("extdata", package = "PipMet"),
+#'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
+#'   extensao = ".mzML",
+#'   myDir = "~/",
+#' )
 #' colors <- read[[1]]
 #' metadata <- read[[2]]
 #' raw_data <- read[[3]]
 #' myDir <- read[[4]]
 #' rm(read)
-#' 
+#'}
 
 read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML")) {
 
@@ -108,93 +112,95 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   # read data into R
   raw_data <- readMSData(metadata$file, pdata = new("NAnnotatedDataFrame", metadata), mode = "onDisk")
 
-  # images of pre-processing
-  dir.create("Visualization_results")
-  setwd("Visualization_results")
-  bpc <- chromatogram(raw_data, aggregationFun = "max")
-  tic <- chromatogram(raw_data, aggregationFun = "sum")
+ 
+    # images of pre-processing
+    dir.create("Visualization_results")
+    setwd("Visualization_results")
+    bpc <- chromatogram(raw_data, aggregationFun = "max")
+    tic <- chromatogram(raw_data, aggregationFun = "sum")
 
-  # chromatograms
-  for (i in 1:length(colors)) {
-    # tiff
-    tiff(paste0(names(colors)[i], "_chromatograms.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    par(mfrow = c(2, 1))
-    plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
-    legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-    plot(tic, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Total Ion Current Chromatogram")
-    legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-    dev.off()
-    # png
-    png(paste0(names(colors)[i], "_chromatograms.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    par(mfrow = c(2, 1))
-    plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
-    legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-    plot(tic, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Total Ion Current Chromatogram")
-    legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-    dev.off()
-  }
+    # chromatograms
+    for (i in 1:length(colors)) {
+      # tiff
+      tiff(paste0(names(colors)[i], "_chromatograms.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      par(mfrow = c(2, 1))
+      plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
+      legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+      plot(tic, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Total Ion Current Chromatogram")
+      legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+      dev.off()
+      # png
+      png(paste0(names(colors)[i], "_chromatograms.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      par(mfrow = c(2, 1))
+      plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
+      legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+      plot(tic, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Total Ion Current Chromatogram")
+      legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+      dev.off()
+    }
 
-  # boxplot of total ion current
-  tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
-  for (i in 1:length(colors)) {
+    # boxplot of total ion current
     tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
-    # tiff
-    tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
-    dev.off()
-    # png
-    png(paste0(names(colors)[i], "_ticBoxplot.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
-    dev.off()
-  }
-  rm(tic_por_arquivo)
+    for (i in 1:length(colors)) {
+      tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
+      # tiff
+      tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
+      dev.off()
+      # png
+      png(paste0(names(colors)[i], "_ticBoxplot.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
+      dev.off()
+    }
+    rm(tic_por_arquivo)
 
-  # cluster
-  tic_bin <- bin(tic, binSize = 1)
-  cl <- do.call(cbind, lapply(tic_bin, intensity))
-  cl[cl == 0] <- NA
-  cormat <- cor(log2(cl), use = "pairwise.complete.obs")
-  colnames(cormat) <- rownames(cormat) <- metadata$all2
-  # for each set of colors (conditions of experiment)
-  for (i in 1:length(colors)) {
-    ann <- data.frame(colors[[i]][[1]])
-    colnames(ann) <- names(colors)[i]
-    rownames(ann) <- metadata$all2
-    ant <- list(colors[[i]][[2]])
-    names(ant) <- names(colors)[i]
-    # tiff
-    tiff(paste0(names(colors)[i], "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
-    dev.off()
-    # png
-    png(paste0(names(colors)[i], "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
-    dev.off()
-  }
-  rm(tic_bin)
+    # cluster
+    tic_bin <- bin(tic, binSize = 1)
+    cl <- do.call(cbind, lapply(tic_bin, intensity))
+    cl[cl == 0] <- NA
+    cormat <- cor(log2(cl), use = "pairwise.complete.obs")
+    colnames(cormat) <- rownames(cormat) <- metadata$all2
+    # for each set of colors (conditions of experiment)
+    for (i in 1:length(colors)) {
+      ann <- data.frame(colors[[i]][[1]])
+      colnames(ann) <- names(colors)[i]
+      rownames(ann) <- metadata$all2
+      ant <- list(colors[[i]][[2]])
+      names(ant) <- names(colors)[i]
+      # tiff
+      tiff(paste0(names(colors)[i], "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
+      dev.off()
+      # png
+      png(paste0(names(colors)[i], "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
+      dev.off()
+    }
+    rm(tic_bin)
 
-  # extracted ion chromatogram based on mz and rt asked previously by user
-  if (EIC == 1) {
-    dir.create("Monitoring ions")
-    setwd("Monitoring ions")
+    # extracted ion chromatogram based on mz and rt asked previously by user
+    if (EIC == 1) {
+      dir.create("Monitoring ions")
+      setwd("Monitoring ions")
 
-    for (ii in 1:length(ions)) {
-      crom <- chromatogram(raw_data, rt = c(as.numeric(ions[[ii]][["rt"]] - 5), as.numeric(ions[[ii]][["rt"]] + 5)), mz = as.numeric(ions[[ii]][["mz"]]))
-      for (i in 1:length(colors)) {
-        # tiff
-        tiff(paste0(names(colors)[i], "_", ii, "_prePross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
-        legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-        dev.off()
+      for (ii in 1:length(ions)) {
+        crom <- chromatogram(raw_data, rt = c(as.numeric(ions[[ii]][["rt"]] - 5), as.numeric(ions[[ii]][["rt"]] + 5)), mz = as.numeric(ions[[ii]][["mz"]]))
+        for (i in 1:length(colors)) {
+          # tiff
+          tiff(paste0(names(colors)[i], "_", ii, "_prePross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
+          legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+          dev.off()
 
-        # png
-        png(paste0(names(colors)[i], "_", ii, "_prePross_EIC.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
-        legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-        dev.off()
+          # png
+          png(paste0(names(colors)[i], "_", ii, "_prePross_EIC.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
+          legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+          dev.off()
+        }
       }
     }
-  }
+  
 
   # return to main folder
   setwd(myDir)

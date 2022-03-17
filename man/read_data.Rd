@@ -33,14 +33,18 @@ A list of list of colors, metadata table, a OnDiskMSnExp object and the path to 
 This function creates a sheet for the user to fill with the experiment design in order to create categories for the files to be processed. Also creates images of preprocessed data.
 }
 \examples{
-read <- read_data(sample_dir = system.file("extdata", package = "PipMet"), 
-                 metadata = system.file("extdata", "metadata.csv", package = "PipMet"), 
-                 extensao = ".mzML")
+\dontrun{
+read <- read_data(
+  sample_dir = system.file("extdata", package = "PipMet"),
+  metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
+  extensao = ".mzML",
+  myDir = "~/",
+)
 colors <- read[[1]]
 metadata <- read[[2]]
 raw_data <- read[[3]]
 myDir <- read[[4]]
 rm(read)
-
+}
 }
 \keyword{metadata}

@@ -28,10 +28,11 @@ Main function for GC data processing.
 }
 \examples{
 \dontrun{
-result <- GC_dataProcess(
+GC_dataProcess(
   sample_dir = system.file("extdata", package = "PipMet"),
   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
-  extensao = ".mzML"
+  extensao = ".mzML",
+  myDir = '~/'
 )
 }
 
