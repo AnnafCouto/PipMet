@@ -4,7 +4,7 @@
 \alias{normalize_data}
 \title{Normalize}
 \usage{
-normalize_data(anIC, pslist, metadata, myDir)
+normalize_data(anIC, pslist, metadata, myDir, pre_anno)
 }
 \arguments{
 \item{anIC}{A 'xsAnnotate' CAMERA object with grouped spectra.}
@@ -14,6 +14,8 @@ normalize_data(anIC, pslist, metadata, myDir)
 \item{metadata}{A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.}
 
 \item{myDir}{Path to the directory of work.}
+
+\item{pre_anno}{A table with annotations for spectra.}
 }
 \value{
 A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.

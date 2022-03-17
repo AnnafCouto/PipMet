@@ -15,13 +15,12 @@
 #' @importFrom methods as new
 #' @importFrom utils choose.dir menu read.csv write.csv write.table
 #' @importFrom svDialogs dlgInput dlg_message
-#' @importFrom xcms chromatogram
-#' @importFrom MSnbase readMSData fromFile intensity bin
+#' @import xcms
+#' @import MSnbase
 #' @importFrom pheatmap pheatmap
 #' @importFrom tcltk tkmessageBox
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
-#' \dontrun{
 #' read <- read_data(sample_dir = system.file("extdata", package = "PipMet"), 
 #'                  metadata = system.file("extdata", "metadata.csv", package = "PipMet"), 
 #'                  extensao = ".mzML")
@@ -30,8 +29,8 @@
 #' raw_data <- read[[3]]
 #' myDir <- read[[4]]
 #' rm(read)
-#' }
-#'
+#' 
+
 read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML")) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
@@ -56,8 +55,9 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   # set metadata table up
   if (!missing(metadata)) {
     metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
+    metadata$file <- metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extensao, full.names = TRUE)
   }
-  
+
   if (missing(metadata)) {
     files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)
     metadata <- matrix(nrow = length(files), ncol = 6)

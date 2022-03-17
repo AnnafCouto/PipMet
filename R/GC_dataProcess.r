@@ -9,7 +9,7 @@
 #' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none. Only for example used.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities matrix
 #' @importFrom methods as new
-#' @importFrom svDialogs dlgInput
+#' @importFrom svDialogs dlgInput dlg_message
 #' @importFrom ddpcr quiet
 #' @importFrom utils choose.dir menu read.csv write.csv write.table
 #' @importFrom metaMS addRI write.msp
@@ -69,8 +69,8 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   # define spectra and create .msp files
   quiet(spectra <- getSpectra(xdata4))
   anIC <- spectra[[1]]
-  pslist <- spectra[[2]]
   result <- spectra[[2]]
+  pslist <- spectra[[2]]
 
   # add retention index info if needed
   ri <- menu(c("Yes", "No"), graphics = TRUE, title = 'Would you like to add retention index data to your spectra? For that, you must provide a .csv file with column "rt" and "RI" in you directory.')
@@ -84,10 +84,12 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   rm(spectra, result, ri)
 
   # update annotated spectra and plot images
-  quiet(apslist <- annot_images(pslist, myDir))
+  quiet(annot <- annot_images(pslist, myDir))
+  apslist <- annot[[1]]
+  pre_anno <- annot[[2]]
 
   # normalize, choose peaks and plot images
-  quiet(n <- normalize_data(anIC, pslist, metadata, myDir))
+  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno))
 
   # plot volcanos
   okay <- 1

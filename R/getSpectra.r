@@ -11,6 +11,7 @@
 #' @importFrom metaMS construct.msp write.msp
 #' @importFrom utils memory.limit
 #' @importFrom tcltk tkmessageBox
+#' @importFrom svDialogs dlg_message
 #' @examples
 #' \dontrun{
 #' getSpectra(xdata4)
@@ -61,6 +62,6 @@ getSpectra <- function(xdata4) {
     result[[i]]$Date <- as.character(Sys.Date())
   }
   write.msp(result, "spectra.msp", newFile = TRUE)
-  tkmessageBox(title = "Annotatation step", message = "The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.", icon = "info", type = "ok")
+  dlg_message("Annotatation step: \n The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
   return(list(anIC, pslist, result))
 }
