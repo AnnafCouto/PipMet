@@ -4,7 +4,15 @@
 \alias{process}
 \title{process}
 \usage{
-process(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL)
+process(
+  raw_data,
+  metadata,
+  myDir,
+  colors,
+  EIC = 2,
+  ions = NULL,
+  pictures = c(TRUE, FALSE)
+)
 }
 \arguments{
 \item{raw_data}{A 'MSnExp' from MSnbase package.}
@@ -18,9 +26,11 @@ process(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL)
 \item{EIC}{Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.}
 
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
+
+\item{pictures}{Logical. If pictures should be plotted or not.}
 }
 \value{
-A 'xcmsSet' or a 'XCMSnExp' object with detected, grouped and filled peaks with retention time corrected.
+A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
 }
 \description{
 This function computes the second step of workflow (peak picking, RT correction and peak grouping) and build images for visualization of data using functions from xcms package.

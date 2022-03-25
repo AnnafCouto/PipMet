@@ -45,3 +45,16 @@ library(PipMet)
 #> 
 #>     heatmap
 ```
+The package was thought to be the more friendly-user as possible, even though it runs in code lines. Therefore, when information is needed, pop-ups will appear so that the user can input them.
+
+``` r
+GC_dataProcess(
+   sample_dir = system.file("extdata", package = "PipMet"),
+   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
+   extensao = ".mzML",
+   myDir = '~/',
+   example = TRUE,
+   pictures = FALSE
+)
+```
+Set 'pictures = TRUE' to generate pictures along the code.

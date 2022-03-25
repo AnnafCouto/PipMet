@@ -14,7 +14,7 @@
 #' @importFrom grDevices dev.off png tiff
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
-#' @importFrom utils choose.dir menu read.csv write.csv write.table
+#' @importFrom utils choose.dir menu read.csv write.csv write.table choose.files
 #' @importFrom svDialogs dlgInput dlg_message
 #' @import xcms
 #' @import MSnbase
@@ -66,7 +66,7 @@ read_data <- function(EIC = c(1,2), ions = NULL, myDir = NULL, sample_dir = NULL
   if (is.null(metadata)) {
     metd <- menu(c("Yes", "No"), graphics = TRUE, title = "Metadata table already exists?")
     if (metd == 1) {
-      metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
+      metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ";")
     }
     if (metd == 2) {
       files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)

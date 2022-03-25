@@ -8,7 +8,9 @@ GC_dataProcess(
   myDir = NULL,
   sample_dir = NULL,
   metadata = NULL,
-  extensao = c(".mzML", ".mzXML")
+  extensao = c(".mzML", ".mzXML"),
+  pictures = c(TRUE, FALSE),
+  example = c(TRUE, FALSE)
 )
 }
 \arguments{
@@ -19,6 +21,10 @@ GC_dataProcess(
 \item{metadata}{Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included. Default to none. Only for example used.}
 
 \item{extensao}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none. Only for example used.}
+
+\item{pictures}{Logical. If pictures should be plotted or not.}
+
+\item{example}{Logical. If is example, pop-ups won't appear.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities matrix
@@ -32,7 +38,9 @@ GC_dataProcess(
   sample_dir = system.file("extdata", package = "PipMet"),
   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
   extensao = ".mzML",
-  myDir = '~/'
+  myDir = '~/',
+  example = TRUE,
+  pictures = TRUE
 )
 }
 

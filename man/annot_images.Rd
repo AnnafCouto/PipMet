@@ -4,12 +4,14 @@
 \alias{annot_images}
 \title{Annotation images}
 \usage{
-annot_images(pslist, myDir)
+annot_images(pslist, myDir, pictures = c(TRUE, FALSE))
 }
 \arguments{
 \item{pslist}{List of spectra.}
 
 \item{myDir}{Path to the directory of work.}
+
+\item{pictures}{Logical. If pictures should be plotted or not.}
 }
 \value{
 A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package) and (2) a table with annotation.

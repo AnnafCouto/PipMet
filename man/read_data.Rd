@@ -5,12 +5,13 @@
 \title{read_data}
 \usage{
 read_data(
-  EIC = 2,
+  EIC = c(1, 2),
   ions = NULL,
   myDir = NULL,
   sample_dir = NULL,
   metadata = NULL,
-  extensao = c(".mzML", ".mzXML")
+  extensao = c(".mzML", ".mzXML"),
+  pictures = c(TRUE, FALSE)
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ read_data(
 \item{metadata}{Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included.}
 
 \item{extensao}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.}
+
+\item{pictures}{Logical. If pictures should be plotted or not.}
 }
 \value{
 A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.

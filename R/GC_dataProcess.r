@@ -8,6 +8,7 @@
 #' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included. Default to none. Only for example used.
 #' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none. Only for example used.
 #' @param pictures Logical. If pictures should be plotted or not.
+#' @param example Logical. If is example, pop-ups won't appear.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities matrix
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message
@@ -22,13 +23,16 @@
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
 #'   extensao = ".mzML",
-#'   myDir = '~/'
+#'   myDir = '~/',
+#'   example = TRUE,
+#'   pictures = TRUE
 #' )
 #' }
 #'
-GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = c(TRUE, FALSE)) {
+GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = c(TRUE, FALSE), example = c(TRUE, FALSE)) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
+  if (!example == TRUE) {
   EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
   ions <- list()
   if (EIC == 1) {
@@ -44,8 +48,10 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
       ei <- ei + 1
     }
   }
+  } else {EIC <- 2}
 
   # ask for parallelization mode
+  if (!example == TRUE) {
   parallel <- menu(c("Serial Param (disable)", "Snow Param", "MultiCore Param"), graphics = TRUE, title = "Choose parallelization mode:")
   if (parallel == 1) {
     register(SerialParam(), default = TRUE)
@@ -56,6 +62,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   if (parallel == 3) {
     register(MulticoreParam(), default = TRUE)
   }
+  } else {register(SerialParam(), default = TRUE)}
 
   # ask informations and read files
   quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extensao = extensao, myDir = myDir, pictures = pictures))
@@ -75,6 +82,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   pslist <- spectra[[2]]
 
   # add retention index info if needed
+  if (!example == TRUE) {
   ri <- menu(c("Yes", "No"), graphics = TRUE, title = 'Would you like to add retention index data to your spectra? For that, you must provide a .csv file with column "rt" and "RI" in you directory.')
   if (ri == 1) {
     RI <- read.csv("RI.csv", sep = ";", dec = ",")
@@ -84,6 +92,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
     rm(RI)
   }
   rm(spectra, result, ri)
+  }
 
   # update annotated spectra and plot images
   quiet(annot <- annot_images(pslist, myDir, pictures))
@@ -93,6 +102,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   # normalize, choose peaks and plot images
   quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno))
 
+  if (!example == TRUE) {
   if (pictures == TRUE) {
     # plot volcanos
     okay <- 1
@@ -115,6 +125,11 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
     # plot heatmaps
     quiet(heatmap(mat, n, metadata, myDir, colors))
   }
+  } else {
+      quiet(mat <- vol_lvl1(n, metadata, myDir))
+      volDir <- mat[[2]]
+      mat <- mat[[1]]
+      quiet(vol_lvl2(mat, n, metadata, myDir, volDir))}
 
   # save session
   save.image(paste0(Sys.Date(), '.R'))

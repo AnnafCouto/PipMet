@@ -12,7 +12,7 @@ exctractSpectra(x, min_peaks = 5)
 \item{min_peaks}{Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum.}
 }
 \description{
-This is a modified function from CluMSID package to extract the spectra from a CAMER object output.
+This is a modified function from CluMSID package to extract the spectra from a CAMERA object output.
 }
 \keyword{CAMERA}
 \keyword{pseudoespectra}
