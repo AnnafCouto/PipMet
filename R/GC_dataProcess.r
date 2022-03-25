@@ -7,6 +7,7 @@
 #' @param sample_dir Path to sample directory. Default to none. Only for example used.
 #' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included. Default to none. Only for example used.
 #' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none. Only for example used.
+#' @param pictures Logical. If pictures should be plotted or not.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities matrix
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message
@@ -25,7 +26,7 @@
 #' )
 #' }
 #'
-GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML")) {
+GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = c(TRUE, FALSE)) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
@@ -57,7 +58,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   }
 
   # ask informations and read files
-  quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extensao = extensao, myDir = myDir))
+  quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extensao = extensao, myDir = myDir, pictures = pictures))
   colors <- read[[1]]
   metadata <- read[[2]]
   raw_data <- read[[3]]
@@ -65,7 +66,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   rm(read)
 
   # process samples
-  quiet(xdata4 <- process(raw_data, metadata, myDir, colors))
+  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures))
 
   # define spectra and create .msp files
   quiet(spectra <- getSpectra(xdata4))
@@ -85,33 +86,38 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   rm(spectra, result, ri)
 
   # update annotated spectra and plot images
-  quiet(annot <- annot_images(pslist, myDir))
+  quiet(annot <- annot_images(pslist, myDir, pictures))
   apslist <- annot[[1]]
   pre_anno <- annot[[2]]
 
   # normalize, choose peaks and plot images
   quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno))
 
-  # plot volcanos
-  okay <- 1
-  while (okay == 1) {
-    quiet(mat <- vol_lvl1(n, metadata, myDir))
-    volDir <- mat[[2]]
-    mat <- mat[[1]]
-    okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
+  if (pictures == TRUE) {
+    # plot volcanos
+    okay <- 1
+    while (okay == 1) {
+      quiet(mat <- vol_lvl1(n, metadata, myDir))
+      volDir <- mat[[2]]
+      mat <- mat[[1]]
+      okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
+    }
+
+    okay <- 1
+    while (okay == 1) {
+      quiet(vol_lvl2(mat, n, metadata, myDir, volDir))
+      okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 2 level-comparison again?")
+    }
+
+    # plot PCA
+    quiet(PCA_(mat, metadata, myDir, colors))
+
+    # plot heatmaps
+    quiet(heatmap(mat, n, metadata, myDir, colors))
   }
 
-  okay <- 1
-  while (okay == 1) {
-    quiet(vol_lvl2(mat, n, metadata, myDir, volDir))
-    okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 2 level-comparison again?")
-  }
-
-  # plot PCA
-  quiet(PCA_(mat, metadata, myDir, colors))
-
-  # plot heatmaps
-  quiet(heatmap(mat, n, metadata, myDir, colors))
+  # save session
+  save.image(paste0(Sys.Date(), '.R'))
 
   dlg_message("Processing done!")$res
 

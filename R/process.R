@@ -7,8 +7,9 @@
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param colors A list with colors generated from "read_data()".
 #' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
+#' @param pictures Logical. If pictures should be plotted or not.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
-#' @return A 'xcmsSet' or a 'XCMSnExp' object with detected, grouped and filled peaks with retention time corrected.
+#' @return A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
 #' @importFrom methods as new
@@ -24,15 +25,12 @@
 #' xdata4 <- process(raw_data, metadata, myDir, colors)
 #' }
 #'
-process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
-  # create and set folder for images
-  dir.create("peakProcessing_results")
-  setwd("peakProcessing_results")
+process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = c(TRUE, FALSE)) {
 
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
   xdata <- findChromPeaks(raw_data, param = mfp)
-  # save(xdata, file = "xdata.RData")
+  save(xdata, file = "xdata.RData")
 
   # apply intensity filter? how much?
   filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
@@ -43,36 +41,37 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
 
   # retention time correction
   xdata2 <- adjustRtime(xdata, param = ObiwarpParam(binSize = 0.6))
-  # save(xdata2, file = "xdata2.RData")
-
+  save(xdata2, file = "xdata2.RData")
 
   x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ") # ask condition to compare from the metadata table
   # grouping peaks
   xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
-  # save(xdata3, file = "xdata3.RData")
+  save(xdata3, file = "xdata3.RData")
 
-  # fill missing peaks
-  xdata4 <- fillChromPeaks(xdata3, param = ChromPeakAreaParam())
 
   # imagens dos dados em processamento e pós processamento (padrões, cromatogramas de íon extraído)
 
 
-  if (exists("xdata4")) {
+  if (exists('xdata3') & pictures == TRUE) {
+    # create and set folder for images
+    dir.create("peakProcessing_results")
+    setwd("peakProcessing_results")
+
     # heatmap of identified peaks per region of chromatogram
     # tiff
     tiff("plotChromPeakImage.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(5, 9, 4, 1) + .1)
-    plotChromPeakImage(xdata4)
+    plotChromPeakImage(xdata3)
     dev.off()
     # png
     png("plotChromPeakImage.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(5, 9, 4, 1) + .1)
-    plotChromPeakImage(xdata4)
+    plotChromPeakImage(xdata3)
     dev.off()
 
     # boxplot of log2 intensities per sample
-    ints <- split(log2(chromPeaks(xdata4)[, "into"]),
-      f = chromPeaks(xdata4)[, "sample"]
+    ints <- split(log2(chromPeaks(xdata3)[, "into"]),
+      f = chromPeaks(xdata3)[, "sample"]
     )
     names(ints) <- metadata$all2
     for (i in 1:length(colors)) {
@@ -103,14 +102,14 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
     }
 
     # chromatogram postprocessed
-    bpc_after <- chromatogram(xdata4, aggregationFun = "max", include = "none")
+    bpc_after <- chromatogram(xdata3, aggregationFun = "max", include = "none")
     for (i in 1:length(colors)) {
       # tiff
       tiff(paste0(names(colors)[i], "_postprocessedChromatogram.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
       par(mfrow = c(2, 1), mar = c(4.5, 4.2, 1, 0.5))
       plot(bpc_after, col = colors[[i]][[2]][colors[[i]][[1]]])
       legend("topright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
-      plotAdjustedRtime(xdata4, col = colors[[i]][[2]][colors[[i]][[1]]])
+      plotAdjustedRtime(xdata3, col = colors[[i]][[2]][colors[[i]][[1]]])
       legend("bottomright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
       dev.off()
       # png
@@ -118,7 +117,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
       par(mfrow = c(2, 1), mar = c(4.5, 4.2, 1, 0.5))
       plot(bpc_after, col = colors[[i]][[2]][colors[[i]][[1]]])
       legend("topright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
-      plotAdjustedRtime(xdata4, col = colors[[i]][[2]][colors[[i]][[1]]])
+      plotAdjustedRtime(xdata3, col = colors[[i]][[2]][colors[[i]][[1]]])
       legend("bottomright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
       dev.off()
     }
@@ -129,7 +128,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
       setwd("Monitoring ions")
 
       for (ii in 1:length(ions)) {
-        crom <- chromatogram(xdata4, rt = c(ions[[ii]][["rt"]] - 5, ions[[ii]][["rt"]] + 5), mz = ions[[ii]][["mz"]], include = "none")
+        crom <- chromatogram(xdata3, rt = c(ions[[ii]][["rt"]] - 5, ions[[ii]][["rt"]] + 5), mz = ions[[ii]][["mz"]], include = "none")
         for (i in 1:length(colors)) {
           # tiff
           tiff(paste0(names(colors)[i], "_", ii, "_postPross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -144,15 +143,15 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL) {
         }
       }
     }
-  } else {
-    xdata4 <- as(xdata3, "xcmsSet")
-    xdata4 <- fillPeaks(xdata4)
-  }
-
-
-
+    
   # set to main folder
   setwd(myDir)
+
+  }
+
+  xdata4 <- as(xdata3, "xcmsSet")
+  xdata4 <- fillPeaks(xdata4)
+  
 
   # return results
   return(xdata4)

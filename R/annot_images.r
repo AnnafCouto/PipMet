@@ -4,6 +4,7 @@
 #' @export
 #' @param pslist List of spectra.
 #' @param myDir Path to the directory of work.
+#' @param pictures Logical. If pictures should be plotted or not.
 #' @return A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package) and (2) a table with annotation.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics par
@@ -14,7 +15,7 @@
 #' annot_images(pslist, myDir)
 #' }
 #'
-annot_images <- function(pslist, myDir) {
+annot_images <- function(pslist, myDir, pictures = c(TRUE, FALSE)) {
   r <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA, "))
   if (length(colnames(r)) <= 1) {
     r <- read.csv("pre_anno.csv", sep = ";")
@@ -28,6 +29,7 @@ annot_images <- function(pslist, myDir) {
   }
   pseudodistmat <- distanceMatrix(apslist, mz_tolerance = 0.02) ### calculates distance matrix; takes a while
 
+  if (pictures == TRUE) {
   # creates a folder for images
   dir.create("Statistics")
   setwd("Statistics")
@@ -65,7 +67,8 @@ annot_images <- function(pslist, myDir) {
   par(mar = c(4.5, 4.2, 1, 0.5))
   HCplot(pseudodistmat, type = "heatmap", cexRow = 0.4, cexCol = 0.4, margins = c(7, 7))
   dev.off()
-
+  }
+  
   # set to main folder
   setwd(myDir)
 
