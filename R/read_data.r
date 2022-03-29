@@ -37,7 +37,7 @@
 #' rm(read)
 #'}
 
-read_data <- function(EIC = c(1,2), ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = c(TRUE, FALSE), example = c(TRUE, FALSE)) {
+read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = TRUE, example = FALSE) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
   if (is.null(sample_dir)| missing(sample_dir)) {

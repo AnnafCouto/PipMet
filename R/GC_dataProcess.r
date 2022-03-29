@@ -65,7 +65,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   } else {register(SerialParam(), default = TRUE)}
 
   # ask informations and read files
-  quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extensao = extensao, myDir = myDir, pictures = pictures))
+  quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extensao = extensao, myDir = myDir, pictures = pictures, example = example))
   colors <- read[[1]]
   metadata <- read[[2]]
   raw_data <- read[[3]]
