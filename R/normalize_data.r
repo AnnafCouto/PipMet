@@ -31,6 +31,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno) {
     quant[, "Compound Name"] <- pre_anno[, "annotation"]
 
     # set to folder
+    if(!dir.exists('Statistics')==TRUE) {dir.create('Statistics')}
     setwd("Statistics")
 
     # ask about derivatizations

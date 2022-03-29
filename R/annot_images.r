@@ -31,7 +31,7 @@ annot_images <- function(pslist, myDir, pictures = c(TRUE, FALSE)) {
 
   if (pictures == TRUE) {
   # creates a folder for images
-  dir.create("Statistics")
+  if(!dir.exists('Statistics')==TRUE) {dir.create('Statistics')}
   setwd("Statistics")
 
   # network plot - not working

@@ -59,14 +59,14 @@ read_data <- function(EIC = c(1,2), ions = NULL, myDir = NULL, sample_dir = NULL
 
   # set metadata table up
   if (!is.null(metadata)) {
-    metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ";")
+    metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
     metadata$file <- metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extensao, full.names = TRUE)
   }
 
   if (is.null(metadata)) {
     metd <- menu(c("Yes", "No"), graphics = TRUE, title = "Metadata table already exists?")
     if (metd == 1) {
-      metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ";")
+      metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
     }
     if (metd == 2) {
       files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)

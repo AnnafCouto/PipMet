@@ -19,7 +19,7 @@
 #' @importFrom tcltk tkmessageBox
 #' @examples
 #' \dontrun{
-#' GC_dataProcess(
+#' result <- GC_dataProcess(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
 #'   extensao = ".mzML",
@@ -104,10 +104,14 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
 
   if (!example == TRUE) {
   if (pictures == TRUE) {
+    mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
+    mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
+    rownames(mat) <- n[, 1]
+
     # plot volcanos
     okay <- 1
     while (okay == 1) {
-      quiet(mat <- vol_lvl1(n, metadata, myDir))
+      quiet(mat <- vol_lvl1(n, mat, metadata, myDir))
       volDir <- mat[[2]]
       mat <- mat[[1]]
       okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
