@@ -73,7 +73,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   rm(read)
 
   # process samples
-  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures))
+  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures, example))
 
   # define spectra and create .msp files
   quiet(spectra <- getSpectra(xdata4))

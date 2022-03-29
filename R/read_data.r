@@ -11,6 +11,7 @@
 #' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included.
 #' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.
 #' @param pictures Logical. If pictures should be plotted or not.
+#' @param example Logical. If is example, pop-ups won't appear.
 #' @importFrom grDevices dev.off png tiff
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
@@ -36,7 +37,7 @@
 #' rm(read)
 #'}
 
-read_data <- function(EIC = c(1,2), ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = c(TRUE, FALSE)) {
+read_data <- function(EIC = c(1,2), ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = c(TRUE, FALSE), example = c(TRUE, FALSE)) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
   if (is.null(sample_dir)| missing(sample_dir)) {
@@ -60,8 +61,9 @@ read_data <- function(EIC = c(1,2), ions = NULL, myDir = NULL, sample_dir = NULL
   # set metadata table up
   if (!is.null(metadata)) {
     metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
+    if (example == TRUE) {
     metadata$file <- metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extensao, full.names = TRUE)
-  }
+  }}
 
   if (is.null(metadata)) {
     metd <- menu(c("Yes", "No"), graphics = TRUE, title = "Metadata table already exists?")
