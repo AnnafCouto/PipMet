@@ -18,11 +18,10 @@
 #' @importFrom utils choose.dir memory.limit menu read.csv select.list write.csv write.table
 #' @examples
 #' \dontrun{
-#' load(system.file("extdata", 'raw_data.R', package = "PipMet"))
-#' load(system.file("extdata", 'metadata.R', package = "PipMet"))
-#' load(system.file("extdata", 'colors.R', package = "PipMet"))
-#' myDir <- getwd()
-#' xdata4 <- process(raw_data, metadata, myDir, colors)
+#' load(system.file("extdata", 'raw_data.RData', package = "PipMet"))
+#' load(system.file("extdata", 'metadata.RData', package = "PipMet"))
+#' load(system.file("extdata", 'colors.RData', package = "PipMet"))
+#' xdata4 <- process(raw_data, metadata, myDir = '~/, colors, pictures = FALSE)
 #' }
 #'
 process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE) {

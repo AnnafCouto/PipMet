@@ -70,5 +70,5 @@ annot_images <- function(pslist, myDir, pictures = TRUE) {
   setwd(myDir)
 
   # return results
-  return(list(apslist, r))
+  return(list(apslist = apslist, r =r))
 }

@@ -217,5 +217,5 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   setwd(myDir)
 
   # return results
-  return(list(colors, metadata, raw_data, myDir))
+  return(list(colors = colors, metadata = metadata, raw_data = raw_data, myDir = myDir))
 }
