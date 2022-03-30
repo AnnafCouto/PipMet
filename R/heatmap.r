@@ -28,10 +28,10 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   mat_scaled <- scale(mat)
   colnames(mat_scaled) <- metadata$all
   png("heatmap_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
+  pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5)
   dev.off()
   tiff("heatmap_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
+  pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5)
   dev.off()
 
   # only annotated metabolites per sample
@@ -44,10 +44,10 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   colnames(mat_ident_scaled) <- metadata$all
   rownames(mat_ident_scaled) <- n[-which(is.na(n[, 3])), 3]
   png("heatmap_scaled_ident.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA")
+  pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 5)
   dev.off()
   tiff("heatmap_scaled_ident.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA")
+  pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 5)
   dev.off()
 
   # calculate mean os technical replicates
@@ -69,10 +69,10 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
 
     # plot heatmaps for ident + non_ident metabolites (MEAN)
     png("heatmap_repMean_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
+    pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5)
     dev.off()
     tiff("heatmap_repMean_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5)
+    pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5)
     dev.off()
 
     # only annotated metabolites (MEAN)
