@@ -10,8 +10,8 @@
 #' @param sample_dir Path to sample directory.
 #' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included.
 #' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.
-#' @param pictures Logical. If pictures should be plotted or not.
-#' @param example Logical. If is example, pop-ups won't appear.
+#' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
+#' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @importFrom grDevices dev.off png tiff
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new

@@ -7,7 +7,7 @@
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param colors A list with colors generated from "read_data()".
 #' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
-#' @param pictures Logical. If pictures should be plotted or not.
+#' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
 #' @return A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
 #' @importFrom grDevices dev.off pdf png tiff
@@ -25,7 +25,7 @@
 #' xdata4 <- process(raw_data, metadata, myDir, colors)
 #' }
 #'
-process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = c(TRUE, FALSE)) {
+process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE) {
 
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)

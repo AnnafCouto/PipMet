@@ -4,7 +4,7 @@
 #' @export
 #' @param pslist List of spectra.
 #' @param myDir Path to the directory of work.
-#' @param pictures Logical. If pictures should be plotted or not.
+#' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @return A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package) and (2) a table with annotation.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics par
@@ -15,7 +15,7 @@
 #' annot_images(pslist, myDir)
 #' }
 #'
-annot_images <- function(pslist, myDir, pictures = c(TRUE, FALSE)) {
+annot_images <- function(pslist, myDir, pictures = TRUE) {
   r <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA, "))
   if (length(colnames(r)) <= 1) {
     r <- read.csv("pre_anno.csv", sep = ";")

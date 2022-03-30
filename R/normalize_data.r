@@ -72,6 +72,8 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno) {
     fill <- list.files(paste0(myDir, "/Normalyzer_results"), full.names = TRUE, pattern = "-normalized.txt", recursive = TRUE)
     norms <- sub("-normalized.txt", replacement = "", fixed = TRUE, x = basename(fill))
     bestNormMat <- menu(norms, graphics = TRUE, title = "Choose the best normalization")
+    mat[mat == 0] <- NA
+    mat[mat > 0 & mat < 1] <- 0
     if (norms[bestNormMat] == "CycLoess") {
       mat <- performCyclicLoessNormalization(mat)
     }
