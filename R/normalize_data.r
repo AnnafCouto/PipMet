@@ -6,10 +6,12 @@
 #' @param pslist List of spectra.
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param anIC A 'xsAnnotate' CAMERA object with grouped spectra.
-#' @param pre_anno A table with annotations for spectra.
+#' @param pre_anno A table with annotations for spectra. or path to .csv file.
+#' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @return A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
+#' @importFrom svDialogs dlg_message
 #' @importFrom methods as new
 #' @importFrom stats cor sd t.test var
 #' @importFrom utils choose.dir menu read.csv select.list write.csv write.table
@@ -18,10 +20,21 @@
 #' @import ggplot2
 #' @examples
 #' \dontrun{
-#' normalized <- normalize_data(anIC, pslist, metadata, myDir)
+#' pre_anno <- read.csv(system.file("extdata", "pre_anno.csv", package = "PipMet"))
+#' load(system.file("extdata", "pslist.RData", package = "PipMet"))
+#' load(system.file("extdata", "anIC.RData", package = "PipMet"))
+#' load(system.file("extdata", "metadata.RData", package = "PipMet"))
+#' normalized <- normalize_data(
+#'               anIC, 
+#'               pslist, 
+#'               metadata, 
+#'               myDir = "~/", 
+#'               pre_anno = pre_anno, 
+#'               example = TRUE)
 #' }
 #'
-normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno) {
+normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
+
   # check if representative ions are ok
   okay <- 2
   while (okay == 2) {
@@ -31,11 +44,18 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno) {
     quant[, "Compound Name"] <- pre_anno[, "annotation"]
 
     # set to folder
-    if(!dir.exists('Statistics')==TRUE) {dir.create('Statistics')}
+    if (!dir.exists("Statistics") == TRUE) {
+      dir.create("Statistics")
+    }
     setwd("Statistics")
 
     # ask about derivatizations
-    der <- menu(c("Yes", "No"), graphics = TRUE, title = "Are those samples derivatized with trimethylsilyl?")
+    if (example == TRUE) {
+      der <- 1
+    } else {
+      der <- menu(c("Yes", "No"), graphics = TRUE, title = "Are those samples derivatized with trimethylsilyl?")
+    }
+
     for (i in 1:nrow(quant)) {
       temp <- anIC@pspectra[[as.integer(quant[i, 1])]]
       if (der == 1 && 73 %in% pslist[[i]]@spectrum[, 1]) { # if der=1, ion m/z 73 is present
@@ -65,13 +85,25 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno) {
     # set up for NormalyzerDE
     designFp <- file_path_as_absolute("design.tsv")
     dataFp <- file_path_as_absolute("data.tsv")
-    x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group for normalization: ") # ask condition to compare from the metadata table
+
+    # ask condition to compare from the metadata table
+    if (example == TRUE) {
+      x <- 2
+    } else {
+      x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group for normalization: ")
+    }
     normalyzer(jobName = "Normalyzer_results", designPath = designFp, dataPath = dataFp, outputDir = myDir, sampleColName = "sample", groupColName = colnames(metadata)[x], requireReplicates = FALSE)
 
     # Pick method and apply
     fill <- list.files(paste0(myDir, "/Normalyzer_results"), full.names = TRUE, pattern = "-normalized.txt", recursive = TRUE)
     norms <- sub("-normalized.txt", replacement = "", fixed = TRUE, x = basename(fill))
-    bestNormMat <- menu(norms, graphics = TRUE, title = "Choose the best normalization")
+    # ask method for normalization. Standard method for the example is CycLoess.
+    if (example == TRUE) {
+      dlg_message("Normalization done! Check the report from NormalyzerDE. As example, the chosen one is CycLoess method.")$res
+      bestNormMat <- 1
+    } else {
+      bestNormMat <- menu(norms, graphics = TRUE, title = "Choose the best normalization")
+    }
     mat[mat == 0] <- NA
     mat[mat > 0 & mat < 1] <- 0
     if (norms[bestNormMat] == "CycLoess") {
@@ -132,7 +164,9 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno) {
     tiff("variance_dp.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     gridExtra::grid.arrange(a, b, ncol = 1)
     dev.off()
-    okay <- menu(c("OK, keep going", "No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")
+    if (example == FALSE) {
+      okay <- menu(c("OK, keep going", "No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")
+    }
   }
 
   n <- n[, 1:(5 + nrow(metadata))] # as everything is ok, use only first most intense ions for representative

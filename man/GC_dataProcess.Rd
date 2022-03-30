@@ -9,8 +9,8 @@ GC_dataProcess(
   sample_dir = NULL,
   metadata = NULL,
   extensao = c(".mzML", ".mzXML"),
-  pictures = c(TRUE, FALSE),
-  example = c(TRUE, FALSE)
+  pictures = TRUE,
+  example = FALSE
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ GC_dataProcess(
 \item{example}{Logical. If is example, pop-ups won't appear.}
 }
 \value{
-A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities matrix
+A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 }
 \description{
 Main function for GC data processing.
@@ -38,7 +38,7 @@ result <- GC_dataProcess(
   sample_dir = system.file("extdata", package = "PipMet"),
   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
   extensao = ".mzML",
-  myDir = '~/',
+  myDir = "~/",
   example = TRUE,
   pictures = TRUE
 )

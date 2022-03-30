@@ -11,7 +11,8 @@ process(
   colors,
   EIC = 2,
   ions = NULL,
-  pictures = TRUE
+  pictures = TRUE,
+  example = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ process(
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
 
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
+
+\item{example}{Logical. If is example, pop-ups won't appear.}
 }
 \value{
 A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
@@ -36,12 +39,10 @@ A 'xcmsSet' object with detected, grouped and filled peaks with retention time c
 This function computes the second step of workflow (peak picking, RT correction and peak grouping) and build images for visualization of data using functions from xcms package.
 }
 \examples{
-\dontrun{
-load(system.file("extdata", 'raw_data.R', package = "PipMet"))
-load(system.file("extdata", 'metadata.R', package = "PipMet"))
-load(system.file("extdata", 'colors.R', package = "PipMet"))
-myDir <- getwd()
-xdata4 <- process(raw_data, metadata, myDir, colors)
-}
+
+load(system.file("extdata", "raw_data.RData", package = "PipMet"))
+load(system.file("extdata", "metadata.RData", package = "PipMet"))
+load(system.file("extdata", "colors.RData", package = "PipMet"))
+xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
 
 }

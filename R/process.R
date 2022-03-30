@@ -8,6 +8,7 @@
 #' @param colors A list with colors generated from "read_data()".
 #' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
+#' @param example Logical. If is example, pop-ups won't appear.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
 #' @return A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
 #' @importFrom grDevices dev.off pdf png tiff
@@ -17,38 +18,45 @@
 #' @importFrom xcms MatchedFilterParam findChromPeaks refineChromPeaks FilterIntensityParam adjustRtime ObiwarpParam groupChromPeaks PeakDensityParam fillChromPeaks ChromPeakAreaParam plotChromPeakImage chromPeaks plotAdjustedRtime chromatogram fillPeaks
 #' @importFrom utils choose.dir memory.limit menu read.csv select.list write.csv write.table
 #' @examples
-#' \dontrun{
-#' load(system.file("extdata", 'raw_data.RData', package = "PipMet"))
-#' load(system.file("extdata", 'metadata.RData', package = "PipMet"))
-#' load(system.file("extdata", 'colors.RData', package = "PipMet"))
-#' xdata4 <- process(raw_data, metadata, myDir = '~/, colors, pictures = FALSE)
-#' }
 #'
-process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE) {
+#' load(system.file("extdata", "raw_data.RData", package = "PipMet"))
+#' load(system.file("extdata", "metadata.RData", package = "PipMet"))
+#' load(system.file("extdata", "colors.RData", package = "PipMet"))
+#' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
+#'
+process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE, example = FALSE) {
 
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
   xdata <- findChromPeaks(raw_data, param = mfp)
-  save(xdata, file = "xdata.RData")
+  #save(xdata, file = "xdata.RData")
 
-  # apply intensity filter? how much?
-  filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
-  if (filt == 1) {
-    filter <- dlgInput("Intensity threshold ", "0")$res
-    xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo"))
+  if (example == FALSE) {
+    # apply intensity filter? how much?
+    filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
+    if (filt == 1) {
+      filter <- dlgInput("Intensity threshold ", "0")$res
+      xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo"))
+    }
   }
 
   # retention time correction
   xdata2 <- adjustRtime(xdata, param = ObiwarpParam(binSize = 0.6))
-  save(xdata2, file = "xdata2.RData")
+  #save(xdata2, file = "xdata2.RData")
 
-  x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ") # ask condition to compare from the metadata table
+  if (example == FALSE) {
+    # ask condition to compare from the metadata table
+    x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ")
+  } else {
+    x <- 2
+  }
+
   # grouping peaks
   xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
-  save(xdata3, file = "xdata3.RData")
+  #save(xdata3, file = "xdata3.RData")
 
   # imagens dos dados em processamento e pós processamento (padrões, cromatogramas de íon extraído)
-  if (exists('xdata3') & pictures == TRUE) {
+  if (exists("xdata3") & pictures == TRUE) {
     # create and set folder for images
     dir.create("peakProcessing_results")
     setwd("peakProcessing_results")
@@ -139,16 +147,23 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
         }
       }
     }
-    
-  # set to main folder
-  setwd(myDir)
 
+    # set to main folder
+    setwd(myDir)
   }
 
   xdata4 <- as(xdata3, "xcmsSet")
-  if ("group" %in% colnames(metadata)) {sampclass(xdata4) <-metadata$group} else {if ("class" %in% colnames(metadata)) {sampclass(xdata4) <-metadata$class} else {sampclass(xdata4) <- NA}}
+  if ("group" %in% colnames(metadata)) {
+    sampclass(xdata4) <- metadata$group
+  } else {
+    if ("class" %in% colnames(metadata)) {
+      sampclass(xdata4) <- metadata$class
+    } else {
+      sampclass(xdata4) <- NA
+    }
+  }
   xdata4 <- fillPeaks(xdata4)
-  
+
   # return results
   return(xdata4)
 }

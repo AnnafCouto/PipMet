@@ -4,7 +4,7 @@
 \alias{annot_images}
 \title{Annotation images}
 \usage{
-annot_images(pslist, myDir, pictures = TRUE)
+annot_images(pslist, myDir, pictures = TRUE, example = FALSE)
 }
 \arguments{
 \item{pslist}{List of spectra.}
@@ -12,6 +12,8 @@ annot_images(pslist, myDir, pictures = TRUE)
 \item{myDir}{Path to the directory of work.}
 
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
+
+\item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
 }
 \value{
 A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package) and (2) a table with annotation.
@@ -20,8 +22,8 @@ A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations
 This function creates network, hierarchy and heatmap plots of the spectra (annotated or not).
 }
 \examples{
-\dontrun{
-annot_images(pslist, myDir)
-}
+
+load(system.file("extdata", "pslist.RData", package = "PipMet"))
+annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, example = TRUE)
 
 }

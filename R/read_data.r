@@ -23,24 +23,24 @@
 #' @importFrom tcltk tkmessageBox
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
-#' \dontrun{
 #' read <- read_data(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
 #'   extensao = ".mzML",
 #'   myDir = "~/",
+#'   pictures = FALSE,
+#'   example = TRUE
 #' )
 #' colors <- read[[1]]
 #' metadata <- read[[2]]
 #' raw_data <- read[[3]]
 #' myDir <- read[[4]]
 #' rm(read)
-#'}
-
+#'
 read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = TRUE, example = FALSE) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
-  if (is.null(sample_dir)| missing(sample_dir)) {
+  if (is.null(sample_dir) | missing(sample_dir)) {
     sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
   }
   if (is.null(myDir) | missing(myDir)) {
@@ -62,8 +62,9 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   if (!is.null(metadata)) {
     metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
     if (example == TRUE) {
-    metadata$file <- metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extensao, full.names = TRUE)
-  }}
+      metadata$file <- metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extensao, full.names = TRUE)
+    }
+  }
 
   if (is.null(metadata)) {
     metd <- menu(c("Yes", "No"), graphics = TRUE, title = "Metadata table already exists?")

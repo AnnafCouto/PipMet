@@ -4,7 +4,7 @@
 \alias{normalize_data}
 \title{Normalize}
 \usage{
-normalize_data(anIC, pslist, metadata, myDir, pre_anno)
+normalize_data(anIC, pslist, metadata, myDir, pre_anno, example)
 }
 \arguments{
 \item{anIC}{A 'xsAnnotate' CAMERA object with grouped spectra.}
@@ -15,7 +15,9 @@ normalize_data(anIC, pslist, metadata, myDir, pre_anno)
 
 \item{myDir}{Path to the directory of work.}
 
-\item{pre_anno}{A table with annotations for spectra.}
+\item{pre_anno}{A table with annotations for spectra. or path to .csv file.}
+
+\item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
 }
 \value{
 A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
@@ -25,7 +27,17 @@ This function normalize data.
 }
 \examples{
 \dontrun{
-normalized <- normalize_data(anIC, pslist, metadata, myDir)
+pre_anno <- read.csv(system.file("extdata", "pre_anno.csv", package = "PipMet"))
+load(system.file("extdata", "pslist.RData", package = "PipMet"))
+load(system.file("extdata", "anIC.RData", package = "PipMet"))
+load(system.file("extdata", "metadata.RData", package = "PipMet"))
+normalized <- normalize_data(
+              anIC, 
+              pslist, 
+              metadata, 
+              myDir = "~/", 
+              pre_anno = pre_anno, 
+              example = TRUE)
 }
 
 }

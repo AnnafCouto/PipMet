@@ -23,7 +23,7 @@
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
 #'   extensao = ".mzML",
-#'   myDir = '~/',
+#'   myDir = "~/",
 #'   example = TRUE,
 #'   pictures = TRUE
 #' )
@@ -33,36 +33,40 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE) {
-  EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
-  ions <- list()
-  if (EIC == 1) {
-    okay <- 1
-    ei <- 1
-    while (okay == 1) {
-      ions[[ei]] <- vector(mode = "list", length = 2)
-      names(ions[[ei]]) <- c("mz", "rt")
-      # names(ions)[ei] <- as.character(dlgInput(paste0('Name monitoring ion ', ei, ' :'), 'First')$res)
-      ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, " :"), "0")$res)
-      ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be add +/- 5s to Rt):"), "0")$res)
-      okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor another one?")
-      ei <- ei + 1
+    EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
+    ions <- list()
+    if (EIC == 1) {
+      okay <- 1
+      ei <- 1
+      while (okay == 1) {
+        ions[[ei]] <- vector(mode = "list", length = 2)
+        names(ions[[ei]]) <- c("mz", "rt")
+        # names(ions)[ei] <- as.character(dlgInput(paste0('Name monitoring ion ', ei, ' :'), 'First')$res)
+        ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, " :"), "0")$res)
+        ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be add +/- 5s to Rt):"), "0")$res)
+        okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor another one?")
+        ei <- ei + 1
+      }
     }
+  } else {
+    EIC <- 2
   }
-  } else {EIC <- 2}
 
   # ask for parallelization mode
   if (!example == TRUE) {
-  parallel <- menu(c("Serial Param (disable)", "Snow Param", "MultiCore Param"), graphics = TRUE, title = "Choose parallelization mode:")
-  if (parallel == 1) {
+    parallel <- menu(c("Serial Param (disable)", "Snow Param", "MultiCore Param"), graphics = TRUE, title = "Choose parallelization mode:")
+    if (parallel == 1) {
+      register(SerialParam(), default = TRUE)
+    }
+    if (parallel == 2) {
+      register(SnowParam(), default = TRUE)
+    }
+    if (parallel == 3) {
+      register(MulticoreParam(), default = TRUE)
+    }
+  } else {
     register(SerialParam(), default = TRUE)
   }
-  if (parallel == 2) {
-    register(SnowParam(), default = TRUE)
-  }
-  if (parallel == 3) {
-    register(MulticoreParam(), default = TRUE)
-  }
-  } else {register(SerialParam(), default = TRUE)}
 
   # ask informations and read files
   quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extensao = extensao, myDir = myDir, pictures = pictures, example = example))
@@ -83,56 +87,50 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
 
   # add retention index info if needed
   if (!example == TRUE) {
-  ri <- menu(c("Yes", "No"), graphics = TRUE, title = 'Would you like to add retention index data to your spectra? For that, you must provide a .csv file with column "rt" and "RI" in you directory.')
-  if (ri == 1) {
-    RI <- read.csv("RI.csv", sep = ";", dec = ",")
-    result <- addRI(result, RI)
-    write.msp(result, "spectra.msp", newFile = TRUE)
-    tkmessageBox(title = "Retention index", message = "The retention index for the spectra was calculated and added to the .msp file.", icon = "info", type = "ok")
-    rm(RI)
-  }
-  rm(spectra, result, ri)
+    ri <- menu(c("Yes", "No"), graphics = TRUE, title = 'Would you like to add retention index data to your spectra? For that, you must provide a .csv file with column "rt" and "RI" in you directory.')
+    if (ri == 1) {
+      RI <- read.csv("RI.csv", sep = ";", dec = ",")
+      result <- addRI(result, RI)
+      write.msp(result, "spectra.msp", newFile = TRUE)
+      tkmessageBox(title = "Retention index", message = "The retention index for the spectra was calculated and added to the .msp file.", icon = "info", type = "ok")
+      rm(RI)
+    }
+    rm(spectra, result, ri)
   }
 
   # update annotated spectra and plot images
   quiet(annot <- annot_images(pslist, myDir, pictures))
-  apslist <- annot[[1]]
-  pre_anno <- annot[[2]]
-  rm(annot)
+  apslist <- annot$apslist
+  pre_anno <- annot$r
 
   # normalize, choose peaks and plot images
   quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno))
 
   if (pictures == TRUE) {
-    mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
-    mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
-    rownames(mat) <- n[, 1]
+    if (!example == TRUE) {
+      # plot volcanos
+      okay <- 1
+      while (okay == 1) {
+        quiet(volDir <- vol_lvl1(n, metadata, myDir))
+        okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
+      }
 
-  if (!example == TRUE) {
-    # plot volcanos
-    okay <- 1
-    while (okay == 1) {
-      quiet(volDir <- vol_lvl1(n, mat, metadata, myDir))
-      okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
+      okay <- 1
+      while (okay == 1) {
+        quiet(vol_lvl2(n, metadata, myDir, volDir))
+        okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 2 level-comparison again?")
+      }
+
+      # plot PCA
+      quiet(PCA_(n, metadata, myDir, colors))
     }
 
-    okay <- 1
-    while (okay == 1) {
-      quiet(vol_lvl2(mat, n, metadata, myDir, volDir))
-      okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 2 level-comparison again?")
-    }
-
-    # plot PCA
-    quiet(PCA_(mat, metadata, myDir, colors))
-  }
-
-  # plot heatmaps
-  quiet(heatmap(mat, n, metadata, myDir, colors))
-
+    # plot heatmaps
+    quiet(heatmap(n, metadata, myDir, colors))
   }
 
   # save session
-  save.image(paste0(Sys.Date(), '.R'))
+  save.image(paste0(Sys.Date(), ".R"))
 
   dlg_message("Processing done!")$res
 

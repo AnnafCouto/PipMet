@@ -4,10 +4,12 @@
 \alias{getSpectra}
 \title{getSpectra}
 \usage{
-getSpectra(xdata4)
+getSpectra(xdata4, example = FALSE)
 }
 \arguments{
 \item{xdata4}{A 'xcmsSet' or 'XCMSnExp' object.}
+
+\item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
 }
 \value{
 A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format.
@@ -16,9 +18,8 @@ A list with 'xsAnnotate' object with peaks grouped by retention time and correla
 This function computes the first subsetp of third step of the workflow. It defines the spectra to proper annotate in NIST MS Search Software.
 }
 \examples{
-\dontrun{
-load(system.file("extdata", 'xdata4.R', package = "PipMet"))
-getSpectra(xdata4)
-}
+
+load(system.file("extdata", "xdata4.RData", package = "PipMet"))
+spectra <- getSpectra(xdata4, example = TRUE)
 
 }

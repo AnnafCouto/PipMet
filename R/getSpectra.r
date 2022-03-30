@@ -14,9 +14,10 @@
 #' @importFrom tcltk tkmessageBox
 #' @importFrom svDialogs dlg_message
 #' @examples
+#'
 #' \dontrun{
-#' load(system.file("extdata", 'xdata4.R', package = "PipMet"))
-#' getSpectra(xdata4)
+#' load(system.file("extdata", "xdata4.RData", package = "PipMet"))
+#' spectra <- getSpectra(xdata4, example = TRUE)
 #' }
 #'
 getSpectra <- function(xdata4, example = FALSE) {
@@ -25,7 +26,11 @@ getSpectra <- function(xdata4, example = FALSE) {
   } else {
     xset <- xdata4
   }
-  if (example == TRUE) {polarity <- 1} else {polarity <- menu(c("Positive", "Negative"), graphics = TRUE, title = "Polarity:")}
+  if (example == TRUE) {
+    polarity <- 1
+  } else {
+    polarity <- menu(c("Positive", "Negative"), graphics = TRUE, title = "Polarity:")
+  }
   if (polarity == 1) {
     an <- xsAnnotate(xset, polarity = "positive")
   } else {
