@@ -48,10 +48,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
   xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
   save(xdata3, file = "xdata3.RData")
 
-
   # imagens dos dados em processamento e pós processamento (padrões, cromatogramas de íon extraído)
-
-
   if (exists('xdata3') & pictures == TRUE) {
     # create and set folder for images
     dir.create("peakProcessing_results")
@@ -150,9 +147,9 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
   }
 
   xdata4 <- as(xdata3, "xcmsSet")
+  if ("group" %in% colnames(metadata)) {sampclass(xdata4) <-metadata$group} else {if ("class" %in% colnames(metadata)) {sampclass(xdata4) <-metadata$class} else {sampclass(xdata4) <- NA}}
   xdata4 <- fillPeaks(xdata4)
   
-
   # return results
   return(xdata4)
 }

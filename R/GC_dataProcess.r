@@ -29,7 +29,7 @@
 #' )
 #' }
 #'
-GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = c(TRUE, FALSE), example = c(TRUE, FALSE)) {
+GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = TRUE, example = FALSE) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE) {
