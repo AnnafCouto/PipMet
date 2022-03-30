@@ -99,5 +99,5 @@ vol_lvl1 <- function(n, mat, metadata, myDir) {
   setwd(myDir)
 
   # return results
-  return(list(mat, volDir))
+  return(volDir)
 }

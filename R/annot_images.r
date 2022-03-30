@@ -16,7 +16,7 @@
 #' }
 #'
 annot_images <- function(pslist, myDir, pictures = TRUE) {
-  r <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA, "))
+  r <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA", ""))
   if (length(colnames(r)) <= 1) {
     r <- read.csv("pre_anno.csv", sep = ";")
   }

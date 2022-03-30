@@ -112,9 +112,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
     # plot volcanos
     okay <- 1
     while (okay == 1) {
-      quiet(mat <- vol_lvl1(n, mat, metadata, myDir))
-      volDir <- mat[[2]]
-      mat <- mat[[1]]
+      quiet(volDir <- vol_lvl1(n, mat, metadata, myDir))
       okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
     }
 
@@ -130,11 +128,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
     # plot heatmaps
     quiet(heatmap(mat, n, metadata, myDir, colors))
   }
-  } else {
-      quiet(mat <- vol_lvl1(n, metadata, myDir))
-      volDir <- mat[[2]]
-      mat <- mat[[1]]
-      quiet(vol_lvl2(mat, n, metadata, myDir, volDir))}
+  }
 
   # save session
   save.image(paste0(Sys.Date(), '.R'))
