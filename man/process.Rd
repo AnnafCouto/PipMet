@@ -11,7 +11,7 @@ process(
   colors,
   EIC = 2,
   ions = NULL,
-  pictures = c(TRUE, FALSE)
+  pictures = TRUE
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ process(
 
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
 
-\item{pictures}{Logical. If pictures should be plotted or not.}
+\item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
 }
 \value{
 A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.

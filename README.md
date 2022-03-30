@@ -48,13 +48,13 @@ library(PipMet)
 The package was thought to be the more friendly-user as possible, even though it runs in code lines. Therefore, when information is needed, pop-ups will appear so that the user can input them.
 
 ``` r
-GC_dataProcess(
+result <- GC_dataProcess(
    sample_dir = system.file("extdata", package = "PipMet"),
    metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
    extensao = ".mzML",
    myDir = '~/',
    example = TRUE,
-   pictures = FALSE
+   pictures = TRUE
 )
 ```
-Set 'pictures = TRUE' to generate pictures along the code.
+To run your own samples, set 'example' to FALSE. You can leave sample_dir, metadata, myDir and extension empty (NULL) so the package will ask you in pop-ups.
