@@ -3,6 +3,7 @@
 #' This function computes the first subsetp of third step of the workflow. It defines the spectra to proper annotate in NIST MS Search Software.
 #' @export
 #' @param xdata4 A 'xcmsSet' or 'XCMSnExp' object.
+#' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @return A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom methods as
@@ -18,13 +19,13 @@
 #' getSpectra(xdata4)
 #' }
 #'
-getSpectra <- function(xdata4) {
+getSpectra <- function(xdata4, example = FALSE) {
   if (class(xdata4)[1] == "XCMSnExp") {
     xset <- as(xdata4, "xcmsSet")
   } else {
     xset <- xdata4
   }
-  polarity <- menu(c("Positive", "Negative"), graphics = TRUE, title = "Polarity:")
+  if (example == TRUE) {polarity <- 1} else {polarity <- menu(c("Positive", "Negative"), graphics = TRUE, title = "Polarity:")}
   if (polarity == 1) {
     an <- xsAnnotate(xset, polarity = "positive")
   } else {

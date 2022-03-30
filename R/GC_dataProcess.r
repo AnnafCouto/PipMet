@@ -103,12 +103,12 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   # normalize, choose peaks and plot images
   quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno))
 
-  if (!example == TRUE) {
   if (pictures == TRUE) {
     mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
     mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
     rownames(mat) <- n[, 1]
 
+  if (!example == TRUE) {
     # plot volcanos
     okay <- 1
     while (okay == 1) {
@@ -124,10 +124,11 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
 
     # plot PCA
     quiet(PCA_(mat, metadata, myDir, colors))
-
-    # plot heatmaps
-    quiet(heatmap(mat, n, metadata, myDir, colors))
   }
+  
+  # plot heatmaps
+  quiet(heatmap(mat, n, metadata, myDir, colors))
+
   }
 
   # save session

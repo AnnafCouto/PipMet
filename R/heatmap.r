@@ -28,10 +28,10 @@ heatmap <- function(mat, n, metadata, myDir, colors) {
   mat_scaled <- scale(mat)
   colnames(mat_scaled) <- metadata$all
   png("heatmap_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5)
+  pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5, show_rownames = FALSE, border_color = "NA")
   dev.off()
   tiff("heatmap_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5)
+  pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5, show_rownames = FALSE, border_color = "NA")
   dev.off()
 
   # only annotated metabolites per sample
