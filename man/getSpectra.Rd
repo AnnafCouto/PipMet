@@ -19,7 +19,9 @@ This function computes the first subsetp of third step of the workflow. It defin
 }
 \examples{
 
+\dontrun{
 load(system.file("extdata", "xdata4.RData", package = "PipMet"))
 spectra <- getSpectra(xdata4, example = TRUE)
+}
 
 }
