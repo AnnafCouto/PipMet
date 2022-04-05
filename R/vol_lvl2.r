@@ -39,6 +39,7 @@ vol_lvl2 <- function(n, metadata, myDir, volDir) {
   sec <- which(metadata[, x] == opt[1] & metadata[, y] == opt2[2])
   # rawpvalue <- apply(mat, 1, ttest, grp1 = first, grp2 = sec)
 
+  rawpvalue <- matrix(nrow = nrow(mat), ncol = 1)
   # calculate t test
   for (i in 1:nrow(mat)) {
     rawpvalue[[i]] <- t.test(as.numeric(mat[i, first]), as.numeric(mat[i, sec]))$p.value
