@@ -55,6 +55,7 @@ vol_lvl1 <- function(n, metadata, myDir) {
   secCond <- apply(mat[, sec], 1, mean)
   foldchange <- firstCond - secCond
   de <- as.data.frame(cbind(foldchange, rawpvalue))
+  colnames(de) <- c("foldchange", "rawpvalue")
   for (i in 1:nrow(n)) {
     if (is.na(n[i, 3])) {
       de$spcId[i] <- n[i, 1]

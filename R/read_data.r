@@ -150,20 +150,20 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       dev.off()
     }
 
-    # boxplot of total ion current
-    tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
-    for (i in 1:length(colors)) {
-      tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
-      # tiff
-      tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
-      dev.off()
-      # png
-      png(paste0(names(colors)[i], "_ticBoxplot.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
-      dev.off()
-    }
-    rm(tic_por_arquivo)
+    # boxplot of total ion current - FIX
+    #tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
+    #for (i in 1:length(colors)) {
+    #  tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
+    #  # tiff
+    #  tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    #  boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
+    #  dev.off()
+    #  # png
+    #  png(paste0(names(colors)[i], "_ticBoxplot.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    #  boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
+    #  dev.off()
+    #}
+    #rm(tic_por_arquivo)
 
     # cluster
     tic_bin <- bin(tic, binSize = 1)

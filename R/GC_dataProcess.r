@@ -104,7 +104,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   pre_anno <- annot$r
 
   # normalize, choose peaks and plot images
-  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno))
+  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example))
 
   if (pictures == TRUE) {
     if (!example == TRUE) {
