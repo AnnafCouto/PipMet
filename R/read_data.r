@@ -43,6 +43,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   if (is.null(sample_dir) | missing(sample_dir)) {
     sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
   }
+  setwd('~/')
   if (is.null(myDir) | missing(myDir)) {
     myDir <- dlgInput("Name your project", Sys.info()["user"])$res
     dir.create(myDir, showWarnings = FALSE)
