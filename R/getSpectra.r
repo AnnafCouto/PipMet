@@ -69,6 +69,42 @@ getSpectra <- function(xdata4, example = FALSE) {
     result[[i]]$Date <- as.character(Sys.Date())
   }
   write.msp(result, "spectra.msp", newFile = TRUE)
+
+  # generate a pdf file with the spectrum, its chromatogram and the XIC of the 6 most intense m/z individually, 
+  # for every one of the generated spectrum
+  if (!example == TRUE) {
+    y <- dlg_message("Plot spectra, with EIC of each of the 6 most intense m/z?", "yesno")$res
+    if (y == 'yes') {
+      z <- as.numeric(menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: "))
+      rt <- list()
+      for (i in 1:length(pslist)) {
+        rt[[i]] <- as.numeric(pslist[[i]]@rt)
+      }
+      pdf ('EIC_XIC.pdf')
+      for (i in 1:length(rt)){
+        par(mfrow = c(2, 1))
+        specplot(pslist[[i]])
+        x <- paste0('Unknown ',pslist[[i]]@id)
+        crom <- chromatogram(raw_data, rt = c(rt[[i]]-8, rt[[i]]+8))
+        plot(crom, col = colors[[z]][[2]][colors[[z]][[1]]], main = paste0('Pre-processing - ', x))
+        legend("right", legend = names(colors[[z]][[2]]), col = colors[[z]][[2]], fill = colors[[z]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+          # plot EIC from the 6 most intense ion-fragm
+        par(mfrow = c(2, 3))
+        f <- pslist[[i]]@spectrum [order(pslist[[i]]@spectrum[,2], decreasing = TRUE)]
+          sort(pslist[[i]]@spectrum[,1], decreasing = TRUE)
+        for (ii in 1:6) {
+          crom <- chromatogram(raw_data, rt = c(rt[[i]]-8, rt[[i]]+8), mz = c(as.numeric(f[[ii]])-0.6, as.numeric(f[[ii]])+0.6))
+          plot(crom, col = colors[[z]][[2]][colors[[z]][[1]]], main = paste0('EIC - mz', f[[ii]]))
+          legend("right", legend = names(colors[[z]][[2]]), col = colors[[z]][[2]], fill = colors[[z]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+          
+        }
+        
+      }
+      dev.off()
+    }
+  }
+
+  # done (with this step)
   dlg_message("Annotatation step: \n The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
   return(list(anIC = anIC, pslist = pslist, result = result))
 }

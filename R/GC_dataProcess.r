@@ -42,8 +42,8 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
         ions[[ei]] <- vector(mode = "list", length = 2)
         names(ions[[ei]]) <- c("mz", "rt")
         # names(ions)[ei] <- as.character(dlgInput(paste0('Name monitoring ion ', ei, ' :'), 'First')$res)
-        ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, " :"), "0")$res)
-        ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be add +/- 5s to Rt):"), "0")$res)
+        ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, ":"), "0")$res)
+        ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be added +/- 5s to Rt):"), "0")$res)
         okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor another one?")
         ei <- ei + 1
       }
