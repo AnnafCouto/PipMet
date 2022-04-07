@@ -29,7 +29,9 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
   xdata <- findChromPeaks(raw_data, param = mfp)
-  if(!example == TRUE) {save(xdata, file = "xdata.RData")}
+  if (!example == TRUE) {
+    save(xdata, file = "xdata.RData")
+  }
 
   if (example == FALSE) {
     # apply intensity filter? how much?
@@ -42,7 +44,9 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
 
   # retention time correction
   xdata2 <- adjustRtime(xdata, param = ObiwarpParam(binSize = 0.6))
-  if(!example == TRUE) {save(xdata2, file = "xdata2.RData")}
+  if (!example == TRUE) {
+    save(xdata2, file = "xdata2.RData")
+  }
 
   if (example == FALSE) {
     # ask condition to compare from the metadata table
@@ -53,7 +57,9 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
 
   # grouping peaks
   xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
-  if(!example == TRUE) {save(xdata3, file = "xdata3.RData")}
+  if (!example == TRUE) {
+    save(xdata3, file = "xdata3.RData")
+  }
 
   # imagens dos dados em processamento e pós processamento (padrões, cromatogramas de íon extraído)
   if (exists("xdata3") & pictures == TRUE) {
@@ -163,7 +169,9 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
     }
   }
   xdata4 <- fillPeaks(xdata4)
-  if(!example == TRUE) {save(xdata4, file = 'xdata4.RData')}
+  if (!example == TRUE) {
+    save(xdata4, file = "xdata4.RData")
+  }
 
   # return results
   return(xdata4)

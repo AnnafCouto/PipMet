@@ -43,7 +43,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   if (is.null(sample_dir) | missing(sample_dir)) {
     sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
   }
-  setwd('~/')
+  setwd("~/")
   if (is.null(myDir) | missing(myDir)) {
     myDir <- dlgInput("Name your project", Sys.info()["user"])$res
     dir.create(myDir, showWarnings = FALSE)
@@ -152,8 +152,8 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     }
 
     # boxplot of total ion current - FIX
-    #tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
-    #for (i in 1:length(colors)) {
+    # tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
+    # for (i in 1:length(colors)) {
     #  tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
     #  # tiff
     #  tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -163,8 +163,8 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     #  png(paste0(names(colors)[i], "_ticBoxplot.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     #  boxplot(tic_por_arquivo, col = colors[[i]][[2]][colors[[i]][[1]]], ylab = "intensity", xlab = "sample", main = "Total ion current")
     #  dev.off()
-    #}
-    #rm(tic_por_arquivo)
+    # }
+    # rm(tic_por_arquivo)
 
     # cluster
     tic_bin <- bin(tic, binSize = 1)

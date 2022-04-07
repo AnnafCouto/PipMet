@@ -32,12 +32,13 @@ load(system.file("extdata", "pslist.RData", package = "PipMet"))
 load(system.file("extdata", "anIC.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 normalized <- normalize_data(
-              anIC, 
-              pslist, 
-              metadata, 
-              myDir = "~/", 
-              pre_anno = pre_anno, 
-              example = TRUE)
+  anIC,
+  pslist,
+  metadata,
+  myDir = "~/",
+  pre_anno = pre_anno,
+  example = TRUE
+)
 }
 
 }
