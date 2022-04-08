@@ -32,7 +32,7 @@
 GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = TRUE, example = FALSE) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
-  if (!example == TRUE) {
+  if (!example == TRUE & pictures == TRUE) {
     EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
     ions <- list()
     if (EIC == 1) {
@@ -80,16 +80,16 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures))
 
   # define spectra and create .msp files
-  quiet(spectra <- getSpectra(xdata4, raw_data, colors))
+  quiet(spectra <- getSpectra(xdata4, example, raw_data, colors))
   anIC <- spectra[[1]]
-  result <- spectra[[2]]
+  result <- spectra[[3]]
   pslist <- spectra[[2]]
 
   # add retention index info if needed
   if (!example == TRUE) {
     ri <- menu(c("Yes", "No"), graphics = TRUE, title = 'Would you like to add retention index data to your spectra? For that, you must provide a .csv file with column "rt" and "RI" in you directory.')
     if (ri == 1) {
-      RI <- read.csv("RI.csv", sep = ";", dec = ",")
+      RI <- read.csv("RI.csv")
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
       tkmessageBox(title = "Retention index", message = "The retention index for the spectra was calculated and added to the .msp file.", icon = "info", type = "ok")
