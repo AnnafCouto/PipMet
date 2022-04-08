@@ -23,6 +23,7 @@
 #' @importFrom tcltk tkmessageBox
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
+#' \dontrun{
 #' read <- read_data(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
@@ -36,7 +37,8 @@
 #' raw_data <- read[[3]]
 #' myDir <- read[[4]]
 #' rm(read)
-#'
+#'}
+
 read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = TRUE, example = FALSE) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"

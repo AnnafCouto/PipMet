@@ -13,8 +13,10 @@
 #' @importFrom CluMSID addAnnotations distanceMatrix networkplot HCplot
 #' @examples
 #'
+#' \dontrun{
 #' load(system.file("extdata", "pslist.RData", package = "PipMet"))
 #' annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, example = TRUE)
+#' }
 #'
 annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE) {
   if (example == TRUE) {
