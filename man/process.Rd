@@ -39,10 +39,11 @@ A 'xcmsSet' object with detected, grouped and filled peaks with retention time c
 This function computes the second step of workflow (peak picking, RT correction and peak grouping) and build images for visualization of data using functions from xcms package.
 }
 \examples{
-
+\dontrun{
 load(system.file("extdata", "raw_data.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 load(system.file("extdata", "colors.RData", package = "PipMet"))
 xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
+}
 
 }

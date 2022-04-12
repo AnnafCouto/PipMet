@@ -23,7 +23,9 @@ This function creates network, hierarchy and heatmap plots of the spectra (annot
 }
 \examples{
 
+\dontrun{
 load(system.file("extdata", "pslist.RData", package = "PipMet"))
 annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, example = TRUE)
+}
 
 }
