@@ -31,9 +31,9 @@ vol_lvl2 <- function(n, metadata, myDir, volDir) {
   opt2 <- select.list(as.character(unique(metadata[, as.integer(y)])), preselect = NULL, multiple = TRUE, title = "Select two characteristic to compare", graphics = TRUE) # from that condition, which characteristics to compare
 
   ### first comparison
-  dir.create(opt[1])
+  if (!dir.exists(opt[1]) == TRUE) {dir.create(opt[1])}
   setwd(opt[1])
-  dir.create(colnames(metadata)[y])
+  if (!dir.exists(colnames(metadata)[y]) == TRUE) {dir.create(colnames(metadata)[y])}
   setwd(colnames(metadata)[y])
   first <- which(metadata[, x] == opt[1] & metadata[, y] == opt2[1])
   sec <- which(metadata[, x] == opt[1] & metadata[, y] == opt2[2])
@@ -109,9 +109,9 @@ vol_lvl2 <- function(n, metadata, myDir, volDir) {
   setwd(volDir)
 
   ### second comparison
-  dir.create(opt[2])
+  if (!dir.exists(opt[2]) == TRUE) {dir.create(opt[2])}
   setwd(opt[2])
-  dir.create(colnames(metadata)[y])
+  if (!dir.exists(colnames(metadata)[y]) == TRUE) {dir.create(colnames(metadata)[y])}
   setwd(colnames(metadata)[y])
   first <- which(metadata[, x] == opt[2] & metadata[, y] == opt2[1])
   sec <- which(metadata[, x] == opt[2] & metadata[, y] == opt2[2])
