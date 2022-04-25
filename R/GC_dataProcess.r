@@ -130,7 +130,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   }
 
   # save session
-  save.image(paste0(Sys.Date(), ".R"))
+  save.image(paste0(Sys.Date(), ".RData"))
 
   dlg_message("Processing done!")$res
 
