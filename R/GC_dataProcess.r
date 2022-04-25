@@ -111,7 +111,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
       # plot volcanos
       okay <- 1
       while (okay == 1) {
-        quiet(volDir <- vol_lvl1(n, metadata, myDir))
+        quiet(x <- try(vol_lvl1(n, metadata, myDir)))
         okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
       }
 
