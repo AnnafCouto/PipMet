@@ -89,7 +89,6 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
     }
     if (!sum((is.na(metadata))) == 0) {
-      metadata <- metadata[-which(apply(metadata, 1, function(x) all(is.na(x)))),]
       metadata <- metadata[, -which(is.na(metadata), arr.ind = TRUE)[, 2]] # remove empty columns
     }
   }
