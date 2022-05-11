@@ -65,7 +65,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   if (!is.null(metadata)) {
     metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
     if (example == TRUE) {
-      metadata$file <- metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extensao, full.names = TRUE)
+      metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extensao, full.names = TRUE)
     }
   }
 
@@ -73,6 +73,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     metd <- menu(c("Yes", "No"), graphics = TRUE, title = "Metadata table already exists?")
     if (metd == 1) {
       metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
+      if (!'file' %in% colnames(metadata)) {metadata$file <- paste0(sample_dir,'/',metadata$sample, extensao)}
     }
     if (metd == 2) {
       files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)
@@ -112,7 +113,8 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     }
   } else {
     metadata$all <- metadata[, x]
-    metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
+    #metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
+    metadata$all2 <- c(1:nrow(metadata))
   }
 
   # colors for each column in metadata except 'sample' and 'tec_rep'
