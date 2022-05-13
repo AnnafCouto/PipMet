@@ -59,14 +59,14 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
 
     for (i in 1:nrow(quant)) {
       temp <- anIC@pspectra[[as.integer(quant[i, 1])]]
-      if (der == 1 && 73 %in% pslist[[i]]@spectrum[, 1]) { # if der=1, ion m/z 73 is present
-        x <- sort(pslist[[i]]@spectrum[-which(pslist[[i]]@spectrum[, 1] == 73), 2], decreasing = TRUE) # remove m/z 73 from possibilities of representative ion
+      if (der == 1 && 73 %in% round(pslist[[i]]@spectrum[, 1])) { # if der=1, ion m/z 73 is present
+        x <- sort(pslist[[i]]@spectrum[-which(round(pslist[[i]]@spectrum[, 1]) == 73), 2], decreasing = TRUE) # remove m/z 73 from possibilities of representative ion
       } else {
         x <- sort(pslist[[i]]@spectrum[, 2], decreasing = TRUE)
       }
       y <- rbind(anIC@groupInfo[temp, ])
       z <- rbind(y[which(y == x[1], arr.ind = TRUE)[, 1], ], y[which(y == x[2], arr.ind = TRUE)[, 1], ])
-      quant[i, 2] <- paste0(z[1, 1], ",", z[2, 1])
+      quant[i, 2] <- paste0(z[1, 1], ", ", z[2, 1])
       quant[i, 6:(5 + nrow(metadata))] <- z[1, which(colnames(z) == "X1"):which(colnames(z) == paste0("X", nrow(metadata)))]
       quant[i, (6 + nrow(metadata)):(5 + 2 * nrow(metadata))] <- z[2, which(colnames(z) == "X1"):which(colnames(z) == paste0("X", nrow(metadata)))]
     }
