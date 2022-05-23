@@ -48,11 +48,11 @@ PCA_ <- function(n, metadata, myDir, colors) {
           f <- paste0(f, "_", metadata[i, x[[ii]]])
         }
         metadata[i, "all"] <- f
-        metadata$all2[i] <- paste0(i, " - ", metadata$all[i])
+        metadata$all2[i] <- paste0(i, " - ", metadata$sample[i])
       }
     } else {
       metadata$all <- metadata[, x]
-      metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
+      metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$sample)
     }
   }
 

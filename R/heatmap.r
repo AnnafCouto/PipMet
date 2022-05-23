@@ -35,7 +35,7 @@ heatmap <- function(n, metadata, myDir, colors) {
 
   # plot heatmap of metabolites per sample
   mat_scaled <- scale(mat)
-  colnames(mat_scaled) <- metadata$all
+  colnames(mat_scaled) <- metadata$all2
   png("heatmap_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5, show_rownames = FALSE, border_color = "NA")
   dev.off()
@@ -50,7 +50,7 @@ heatmap <- function(n, metadata, myDir, colors) {
     mat_ident <- mat
   }
   mat_ident_scaled <- scale(mat_ident)
-  colnames(mat_ident_scaled) <- metadata$all
+  colnames(mat_ident_scaled) <- metadata$all2
   rownames(mat_ident_scaled) <- n[-which(is.na(n[, 3])), 3]
   png("heatmap_scaled_ident.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 5)
@@ -86,9 +86,11 @@ heatmap <- function(n, metadata, myDir, colors) {
     rownames(nhmedia_ident) <- n[-which(is.na(n[, 3])), 3]
     for (i in unique(metadata$tec_rep)) {
       x <- grep(i, metadata$tec_rep)
-      for (ii in 1:nrow(mat_ident)) {
-        nhmedia_ident[ii, i] <- sum(mat_ident[ii, x]) / length(x)
-      }
+      if (length(x) > 1) {
+        for (ii in 1:nrow(mat_ident)) {
+          nhmedia_ident[ii, i] <- sum(mat_ident[ii, x]) / length(x)
+        }
+      } else {nhmedia_ident[ii, i] <- mat_ident[ii, x]}
     }
     nhmedia_scaled_ident <- scale(nhmedia_ident) # scale
 

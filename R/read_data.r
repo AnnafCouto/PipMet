@@ -39,7 +39,7 @@
 #' rm(read)
 #'}
 
-read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = c(".mzML", ".mzXML"), pictures = TRUE, example = FALSE) {
+read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = NULL, pictures = TRUE, example = FALSE) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
   if (is.null(sample_dir) | missing(sample_dir)) {
@@ -90,8 +90,10 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
     }
     if (!sum((is.na(metadata))) == 0) {
-      metadata <- metadata[-which(apply(metadata, 1, function(x) all(is.na(x)))),]
-      metadata <- metadata[, -which(is.na(metadata), arr.ind = TRUE)[, 2]] # remove empty columns
+      dlg_message("It seems to existx empty columns/rows in you metadata file. Please, delete and press 'OK'.")$res
+      metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
+      if (!'file' %in% colnames(metadata)) {metadata$file <- paste0(sample_dir,'/',metadata$sample, extensao)}
+
     }
   }
 
