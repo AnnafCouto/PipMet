@@ -10,7 +10,7 @@ read_data(
   myDir = NULL,
   sample_dir = NULL,
   metadata = NULL,
-  extensao = c(".mzML", ".mzXML"),
+  extensao = NULL,
   pictures = TRUE,
   example = FALSE
 )

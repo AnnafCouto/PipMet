@@ -33,7 +33,7 @@ PCA_ <- function(n, metadata, myDir, colors) {
   }
   setwd("PCA")
 
-  if (!"metadata$all" %in% colnames(metadata)) {
+  if (!"all" %in% colnames(metadata)) {
     # create 'metadata$all' 1 and 2 for identification
     x <- colnames(metadata)
     for (i in c("sample", "tec_rep", "bio_rep", "file", "all", "all2")) {
@@ -70,7 +70,7 @@ PCA_ <- function(n, metadata, myDir, colors) {
       theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black", size = 16, face = "bold")))
     dev.off()
     png(paste0("PCA_named_", names(colors)[[i]], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], label = metadata$all, color = colors[[i]][[1]])) +
+    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], label = metadata$all2, color = colors[[i]][[1]])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +
       labs(title = "PCA", x = paste0("PC1: ", format(pcSummary$importance[2, 1] * 100, digits = 3), " % variance"), y = paste0("PC2: ", format(pcSummary$importance[2, 2] * 100, digits = 3), " % variance"), fill = names(colors)[[i]], colour = names(colors)[[i]]) +

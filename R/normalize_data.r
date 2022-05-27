@@ -144,7 +144,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
     y[, nrow(metadata) + 1] <- apply(y[, 1:nrow(metadata)], MARGIN = 1, FUN = var, na.rm = TRUE)
     y[, nrow(metadata) + 2] <- apply(y[, 1:nrow(metadata)], MARGIN = 1, FUN = sd, na.rm = TRUE)
     rownames(y) <- n$id
-    colnames(y) <- c(metadata$sample, "Variance, sd")
+    colnames(y) <- c(metadata$sample, "Variance", "sd")
     a <- ggplot(y, aes(x = y[, nrow(metadata) + 1])) +
       geom_histogram() +
       ggtitle("Variance Distribution") +

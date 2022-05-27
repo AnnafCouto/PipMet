@@ -89,7 +89,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   if (!example == TRUE) {
     ri <- menu(c("Yes", "No"), graphics = TRUE, title = 'Would you like to add retention index data to your spectra? For that, you must provide a .csv file with column "rt" and "RI" in you directory.')
     if (ri == 1) {
-      RI <- read.csv("RI.csv")
+      RI <- read.csv(choose.files())
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
       tkmessageBox(title = "Retention index", message = "The retention index for the spectra was calculated and added to the .msp file.", icon = "info", type = "ok")
