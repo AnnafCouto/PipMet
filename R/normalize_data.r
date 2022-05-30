@@ -102,6 +102,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
     if (example == TRUE) {
       dlg_message("Normalization done! Check the report from NormalyzerDE. As example, the chosen one is CycLoess method.")$res
       bestNormMat <- 1
+      okay <- 1
     } else {
       bestNormMat <- menu(norms, graphics = TRUE, title = "Choose the best normalization")
     }

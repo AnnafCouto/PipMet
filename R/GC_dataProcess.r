@@ -92,8 +92,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
       RI <- read.csv(choose.files())
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
-      tkmessageBox(title = "Retention index", message = "The retention index for the spectra was calculated and added to the .msp file.", icon = "info", type = "ok")
-      rm(RI)
+      dlg_message("The retention index for the spectra was calculated and added to the .msp file.")$res
     }
     rm(spectra, result, ri)
   }
@@ -120,10 +119,9 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
         quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir)))
         okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 2 level-comparison again?")
       }
-
-      # plot PCA
-      quiet(PCA_(n, metadata, myDir, colors))
     }
+    # plot PCA
+    quiet(PCA_(n, metadata, myDir, colors))
 
     # plot heatmaps
     quiet(heatmap(n, metadata, myDir, colors))
@@ -133,6 +131,10 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   save.image(paste0(Sys.Date(), ".RData"))
 
   dlg_message("Processing done!")$res
+
+  if (dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res == "yes") {
+    create_database(apslist)
+  }
 
   return(list(myDir = myDir, metadata = metadata, apslist = apslist, raw_data = raw_data, xdata4 = xdata4, anIC = anIC, colors = colors, quantification_table = n))
 }

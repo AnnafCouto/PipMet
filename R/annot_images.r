@@ -12,7 +12,6 @@
 #' @importFrom utils read.csv
 #' @importFrom CluMSID addAnnotations distanceMatrix networkplot HCplot
 #' @examples
-#'
 #' \dontrun{
 #' load(system.file("extdata", "pslist.RData", package = "PipMet"))
 #' annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, example = TRUE)
@@ -25,15 +24,14 @@ annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE) {
   } else {
     r <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA", ""))
     if (!"annotation" %in% colnames(r)) {
-      r <- read.csv("pre_anno.csv", sep = ";", na.string = c("NA", ""), dec=',')
+      r <- read.csv("pre_anno.csv", sep = ";", na.string = c("NA", ""), dec = ",")
     }
-    r [is.na(r)] <- ''
+    r[is.na(r)] <- ""
     ### add annotations from 'pre_anno.csv' file (if there is annotation)
     if (sum(is.na(r$annotation)) == nrow(r)) {
       apslist <- pslist
     }
     apslist <- addAnnotations(featlist = pslist, annolist = r)
-    
   }
 
   if (pictures == TRUE) {

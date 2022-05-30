@@ -28,7 +28,7 @@ heatmap <- function(n, metadata, myDir, colors) {
     dir.create("Statistics")
   }
   setwd("Statistics")
-  n[n == ""] <- NA 
+  n[n == ""] <- NA
   mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
   rownames(mat) <- n[, 1]
@@ -90,7 +90,9 @@ heatmap <- function(n, metadata, myDir, colors) {
         for (ii in 1:nrow(mat_ident)) {
           nhmedia_ident[ii, i] <- sum(mat_ident[ii, x]) / length(x)
         }
-      } else {nhmedia_ident[ii, i] <- mat_ident[ii, x]}
+      } else {
+        nhmedia_ident[ii, i] <- mat_ident[ii, x]
+      }
     }
     nhmedia_scaled_ident <- scale(nhmedia_ident) # scale
 

@@ -37,8 +37,8 @@
 #' raw_data <- read[[3]]
 #' myDir <- read[[4]]
 #' rm(read)
-#'}
-
+#' }
+#'
 read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = NULL, pictures = TRUE, example = FALSE) {
 
   # ask user about samples and folders path and create a new folder named after a "Project"
@@ -73,7 +73,9 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     metd <- menu(c("Yes", "No"), graphics = TRUE, title = "Metadata table already exists?")
     if (metd == 1) {
       metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
-      if (!'file' %in% colnames(metadata)) {metadata$file <- paste0(sample_dir,'/',metadata$sample, extensao)}
+      if (!"file" %in% colnames(metadata)) {
+        metadata$file <- paste0(sample_dir, "/", metadata$sample, extensao)
+      }
     }
     if (metd == 2) {
       files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)
@@ -92,8 +94,9 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     if (!sum((is.na(metadata))) == 0) {
       dlg_message("It seems to existx empty columns/rows in you metadata file. Please, delete and press 'OK'.")$res
       metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
-      if (!'file' %in% colnames(metadata)) {metadata$file <- paste0(sample_dir,'/',metadata$sample, extensao)}
-
+      if (!"file" %in% colnames(metadata)) {
+        metadata$file <- paste0(sample_dir, "/", metadata$sample, extensao)
+      }
     }
   }
 
@@ -115,7 +118,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     }
   } else {
     metadata$all <- metadata[, x]
-    #metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
+    # metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
     metadata$all2 <- c(1:nrow(metadata))
   }
 

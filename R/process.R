@@ -25,13 +25,14 @@
 #' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
 #' }
 #'
-
 process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE, example = FALSE) {
 
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
   xdata <- findChromPeaks(raw_data, param = mfp)
-  if(!example == TRUE) {save(xdata, file = "xdata.RData")}
+  if (!example == TRUE) {
+    save(xdata, file = "xdata.RData")
+  }
 
   if (example == FALSE) {
     # apply intensity filter? how much?
@@ -46,7 +47,9 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
   if (nrow(xdata@phenoData@data) > 1) {
     # retention time correction
     xdata2 <- adjustRtime(xdata, param = ObiwarpParam(binSize = 0.6))
-    if(!example == TRUE) {save(xdata2, file = "xdata2.RData")}
+    if (!example == TRUE) {
+      save(xdata2, file = "xdata2.RData")
+    }
 
     if (example == FALSE) {
       # ask condition to compare from the metadata table
@@ -57,12 +60,16 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
 
     # grouping peaks
     xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
-    if(!example == TRUE) {save(xdata3, file = "xdata3.RData")}
+    if (!example == TRUE) {
+      save(xdata3, file = "xdata3.RData")
+    }
 
     # imagens dos dados em processamento e pós processamento (padrões, cromatogramas de íon extraído)
     if (exists("xdata3") & pictures == TRUE) {
       # create and set folder for images
-      if (!dir.exists("peakProcessing_results")) {dir.create("peakProcessing_results")}
+      if (!dir.exists("peakProcessing_results")) {
+        dir.create("peakProcessing_results")
+      }
       setwd("peakProcessing_results")
 
       # heatmap of identified peaks per region of chromatogram
@@ -157,7 +164,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
     }
   }
 
-  if (exists ('xdata3')) {
+  if (exists("xdata3")) {
     xdata4 <- as(xdata3, "xcmsSet")
     if ("group" %in% colnames(metadata)) {
       sampclass(xdata4) <- metadata$group
@@ -169,8 +176,12 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
       }
     }
     xdata4 <- fillPeaks(xdata4)
-    if(!example == TRUE) {save(xdata4, file = 'xdata4.RData')}
-  } else {xdata4 <- as(xdata, "xcmsSet")}
+    if (!example == TRUE) {
+      save(xdata4, file = "xdata4.RData")
+    }
+  } else {
+    xdata4 <- as(xdata, "xcmsSet")
+  }
 
   # return results
   return(xdata4)
