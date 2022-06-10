@@ -44,7 +44,7 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
   rm(anF)
 
   # extract spectra with minimum of 5 peaks
-  pslist <- exctractSpectra(anIC)
+  pslist <- extractSpectra(anIC)
 
   # create 'pre_anno.csv' where the user annotates the spectra
   # contains id and retention time of each spectra
