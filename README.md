@@ -23,7 +23,7 @@ You can install the released version of PipMet from
 devtools::install_github("AnnafCouto/PipMet")
 ```
 
-## Example
+## Example - Data processing
 
 The package is constituted of one main function with pre-set parameters
 and algorithms. To start the processing:
@@ -45,7 +45,7 @@ library(PipMet)
 #> 
 #>     heatmap
 ```
-The package was thought to be the more friendly-user as possible, even though it runs in code lines. Therefore, when information is needed, pop-ups will appear so that the user can input them.
+The package was thought to be the more friendly-user as possible, even though it runs in code lines. Therefore, when information is needed, pop-ups will appear so that the user can input the information in them.
 
 ``` r
 result <- GC_dataProcess(
@@ -58,3 +58,17 @@ result <- GC_dataProcess(
 )
 ```
 To run your own samples, set 'example' to FALSE. You can leave sample_dir, metadata, myDir and extension empty (NULL) so the package will ask you in pop-ups.
+
+## Example - Internal library building
+
+The package provides an option to build your own internal library of standards from GC-MS files. The user must provide or fill a .csv table with the compound's informations such as name, retention time, filename, formula, exact mass and identifiers such as CAS, ChemSpider ou InChIKey numbers. 
+
+``` r
+GC_dataProcess(
+  sample_dir = system.file("extdata", package = "PipMet"),
+  metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
+  extensao = ".mzXML",
+  myDir = "~/",
+  example = TRUE
+}
+```
