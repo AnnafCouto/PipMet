@@ -63,7 +63,7 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
     result[[i]]$rt <- pslist[[i]]@rt
     result[[i]]$Name <- paste0("Unknown ", pslist[[i]]@id)
     result[[i]]$Formula <- "Unknown"
-    result[[i]]$MW <- "Unknown"
+    result[[i]]$ExactMass <- "Unknown"
     result[[i]]$CAS <- "Unknown"
     result[[i]]$ChemSpiderID <- "Unknown"
     result[[i]]$Class <- "Unknown"

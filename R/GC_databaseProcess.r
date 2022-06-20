@@ -23,9 +23,9 @@
 #' @importFrom svDialogs dlgInput dlg_message
 #' @examples
 #' \dontrun{
-#' GC_dataProcess(
+#' GC_databaseProcess(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
-#'   metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
+#'   lib_metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
 #'   extensao = ".mzXML",
 #'   myDir = "~/",
 #'   example = TRUE

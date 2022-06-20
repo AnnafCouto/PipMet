@@ -43,8 +43,9 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
 
   # ask user about samples and folders path and create a new folder named after a "Project"
   if (is.null(sample_dir) | missing(sample_dir)) {
+    if (!example = TRUE) {
     sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
-  }
+  } else {sample_dir <- system.file("extdata", package = "PipMet")}}
   setwd("~/")
   if (is.null(myDir) | missing(myDir)) {
     myDir <- dlgInput("Name your project", Sys.info()["user"])$res
@@ -70,14 +71,13 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   }
 
   if (is.null(metadata)) {
-    metd <- menu(c("Yes", "No"), graphics = TRUE, title = "Metadata table already exists?")
-    if (metd == 1) {
+    metd <- dlg_message("Metadata table already exists?", "yesno")$res
+    if (metd == 'yes') {
       metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
       if (!"file" %in% colnames(metadata)) {
         metadata$file <- paste0(sample_dir, "/", metadata$sample, extensao)
       }
-    }
-    if (metd == 2) {
+    } else {
       files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)
       metadata <- matrix(nrow = length(files), ncol = 6)
       colnames(metadata) <- c("sample", "group", "class", "tec_rep", "bio_rep", "file")
