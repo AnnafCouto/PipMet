@@ -64,9 +64,9 @@ To run your own samples, set 'example' to FALSE. You can leave sample_dir, metad
 The package provides an option to build your own internal library of standards from GC-MS files. The user must provide or fill a .csv table with the compound's informations such as name, retention time, filename, formula, exact mass and identifiers such as CAS, ChemSpider ou InChIKey numbers. 
 
 ``` r
-GC_dataProcess(
+GC_databaseProcess(
   sample_dir = system.file("extdata", package = "PipMet"),
-  metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
+  lib_metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
   extensao = ".mzXML",
   myDir = "~/",
   example = TRUE
