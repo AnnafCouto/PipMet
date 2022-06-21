@@ -8,7 +8,7 @@ GC_databaseProcess(
   myDir = NULL,
   sample_dir = NULL,
   lib_metadata = NULL,
-  extensao = NULL,
+  extension = NULL,
   example = FALSE
 )
 }
@@ -17,23 +17,24 @@ GC_databaseProcess(
 
 \item{sample_dir}{Path to sample directory. Default to none.}
 
-\item{extensao}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.}
+\item{extension}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.}
 
 \item{example}{Logical. If is example, pop-ups won't appear.}
 
-\item{metadata}{Path to .csv file containing metadata. "Compound", "Formula", "monoMW", "rt", "file", "CAS", "ChemSpider", "Class", "RI", "InChIKey" columns must be included. Default to none.}
+\item{metadata}{Path to .csv file containing metadata. "compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey" columns must be included. Default to none.}
 }
 \description{
 Main function for GC-MS standards processing for internal library development.
 }
 \examples{
 \dontrun{
-GC_dataProcess(
+GC_databaseProcess(
   sample_dir = system.file("extdata", package = "PipMet"),
-  metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
-  extensao = ".mzXML",
+  lib_metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
+  extension = ".mzXML",
   myDir = "~/",
   example = TRUE
+)
 }
 
 }

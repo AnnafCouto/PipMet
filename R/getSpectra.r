@@ -6,15 +6,14 @@
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @param raw_data A 'XCMSnExp' object.
 #' @param colors A list with colors generated from "read_data()".
-#' @return A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format.
+#' @return A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format and the ion mode of data acquisition ('negative' or 'positive').
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom methods as
 #' @importFrom CAMERA xsAnnotate groupFWHM groupCorr
 #' @importFrom CluMSID writeFeaturelist specplot
 #' @importFrom metaMS construct.msp write.msp
 #' @importFrom utils memory.limit
-#' @importFrom tcltk tkmessageBox
-#' @importFrom svDialogs dlg_message
+#' @importFrom svDialogs dlg_message dlg_input dlg_list
 #' @examples
 #' \dontrun{
 #' load(system.file("extdata", "xdata4.RData", package = "PipMet"))
@@ -28,15 +27,11 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
     xset <- xdata4
   }
   if (example == TRUE) {
-    polarity <- 1
+    polarity <- "positive"
   } else {
-    polarity <- menu(c("Positive", "Negative"), graphics = TRUE, title = "Polarity:")
+    polarity <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Polarity:")$res # ask user for the polarity
   }
-  if (polarity == 1) {
-    an <- xsAnnotate(xset, polarity = "positive")
-  } else {
-    an <- xsAnnotate(xset, polarity = "negative")
-  }
+  an <- xsAnnotate(xset, polarity = polarity)
   anF <- groupFWHM(an, perfwhm = 1)
   rm(an, xset)
   memory.limit(100000)
@@ -50,6 +45,11 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
   # contains id and retention time of each spectra
   writeFeaturelist(pslist)
 
+  # get information about data acquisition
+  column <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res
+  prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res
+  Instrument_type <- dlg_input("Type of instrument of acquisition", "GC-EI-Q")$res
+
   # creates a .msp file for spectra
   spectra <- list()
   for (i in 1:length(pslist)) {
@@ -62,12 +62,10 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
     result[[i]]$id <- pslist[[i]]@id
     result[[i]]$rt <- pslist[[i]]@rt
     result[[i]]$Name <- paste0("Unknown ", pslist[[i]]@id)
-    result[[i]]$Formula <- "Unknown"
-    result[[i]]$ExactMass <- "Unknown"
-    result[[i]]$CAS <- "Unknown"
-    result[[i]]$ChemSpiderID <- "Unknown"
-    result[[i]]$Class <- "Unknown"
     result[[i]]$Date <- as.character(Sys.Date())
+    result[[i]]$Instrument_type <- Instrument_type
+    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog)
+    result[[i]]$Ion_mode <- polarity
   }
   write.msp(result, "spectra.msp", newFile = TRUE)
 
@@ -104,9 +102,7 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
     }
   }
 
-
-
   # done (with this step)
   dlg_message("Annotatation step: \n The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
-  return(list(anIC = anIC, pslist = pslist, result = result))
+  return(list(anIC = anIC, pslist = pslist, result = result, polarity = polarity))
 }

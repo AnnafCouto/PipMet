@@ -4,9 +4,9 @@
 #' @keywords metadata
 #' @export
 #' @param myDir Path to working directory. Default to none.
-#' @param sample_dir Path to sample directory. Default to none. 
+#' @param sample_dir Path to sample directory. Default to none.
 #' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included. Default to none.
-#' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
+#' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
 #' @param pictures Logical. If pictures should be plotted or not.
 #' @param example Logical. If is example, pop-ups won't appear.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
@@ -69,7 +69,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   }
 
   # ask informations and read files
-  quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extensao = extensao, myDir = myDir, pictures = pictures, example = example))
+  quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example))
   colors <- read[[1]]
   metadata <- read[[2]]
   raw_data <- read[[3]]
@@ -133,7 +133,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   dlg_message("Processing done!")$res
 
   if (dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res == "yes") {
-    create_database(apslist)
+    create_database(apslist, polarity)
   }
 
   return(list(myDir = myDir, metadata = metadata, apslist = apslist, raw_data = raw_data, xdata4 = xdata4, anIC = anIC, colors = colors, quantification_table = n))

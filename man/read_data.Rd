@@ -10,7 +10,7 @@ read_data(
   myDir = NULL,
   sample_dir = NULL,
   metadata = NULL,
-  extensao = NULL,
+  extension = NULL,
   pictures = TRUE,
   example = FALSE
 )
@@ -26,7 +26,7 @@ read_data(
 
 \item{metadata}{Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included.}
 
-\item{extensao}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.}
+\item{extension}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.}
 
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
 
@@ -43,7 +43,7 @@ This function creates a sheet for the user to fill with the experiment design in
 read <- read_data(
   sample_dir = system.file("extdata", package = "PipMet"),
   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
-  extensao = ".mzML",
+  extension = ".mzML",
   myDir = "~/",
   pictures = FALSE,
   example = TRUE

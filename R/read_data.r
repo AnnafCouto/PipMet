@@ -9,7 +9,7 @@
 #' @param myDir Path to working directory
 #' @param sample_dir Path to sample directory.
 #' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included.
-#' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.
+#' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @importFrom grDevices dev.off png tiff
@@ -27,7 +27,7 @@
 #' read <- read_data(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
-#'   extensao = ".mzML",
+#'   extension = ".mzML",
 #'   myDir = "~/",
 #'   pictures = FALSE,
 #'   example = TRUE
@@ -39,65 +39,69 @@
 #' rm(read)
 #' }
 #'
-read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = NULL, pictures = TRUE, example = FALSE) {
+read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
+  if (!example == TRUE) {
 
-  # ask user about samples and folders path and create a new folder named after a "Project"
-  if (is.null(sample_dir) | missing(sample_dir)) {
-    if (!example = TRUE) {
-    sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
-  } else {sample_dir <- system.file("extdata", package = "PipMet")}}
-  setwd("~/")
-  if (is.null(myDir) | missing(myDir)) {
-    myDir <- dlgInput("Name your project", Sys.info()["user"])$res
-    dir.create(myDir, showWarnings = FALSE)
-  }
-  setwd(myDir)
-  myDir <- getwd()
-  if (is.null(extensao)) {
-    extensao <- menu(c(".mzML", ".mzXML"), graphics = TRUE, title = "Files extension:")
-    if (extensao == 1) {
-      extensao <- ".mzML"
-    } else {
-      extensao <- ".mzXML"
+    # ask user about samples and folders path and create a new folder named after a "Project"
+    if (is.null(sample_dir) | missing(sample_dir)) {
+      sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
     }
-  }
-
-  # set metadata table up
-  if (!is.null(metadata)) {
-    metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
-    if (example == TRUE) {
-      metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extensao, full.names = TRUE)
+    setwd("~/")
+    if (is.null(myDir) | missing(myDir)) {
+      myDir <- dlgInput("Name your project", Sys.info()["user"])$res
+      dir.create(myDir, showWarnings = FALSE)
     }
-  }
+    setwd(myDir)
+    myDir <- getwd()
 
-  if (is.null(metadata)) {
-    metd <- dlg_message("Metadata table already exists?", "yesno")$res
-    if (metd == 'yes') {
-      metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
-      if (!"file" %in% colnames(metadata)) {
-        metadata$file <- paste0(sample_dir, "/", metadata$sample, extensao)
-      }
-    } else {
-      files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE)
-      metadata <- matrix(nrow = length(files), ncol = 6)
-      colnames(metadata) <- c("sample", "group", "class", "tec_rep", "bio_rep", "file")
-      metadata[, "file"] <- files
-      metadata[, "sample"] <- sub(basename(files), pattern = extensao, replacement = "", fixed = TRUE)
-      write.csv(metadata, "metadata.csv", row.names = FALSE)
-      tkmessageBox(title = "Metadata", message = "A file 'metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", icon = "info", type = "ok")
-      while (file.exists("metadata.csv") == FALSE) {
-        dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
+    # file extension
+    if (is.null(extension)) {
+      extension <- dlg_list(c(".mzML", ".mzXML"), multiple = TRUE, title = "Files extension:")$res
+    }
+
+    # set up metadata table
+    if (!is.null(metadata)) {
+      metadata <- read.csv(metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
+    }
+
+    if (is.null(metadata)) {
+      metd <- dlg_message("Metadata table already exists?", "yesno")$res
+      if (metd == "yes") {
+        metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
+        if (!"file" %in% colnames(metadata)) {
+          metadata$file <- paste0(sample_dir, "/", metadata$sample, extension)
+        }
+      } else {
+        files <- list.files(sample_dir, full.names = TRUE, pattern = extension, recursive = TRUE)
+        metadata <- matrix(nrow = length(files), ncol = 6)
+        colnames(metadata) <- c("sample", "group", "class", "tec_rep", "bio_rep", "file")
+        metadata[, "file"] <- files
+        metadata[, "sample"] <- sub(basename(files), pattern = extension, replacement = "", fixed = TRUE)
+        write.csv(metadata, "metadata.csv", row.names = FALSE)
+        tkmessageBox(title = "Metadata", message = "A file 'metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", icon = "info", type = "ok")
+        while (file.exists("metadata.csv") == FALSE) {
+          dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
+          metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
+        }
         metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
       }
-      metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
-    }
-    if (!sum((is.na(metadata))) == 0) {
-      dlg_message("It seems to existx empty columns/rows in you metadata file. Please, delete and press 'OK'.")$res
-      metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
-      if (!"file" %in% colnames(metadata)) {
-        metadata$file <- paste0(sample_dir, "/", metadata$sample, extensao)
+      if (!sum((is.na(metadata))) == 0) {
+        dlg_message("It seems to existx empty columns/rows in you metadata file. Please, delete and press 'OK'.")$res
+        metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
+        if (!"file" %in% colnames(metadata)) {
+          metadata$file <- paste0(sample_dir, "/", metadata$sample, extension)
+        }
       }
     }
+  } else { # if example == TRUE
+    metadata <- read.csv(system.file("extdata", "metadata.csv", package = "PipMet"), na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
+    metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extension, full.names = TRUE)
+    sample_dir <- system.file("extdata", package = "PipMet")
+    myDir <- dlgInput("Name your project", "PipMet_example")$res
+    dir.create(myDir, showWarnings = FALSE)
+    setwd(myDir)
+    myDir <- getwd()
+    extension <- ".mzXML"
   }
 
   # create 'metadata$all' 1 and 2 for identification

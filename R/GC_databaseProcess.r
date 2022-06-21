@@ -5,14 +5,15 @@
 #' @export
 #' @param myDir Path to working directory. Default to none.
 #' @param sample_dir Path to sample directory. Default to none.
-#' @param metadata Path to .csv file containing metadata. "Compound", "Formula", "monoMW", "rt", "file", "CAS", "ChemSpider", "Class", "RI", "InChIKey" columns must be included. Default to none.
-#' @param extensao Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
+#' @param metadata Path to .csv file containing metadata. "compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey" columns must be included. Default to none.
+#' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
 #' @param example Logical. If is example, pop-ups won't appear.
 #' @importFrom methods as
 #' @importFrom ddpcr quiet
 #' @importFrom utils choose.dir menu read.csv write.csv
 #' @importFrom metaMS addRI write.msp construct.msp
-#' @importFrom MSnbase filterRT readMSData
+#' @importFrom MSnbase readMSData
+#' @importFrom ProtGenerics filterRt
 #' @importFrom tools file_path_as_absolute
 #' @importFrom xcms MatchedFilterParam findChromPeaks
 #' @importFrom BiocParallel register SerialParam
@@ -26,13 +27,13 @@
 #' GC_databaseProcess(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   lib_metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
-#'   extensao = ".mzXML",
+#'   extension = ".mzXML",
 #'   myDir = "~/",
 #'   example = TRUE
+#' )
 #' }
 #'
-
-GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extensao = NULL, example = FALSE) {
+GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE) {
 
   # ask for parallelization mode
   if (!example == TRUE) {
@@ -65,39 +66,42 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     setwd(myDir)
     myDir <- getwd()
     # files extension
-    if (is.null(extensao)) {
-      extensao <- dlg_list(c(".mzML", ".mzXML"), multiple = TRUE, title = "Files extension:")$res
+    if (is.null(extension)) {
+      extension <- dlg_list(c(".mzML", ".mzXML"), multiple = TRUE, title = "Files extension:")$res
     }
     # library metadata set up
     if (is.null(lib_metadata)) {
       metd <- dlg_message("Metadata table already exists?", "yesno")$res
-      if (metd == 'yes') {
+      if (metd == "yes") {
         lib_metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
         if (!"file" %in% colnames(lib_metadata)) {
-          lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$sample, extensao)
+          lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$sample, extension)
         }
       } else {
-        files <- list.files(sample_dir, full.names = TRUE, pattern = extensao, recursive = TRUE, full.names = TRUE)
+        files <- list.files(sample_dir, full.names = TRUE, pattern = extension, recursive = TRUE)
         lib_metadata <- matrix(nrow = length(files), ncol = 10)
-        colnames(lib_metadata) <- c("Compound", "Formula", "monoMW", "rt", "file", "CAS", "ChemSpider", "Class", "RI", "InChIKey")
+        colnames(lib_metadata) <- c("compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey")
         lib_metadata[, "file"] <- files
-        lib_metadata[, "Compound"] <- sub(basename(files), pattern = extensao, replacement = "", fixed = TRUE)
+        lib_metadata[, "Compound"] <- sub(basename(files), pattern = extension, replacement = "", fixed = TRUE)
         write.csv(lib_metadata, "lib_metadata.csv", row.names = FALSE)
         dlg_message("A file 'lib_metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", "yesno")
         while (file.exists("lib_metadata.csv") == FALSE) {
           write.csv(lib_metadata, "lib_metadata.csv", row.names = FALSE)
           dlg_message("A file 'lib_metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
-          lib_metadata <- read.csv("lib_metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",", dec = '.')
+          lib_metadata <- read.csv("lib_metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
         }
-        lib_metadata <- read.csv("lib_metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",", dec = '.')
+        lib_metadata <- read.csv("lib_metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
       }
     }
-  # if example = TRUE
+    # if example = TRUE
   } else {
     sample_dir <- system.file("extdata", package = "PipMet")
-    lib_metadata <- read.csv(system.file("extdata", "lib_metadata.csv", package = "PipMet"), na.string = c("NA", ""), colClasses = "character", sep = ",", dec = '.')
-    extensao <- '.mzXML'
-    myDir <- '~/LibraryBuilding_example'
+    lib_metadata <- read.csv(system.file("extdata", "lib_metadata.csv", package = "PipMet"), na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
+    extension <- ".mzXML"
+    setwd(sample_dir)
+    for (i in 1:nrow(lib_metadata)) {lib_metadata$file[i] <- file_path_as_absolute(lib_metadata$file[i])}
+    myDir <- "~/LibraryBuilding_example"
+    setwd('~/')
     dir.create(myDir)
     setwd(myDir)
   }
@@ -107,28 +111,30 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
   lib_metadata <- lib_metadata[!apply(is.na(lib_metadata), 1, all), ] # remove empty rows
 
   # begin processing
-  dados_brutos <- list()
+  # get polarity of data acquisiton
+  if (example == TRUE) {polarity <- 'positive'} else {polarity <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Polarity:")$res}
+  raw_data <- list()
   for (i in 1:nrow(lib_metadata)) {
-    # read
-    quiet(dados_brutos[[i]] <- readMSData(lib_metadata[i, "file"], mode = "onDisk"))
+    # read - OK
+    quiet(raw_data[[i]]<- readMSData(lib_metadata$file[i], mode = 'onDisk'))
     # filter RT
-    quiet(dados_brutos[[i]] <- filterRt(dados_brutos[[i]], c(lib_metadata[i, "rt"] - 10, lib_metadata[i, "rt"] + 10)))
-    # peak picking
-    quiet(xdata <- lapply(dados_brutos, FUN = xcms::findChromPeaks, param = xcms::MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)))
-    # spectra defition
-    quiet(xset <- lapply(xdata, FUN = as, Class = "xcmsSet"))
-    # get polarity of data acquisiton
-    polarity <- dlg_list(c("Positive", "Negative"), multiple = FALSE, title = "Polarity:")$res # ask user for the polarity
-    an <- lapply(xset, FUN = xsAnnotate, polarity = polarity)
-    # group by rt
-    anF <- lapply(an, FUN = groupFWHM, perfwhm = 1)
-    # group by correlation information
-    anIC <- lapply(anF, FUN = groupCorr, calcIso = FALSE)
-    # extract to spectra list
-    pslist <- lapply(anIC, FUN = extractSpectra, min_peaks = 5)
+    quiet(raw_data[[i]] <- filterRt(raw_data[[i]], c(as.numeric(lib_metadata[i, "rt"]) - 10, as.numeric(lib_metadata[i, "rt"]) + 10)))
   }
-  names(pslist) <- names(anIC) <- names(an) <- names(anF) <- names(xset) <- names(xdata) <- names(dados_brutos) <- lib_metadata[, 'Compound']
- 
+  # peak picking
+  quiet(xdata <- lapply(raw_data, FUN = findChromPeaks, param = MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)))
+  # spectra defition
+  quiet(xset <- lapply(xdata, FUN = as, Class = "xcmsSet"))
+  # create a xsAnnotate object
+  an <- lapply(xset, FUN = xsAnnotate, polarity = polarity)
+  # group by rt
+  anF <- lapply(an, FUN = groupFWHM, perfwhm = 1)
+  # group by correlation information
+  anIC <- lapply(anF, FUN = groupCorr, calcIso = FALSE)
+  # extract to spectra list
+  pslist <- lapply(anIC, FUN = extractSpectra, min_peaks = 5)
+
+  names(pslist) <- names(anIC) <- names(an) <- names(anF) <- names(xset) <- names(xdata) <- names(raw_data) <- lib_metadata[, "compound"]
+
   # get information on retention index, column and temperature program
   Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index")$res
   column <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res
@@ -157,7 +163,7 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     }
     result <- construct.msp(spectra, extra.info = NULL)
     for (ii in 1:length(result)) {
-      result[[ii]]$Name <- paste0("Candidate to ", names(pslist) [i] ," - ", pslist[[i]][[ii]]@id)
+      result[[ii]]$Name <- paste0(pslist[[i]][[ii]]@id, " - Candidate to ", names(pslist)[i])
       result[[ii]]$id <- pslist[[i]][[ii]]@id
       result[[ii]]$rt <- pslist[[i]][[ii]]@rt
     }
@@ -167,18 +173,22 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
   # alerts the user that a .msp file for each component of the lib_metadata list was created, so the user uploads once at a time to NIST MSSearch, validate and answer the folowwing pop-up asking which index of mass spectra is the component
   # tcltk::tkmessageBox(title = "Library development", message = "For each file processed, a '.msp' file was created in the files directory. Upload to NIST MS Search and select the mass spectrum correspondent to the standard.", icon = "info", type = "ok")
   dlg_message("For each file processed, a '.msp' file was created in the files directory. Upload to NIST MS Search and select the mass spectrum correspondent to the standard.")$res
-
+  
   # ppslist is the pslist corrected
   ppslist <- pslist
 
-  # ask which is correct
-  for (i in 1:length(pslist)) {
-    id <- dlg_list(c(1:length(pslist[[i]]), "None"), multiple = FALSE, title = names(pslist)[[i]])$res
-    if (id == "None") {
-      ppslist[[i]] <- "NA"
-    } else {
-      ppslist[[i]] <- pslist[[i]][[as.numeric(id)]]
+  # validating spectra
+  done <- 2
+  while (done == 2) {
+    for (i in 1:length(pslist)) {
+      id <- dlg_list(c(1:length(pslist[[i]]), "None"), multiple = FALSE, title = names(pslist)[[i]])$res
+      if (id == "None") {
+        ppslist[[i]] <- "NA"
+      } else {
+        ppslist[[i]] <- pslist[[i]][[as.numeric(id)]]
+      }
     }
+    done <- menu(c("Continue", "Do it again"), graphics = TRUE, title = "Validation done!")
   }
 
   # generate final .msp file
@@ -195,17 +205,14 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     result[[i]]$id <- ppslist[[i]]@id
     result[[i]]$rt <- ppslist[[i]]@rt
     result[[i]]$Name <- names(ppslist)[i]
-    result[[i]]$Formula <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "Formula"]
-    result[[i]]$ExactMass <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "monoMW"]
+    result[[i]]$Formula <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "formula"]
+    result[[i]]$MW <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "exact.mass"]
     result[[i]]$CAS <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "CAS"]
     result[[i]]$ChemSpiderID <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "ChemSpiderID"]
-    result[[i]]$Class <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "Class"]
-    result[[i]]$Date <- Sys.Date()
-    result[[i]]$ColumnClass <- paste0("Standard ", column)
-    result[[i]]$ProgramType <- prog
-    result[[i]]$DataType <- paste0(Ri, " RI")
+    result[[i]]$Class <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "class"]
+    result[[i]]$Date <- as.character(Sys.Date())
     result[[i]]$Instrument_type <- Instrument_type
-    result[[i]]$Comments <- paste0('Column class: ', paste0("Standard ", column), '; ','ProgramType: ', prog)
+    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog)
     result[[i]]$Ion_mode <- polarity
     if ("RI" %in% colnames(lib_metadata)) {
       result[[i]]$RI <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI"]

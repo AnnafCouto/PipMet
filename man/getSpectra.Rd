@@ -16,7 +16,7 @@ getSpectra(xdata4, example = FALSE, raw_data, colors)
 \item{colors}{A list with colors generated from "read_data()".}
 }
 \value{
-A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format.
+A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format and the ion mode of data acquisition ('negative' or 'positive').
 }
 \description{
 This function computes the first subsetp of third step of the workflow. It defines the spectra to proper annotate in NIST MS Search Software.
