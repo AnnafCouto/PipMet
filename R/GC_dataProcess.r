@@ -22,14 +22,14 @@
 #' result <- GC_dataProcess(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
-#'   extensao = ".mzML",
+#'   extension = ".mzXML",
 #'   myDir = "~/",
 #'   example = TRUE,
 #'   pictures = TRUE
 #' )
 #' }
 #'
-GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extensao = NULL, pictures = TRUE, example = FALSE) {
+GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE) {
