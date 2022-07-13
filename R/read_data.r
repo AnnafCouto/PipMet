@@ -20,7 +20,6 @@
 #' @import xcms
 #' @import MSnbase
 #' @importFrom pheatmap pheatmap
-#' @importFrom tcltk tkmessageBox
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
 #' \dontrun{
@@ -78,7 +77,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
         metadata[, "file"] <- files
         metadata[, "sample"] <- sub(basename(files), pattern = extension, replacement = "", fixed = TRUE)
         write.csv(metadata, "metadata.csv", row.names = FALSE)
-        tkmessageBox(title = "Metadata", message = "A file 'metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", icon = "info", type = "ok")
+        dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
         while (file.exists("metadata.csv") == FALSE) {
           dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
           metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
