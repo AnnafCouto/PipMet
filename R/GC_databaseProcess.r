@@ -5,7 +5,7 @@
 #' @export
 #' @param myDir Path to working directory. Default to none.
 #' @param sample_dir Path to sample directory. Default to none.
-#' @param metadata Path to .csv file containing metadata. "compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey" columns must be included. Default to none.
+#' @param lib_metadata Path to .csv file containing metadata. "compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey" columns must be included. Default to none.
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
 #' @param example Logical. If is example, pop-ups won't appear.
 #' @importFrom methods as
@@ -53,6 +53,8 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
 
   # get directory for samples and project and set library metadata
   if (!example == TRUE) {
+    # lib name
+    libname <- dlgInput("Name your library", 'Library X')$res
     # samples directory
     if (is.null(sample_dir) | missing(sample_dir)) {
       sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
@@ -82,7 +84,7 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
         lib_metadata <- matrix(nrow = length(files), ncol = 10)
         colnames(lib_metadata) <- c("compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey")
         lib_metadata[, "file"] <- files
-        lib_metadata[, "Compound"] <- sub(basename(files), pattern = extension, replacement = "", fixed = TRUE)
+        lib_metadata[, "compound"] <- sub(basename(files), pattern = extension, replacement = "", fixed = TRUE)
         write.csv(lib_metadata, "lib_metadata.csv", row.names = FALSE)
         dlg_message("A file 'lib_metadata.csv' was created in your directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", "yesno")
         while (file.exists("lib_metadata.csv") == FALSE) {
@@ -99,9 +101,11 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     lib_metadata <- read.csv(system.file("extdata", "lib_metadata.csv", package = "PipMet"), na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
     extension <- ".mzXML"
     setwd(sample_dir)
-    for (i in 1:nrow(lib_metadata)) {lib_metadata$file[i] <- file_path_as_absolute(lib_metadata$file[i])}
+    for (i in 1:nrow(lib_metadata)) {
+      lib_metadata$file[i] <- file_path_as_absolute(lib_metadata$file[i])
+    }
     myDir <- "~/LibraryBuilding_example"
-    setwd('~/')
+    setwd("~/")
     dir.create(myDir)
     setwd(myDir)
   }
@@ -112,11 +116,15 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
 
   # begin processing
   # get polarity of data acquisiton
-  if (example == TRUE) {polarity <- 'positive'} else {polarity <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Polarity:")$res}
+  if (example == TRUE) {
+    polarity <- "positive"
+  } else {
+    polarity <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Polarity:")$res
+  }
   raw_data <- list()
   for (i in 1:nrow(lib_metadata)) {
     # read - OK
-    quiet(raw_data[[i]]<- readMSData(lib_metadata$file[i], mode = 'onDisk'))
+    quiet(raw_data[[i]] <- readMSData(lib_metadata$file[i], mode = "onDisk"))
     # filter RT
     quiet(raw_data[[i]] <- filterRt(raw_data[[i]], c(as.numeric(lib_metadata[i, "rt"]) - 10, as.numeric(lib_metadata[i, "rt"]) + 10)))
   }
@@ -142,10 +150,10 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
   Instrument_type <- dlg_input("Type of instrument of acquisition", "GC-EI-Q")$res
 
   # retrieve RI from CAS numbers (from NIST database), if RI is not present
-  lib_metadata[, "RI"] <- NA
+  lib_metadata[, "RI_"] <- NA
   for (i in 1:nrow(lib_metadata)) {
     lib_metadata[i, "CAS"] <- gsub(pattern = "-", replacement = "", lib_metadata[i, "CAS"]) # remove hifens from CAS
-    if (is.na(lib_metadata[i, "RI"])) {
+    if (is.na(lib_metadata[i, "RI_"])) {
       lib_metadata[i, "RI_"] <- mean(nist_ri(as.cas(lib_metadata[i, "CAS"]), from = "cas", type = Ri, polarity = column, temp_prog = prog)$RI)
     }
   }
@@ -166,6 +174,7 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
       result[[ii]]$Name <- paste0(pslist[[i]][[ii]]@id, " - Candidate to ", names(pslist)[i])
       result[[ii]]$id <- pslist[[i]][[ii]]@id
       result[[ii]]$rt <- pslist[[i]][[ii]]@rt
+      result[[ii]]$RI <- lib_metadata$RI_[[i]]
     }
     metaMS::write.msp(result, paste0(names(pslist)[i], "_", Sys.Date(), ".msp"), newFile = TRUE)
   }
@@ -173,7 +182,7 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
   # alerts the user that a .msp file for each component of the lib_metadata list was created, so the user uploads once at a time to NIST MSSearch, validate and answer the folowwing pop-up asking which index of mass spectra is the component
   # tcltk::tkmessageBox(title = "Library development", message = "For each file processed, a '.msp' file was created in the files directory. Upload to NIST MS Search and select the mass spectrum correspondent to the standard.", icon = "info", type = "ok")
   dlg_message("For each file processed, a '.msp' file was created in the files directory. Upload to NIST MS Search and select the mass spectrum correspondent to the standard.")$res
-  
+
   # ppslist is the pslist corrected
   ppslist <- pslist
 
@@ -201,6 +210,7 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     rm(x)
   }
   result <- metaMS::construct.msp(spectra, extra.info = NULL)
+  lib_metadata[is.na(lib_metadata)] <- ''
   for (i in 1:length(result)) {
     result[[i]]$id <- ppslist[[i]]@id
     result[[i]]$rt <- ppslist[[i]]@rt
@@ -208,11 +218,10 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     result[[i]]$Formula <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "formula"]
     result[[i]]$MW <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "exact.mass"]
     result[[i]]$CAS <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "CAS"]
-    result[[i]]$ChemSpiderID <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "ChemSpiderID"]
     result[[i]]$Class <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "class"]
     result[[i]]$Date <- as.character(Sys.Date())
     result[[i]]$Instrument_type <- Instrument_type
-    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog)
+    result[[i]]$Comments <- paste0(" Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog, "; ",'ChemSpiderID: ', lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "ChemSpiderID"], '; linear RI: ', lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI_"])
     result[[i]]$Ion_mode <- polarity
     if ("RI" %in% colnames(lib_metadata)) {
       result[[i]]$RI <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI"]
@@ -222,7 +231,8 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     }
   }
   names(result) <- names(ppslist)
-  metaMS::write.msp(result, paste0("Library_", Sys.Date(), ".msp"), newFile = TRUE)
-  save.image(paste0(Sys.Date(), ".RData"))
+  setwd(myDir)
+  metaMS::write.msp(result, paste0("Library_", libname, ".msp"), newFile = TRUE)
+  if (!example==TRUE) {save.image(paste0(libname, '_', Sys.Date(), ".RData"))} else {save.image(paste0('LibExample_', Sys.Date(), ".RData"))}
   dlg_message("Done! Internal library development finalized. A '.msp' file was created in your directory for conversion to NIST MS Search Library.")
 }

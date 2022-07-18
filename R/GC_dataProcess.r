@@ -105,7 +105,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   # normalize, choose peaks and plot images
   quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example))
 
-  if (pictures == TRUE) {
+  if (pictures == TRUE & nrow(xdata@phenoData@data) > 1) {
     if (!example == TRUE) {
       # plot volcanos
       okay <- 1

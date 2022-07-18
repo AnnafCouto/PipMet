@@ -37,7 +37,7 @@ Main function for GC data processing.
 result <- GC_dataProcess(
   sample_dir = system.file("extdata", package = "PipMet"),
   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
-  extension = ".mzML",
+  extension = ".mzXML",
   myDir = "~/",
   example = TRUE,
   pictures = TRUE

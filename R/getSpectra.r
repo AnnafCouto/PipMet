@@ -103,6 +103,6 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
   }
 
   # done (with this step)
-  dlg_message("Annotatation step: \n The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
+  dlg_message("Annotatation step: The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
   return(list(anIC = anIC, pslist = pslist, result = result, polarity = polarity))
 }
