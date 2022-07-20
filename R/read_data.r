@@ -12,7 +12,7 @@
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
-#' @importFrom grDevices dev.off png tiff
+#' @importFrom grDevices dev.off png tiff rainbow
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
 #' @importFrom utils choose.dir menu read.csv write.csv write.table choose.files
@@ -104,10 +104,10 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
   }
 
   # if there is only a single file
-  if (files == 1 | nrow(metadata) == 1) {
+  if (!nrow(metadata) == 1) {
     # create 'metadata$all' 1 and 2 for identification
     x <- colnames(metadata)
-    for (i in c("sample", "tec_rep", "bio_rep", "file", "all", "all2")) {
+    for (i in c("file", "all", "all2")) {
       if (i %in% x) {
         x <- x[-which(x == i)]
       }
@@ -126,12 +126,12 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       # metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
       metadata$all2 <- c(1:nrow(metadata))
     }
-
+    
     # colors for each column in metadata except 'sample' and 'tec_rep'
     colors <- vector(mode = "list", length = length(x))
     names(colors) <- x
     for (i in 1:length(x)) {
-      colors[[i]] <- list(metadata[, x[i]], paste0(RColorBrewer::brewer.pal(length(unique(metadata[, x[[i]]])), "Set1")[1:length(unique(metadata[, x[[i]]]))], "60"))
+      if (length(unique(metadata[, x[[i]]]))<=9) {colors[[i]] <- list(metadata[, x[i]], paste0(RColorBrewer::brewer.pal(length(unique(metadata[, x[[i]]])), "Set1")[1:length(unique(metadata[, x[[i]]]))], "60"))} else {colors[[i]] <- list(metadata[, x[i]], rainbow(length(unique(metadata[, x[[i]]]))))}
       names(colors[[i]][[2]]) <- c(unique(metadata[, x[i]]))
       names(colors[[i]]) <- c(x[[i]], paste0(x[[i]], "_colors"))
     }
@@ -142,8 +142,12 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
 
   if (pictures == TRUE) {
     # images of pre-processing
-    dir.create("Visualization_results")
+    if (!dir.exists("Visualization_results") == TRUE) {
+      dir.create("Visualization_results")
+    }
     setwd("Visualization_results")
+
+    # get info to plot
     bpc <- chromatogram(raw_data, aggregationFun = "max")
     tic <- chromatogram(raw_data, aggregationFun = "sum")
 
@@ -182,30 +186,32 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     # }
     # rm(tic_por_arquivo)
 
-    if (files == 1 | nrow(metadata) == 1) {
+    if (!nrow(metadata) == 1) {
       # cluster
       tic_bin <- bin(tic, binSize = 1)
       cl <- do.call(cbind, lapply(tic_bin, intensity))
       cl[cl == 0] <- NA
       cormat <- cor(log2(cl), use = "pairwise.complete.obs")
-      colnames(cormat) <- rownames(cormat) <- metadata$all2
-      # for each set of colors (conditions of experiment)
-      for (i in 1:length(colors)) {
-        ann <- data.frame(colors[[i]][[1]])
-        colnames(ann) <- names(colors)[i]
-        rownames(ann) <- metadata$all2
-        ant <- list(colors[[i]][[2]])
-        names(ant) <- names(colors)[i]
-        # tiff
-        tiff(paste0(names(colors)[i], "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
-        dev.off()
-        # png
-        png(paste0(names(colors)[i], "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
-        dev.off()
+      for (ii in c('sample', 'all2')) {
+        colnames(cormat) <- rownames(cormat) <- metadata [,ii]
+        # for each set of colors (conditions of experiment)
+        for (i in 1:length(colors)) {
+          ann <- data.frame(colors[[i]][[1]])
+          colnames(ann) <- names(colors)[i]
+          rownames(ann) <- metadata [,ii]
+          ant <- list(colors[[i]][[2]])
+          names(ant) <- names(colors)[i]
+          # tiff
+          tiff(paste0(names(colors)[i],'_',ii,'_',"_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
+          dev.off()
+          # png
+          png(paste0(names(colors)[i],'_',ii,'_', "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
+          dev.off()
+        }
       }
-      rm(tic_bin)
+    rm(tic_bin)
     }
 
     # extracted ion chromatogram based on mz and rt asked previously by user

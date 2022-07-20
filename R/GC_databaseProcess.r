@@ -54,7 +54,7 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
   # get directory for samples and project and set library metadata
   if (!example == TRUE) {
     # lib name
-    libname <- dlgInput("Name your library", 'Library X')$res
+    libname <- dlgInput("Name your library", "Library X")$res
     # samples directory
     if (is.null(sample_dir) | missing(sample_dir)) {
       sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
@@ -210,7 +210,7 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     rm(x)
   }
   result <- metaMS::construct.msp(spectra, extra.info = NULL)
-  lib_metadata[is.na(lib_metadata)] <- ''
+  lib_metadata[is.na(lib_metadata)] <- ""
   for (i in 1:length(result)) {
     result[[i]]$id <- ppslist[[i]]@id
     result[[i]]$rt <- ppslist[[i]]@rt
@@ -221,7 +221,7 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
     result[[i]]$Class <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "class"]
     result[[i]]$Date <- as.character(Sys.Date())
     result[[i]]$Instrument_type <- Instrument_type
-    result[[i]]$Comments <- paste0(" Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog, "; ",'ChemSpiderID: ', lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "ChemSpiderID"], '; linear RI: ', lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI_"])
+    result[[i]]$Comments <- paste0(" Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog, "; ", "ChemSpiderID: ", lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "ChemSpiderID"], "; linear RI: ", lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI_"])
     result[[i]]$Ion_mode <- polarity
     if ("RI" %in% colnames(lib_metadata)) {
       result[[i]]$RI <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI"]
@@ -233,6 +233,10 @@ GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = N
   names(result) <- names(ppslist)
   setwd(myDir)
   metaMS::write.msp(result, paste0("Library_", libname, ".msp"), newFile = TRUE)
-  if (!example==TRUE) {save.image(paste0(libname, '_', Sys.Date(), ".RData"))} else {save.image(paste0('LibExample_', Sys.Date(), ".RData"))}
+  if (!example == TRUE) {
+    save.image(paste0(libname, "_", Sys.Date(), ".RData"))
+  } else {
+    save.image(paste0("LibExample_", Sys.Date(), ".RData"))
+  }
   dlg_message("Done! Internal library development finalized. A '.msp' file was created in your directory for conversion to NIST MS Search Library.")
 }

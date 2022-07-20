@@ -17,11 +17,11 @@ GC_databaseProcess(
 
 \item{sample_dir}{Path to sample directory. Default to none.}
 
+\item{lib_metadata}{Path to .csv file containing metadata. "compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey" columns must be included. Default to none.}
+
 \item{extension}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.}
 
 \item{example}{Logical. If is example, pop-ups won't appear.}
-
-\item{metadata}{Path to .csv file containing metadata. "compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey" columns must be included. Default to none.}
 }
 \description{
 Main function for GC-MS standards processing for internal library development.
