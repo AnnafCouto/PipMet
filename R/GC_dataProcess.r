@@ -84,6 +84,7 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   anIC <- spectra[[1]]
   result <- spectra[[3]]
   pslist <- spectra[[2]]
+  polarity <- spectra[[4]]
 
   # add retention index info if needed
   if (!example == TRUE) {
