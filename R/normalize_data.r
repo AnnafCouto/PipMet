@@ -9,7 +9,7 @@
 #' @param pre_anno A table with annotations for spectra. or path to .csv file.
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @return A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
-#' @importFrom grDevices dev.off pdf png tiff
+#' @importFrom grDevices dev.off pdf png tiff boxplot.stats
 #' @importFrom graphics boxplot grid legend par text
 #' @importFrom svDialogs dlg_message
 #' @importFrom methods as new
@@ -39,6 +39,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
   # check if representative ions are ok
   okay <- 2
   while (okay == 2) {
+    setwd(myDir)
     quant <- matrix(nrow = nrow(pre_anno), ncol = 5 + (2 * nrow(metadata)))
     colnames(quant) <- c("id", "Fragment Ion (m/z Quant)", "Compound Name", "Chemical Formula", "Metabolic Class", metadata$sample, metadata$sample)
     quant[, "id"] <- pre_anno[, "id"]
@@ -159,20 +160,78 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
       ylab("Frequency") +
       theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrão.
 
-    # plot histogram of variance and standard deviation
+    # plot histogram of variance and standard deviation and boxplots
     png("variance_dp.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     gridExtra::grid.arrange(a, b, ncol = 1)
     dev.off()
+    png("boxplot.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    par(mfrow = c(1, 4))
+    boxplot(y$Variance, main = "Variance", horizontal = TRUE)
+    boxplot(y$sd, main = "Standard Deviation", horizontal = TRUE)
+    dev.off()
+
     tiff("variance_dp.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     gridExtra::grid.arrange(a, b, ncol = 1)
     dev.off()
+    tiff("boxplot.tiff", res = 900, bg = "NA")
+    par(mfrow = c(1, 2))
+    boxplot(y$Variance, main = "Variance", horizontal = TRUE)
+    boxplot(y$sd, main = "Standard Deviation", horizontal = TRUE)
+    dev.off()
+
+    n <- cbind(n[, 1:(5 + nrow(metadata))], y[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
+    write.csv(n, "Normalized_quantification.csv", row.names = FALSE, na = "")
+
     if (example == FALSE) {
+      res <- menu(c("Conclude normalization", "Re-do normalization", "Remove all outliers", "Remove spectra with variance bigger than defined"), graphics = TRUE, title = "Choose the best normalization")
+      if (res == 1) {
+        okay <- 1
+      }
+      if (res == 2) {
+        okay <- 2
+      }
+      if (res == 3) {
+        y_1 <- y[-which(y$Variance >= boxplot.stats(y$Variance)$stats[5]), ]
+        n_1 <- n[-which(y$Variance >= boxplot.stats(y$Variance)$stats[5]), ]
+        png("boxplot_withoutOutliers.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        par(mfrow = c(1, 2))
+        boxplot(y_1$Variance, main = "Variance", horizontal = TRUE)
+        boxplot(y_1$sd, main = "Standard Deviation", horizontal = TRUE)
+        dev.off()
+        n_1 <- cbind(n_1[, 1:(5 + nrow(metadata))], y_1[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
+        write.csv(n_1, "Normalized_quantification_withoutOutliers.csv", row.names = FALSE, na = "")
+        a <- ggplot(y_1, aes(x = y[, nrow(metadata) + 1])) +
+          geom_histogram() +
+          ggtitle("Variance Distribution") +
+          xlab("Variance") +
+          ylab("Frequency") +
+          theme(rect = element_rect(fill = "transparent")) # histograma da variância. O ideal é que tenha pouca variância alta
+        b <- ggplot(y_1, aes(x = y[, nrow(metadata) + 2])) +
+          geom_histogram() +
+          ggtitle("Standard Deviation") +
+          xlab("Standard Deviation") +
+          ylab("Frequency") +
+          theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrão.
+        png("variance_dp_withoutOutliers.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        gridExtra::grid.arrange(a, b, ncol = 1)
+        dev.off()
+      }
+
+      if (res == 4) {
+        th <- as.double(dlgInput("Variance threshold ", "0")$res)
+        y_2 <- y[-which(y$Variance >= th), ]
+        n_2 <- n[-which(y$Variance >= th), ]
+        png(paste0("boxplot_varianceUpTo", th, ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        par(mfrow = c(1, 2))
+        boxplot(y_2$Variance, main = "Variance", horizontal = TRUE)
+        boxplot(y_2$sd, main = "Standard Deviation", horizontal = TRUE)
+        dev.off()
+        n_2 <- cbind(n_2[, 1:(5 + nrow(metadata))], y_2[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
+        write.csv(n_2, paste0("Normalized_quantification_varianceUpTo", th, ".csv"), row.names = FALSE, na = "")
+      }
       okay <- menu(c("OK, keep going", "No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")
     }
   }
-
-  n <- n[, 1:(5 + nrow(metadata))] # as everything is ok, use only first most intense ions for representative
-  write.csv(n, "Normalized_quantification.csv", row.names = FALSE, na = "")
 
   # set to main folder
   setwd(myDir)

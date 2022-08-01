@@ -57,12 +57,12 @@ annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE) {
     # tiff
     tiff("hierarchy_plot.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(4.5, 4.2, 1, 0.5))
-    HCplot(pseudodistmat, h = 0.7, cex = 0.5)
+    HCplot(pseudodistmat, h = 0.7, cex = 0.3)
     dev.off()
     # png
     png("hierarchy_plot.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(4.5, 4.2, 1, 0.5))
-    HCplot(pseudodistmat, h = 0.7, cex = 0.5)
+    HCplot(pseudodistmat, h = 0.7, cex = 0.3)
     dev.off()
 
     # heatmap plot

@@ -29,13 +29,16 @@ heatmap <- function(n, metadata, myDir, colors) {
   }
   setwd("Statistics")
   n[n == ""] <- NA
-  mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
+  mat <- n[, 6:(ncol(n) - 2)] # remove aditional information from the normalized table of spectra
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
   rownames(mat) <- n[, 1]
 
   # plot heatmap of metabolites per sample
   mat_scaled <- scale(mat)
-  colnames(mat_scaled) <- metadata$all2
+  colnames(mat_scaled) <- metadata$sample
+  m <- n[, "Compound Name"]
+  m[m == ""] <- NA
+  rownames(mat_scaled) <- m
   png("heatmap_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5, show_rownames = FALSE, border_color = "NA")
   dev.off()
@@ -50,7 +53,7 @@ heatmap <- function(n, metadata, myDir, colors) {
     mat_ident <- mat
   }
   mat_ident_scaled <- scale(mat_ident)
-  colnames(mat_ident_scaled) <- metadata$all2
+  colnames(mat_ident_scaled) <- metadata$sample
   rownames(mat_ident_scaled) <- n[-which(is.na(n[, 3])), 3]
   png("heatmap_scaled_ident.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 5)

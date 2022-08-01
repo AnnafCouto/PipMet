@@ -79,7 +79,7 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
         write.csv(metadata, "metadata.csv", row.names = FALSE)
         dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. In 'class' column, describe your samples as 'Sample', 'QC', 'Blank' or 'Pool'. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
         while (file.exists("metadata.csv") == FALSE) {
-          dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
+          dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. In 'class' column, describe your samples as 'Sample', 'QC', 'Blank' or 'Pool'. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
           metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
         }
         metadata <- read.csv("metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
@@ -126,12 +126,16 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       # metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
       metadata$all2 <- c(1:nrow(metadata))
     }
-    
+
     # colors for each column in metadata except 'sample' and 'tec_rep'
     colors <- vector(mode = "list", length = length(x))
     names(colors) <- x
     for (i in 1:length(x)) {
-      if (length(unique(metadata[, x[[i]]]))<=9) {colors[[i]] <- list(metadata[, x[i]], paste0(RColorBrewer::brewer.pal(length(unique(metadata[, x[[i]]])), "Set1")[1:length(unique(metadata[, x[[i]]]))], "60"))} else {colors[[i]] <- list(metadata[, x[i]], rainbow(length(unique(metadata[, x[[i]]]))))}
+      if (length(unique(metadata[, x[[i]]])) <= 9) {
+        colors[[i]] <- list(metadata[, x[i]], paste0(RColorBrewer::brewer.pal(length(unique(metadata[, x[[i]]])), "Set1")[1:length(unique(metadata[, x[[i]]]))], "60"))
+      } else {
+        colors[[i]] <- list(metadata[, x[i]], rainbow(length(unique(metadata[, x[[i]]]))))
+      }
       names(colors[[i]][[2]]) <- c(unique(metadata[, x[i]]))
       names(colors[[i]]) <- c(x[[i]], paste0(x[[i]], "_colors"))
     }
@@ -192,26 +196,26 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       cl <- do.call(cbind, lapply(tic_bin, intensity))
       cl[cl == 0] <- NA
       cormat <- cor(log2(cl), use = "pairwise.complete.obs")
-      for (ii in c('sample', 'all2')) {
-        colnames(cormat) <- rownames(cormat) <- metadata [,ii]
+      for (ii in c("sample", "all2")) {
+        colnames(cormat) <- rownames(cormat) <- metadata[, ii]
         # for each set of colors (conditions of experiment)
         for (i in 1:length(colors)) {
           ann <- data.frame(colors[[i]][[1]])
           colnames(ann) <- names(colors)[i]
-          rownames(ann) <- metadata [,ii]
+          rownames(ann) <- metadata[, ii]
           ant <- list(colors[[i]][[2]])
           names(ant) <- names(colors)[i]
           # tiff
-          tiff(paste0(names(colors)[i],'_',ii,'_',"_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          tiff(paste0(names(colors)[i], "_", ii, "_", "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
           pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
           dev.off()
           # png
-          png(paste0(names(colors)[i],'_',ii,'_', "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          png(paste0(names(colors)[i], "_", ii, "_", "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
           pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
           dev.off()
         }
       }
-    rm(tic_bin)
+      rm(tic_bin)
     }
 
     # extracted ion chromatogram based on mz and rt asked previously by user

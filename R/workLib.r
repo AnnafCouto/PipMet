@@ -1,4 +1,4 @@
-#' GC_databaseProcess
+#' workLib
 #'
 #' Main function for GC-MS standards processing for internal library development.
 #' @keywords standards, library, internal
@@ -24,7 +24,7 @@
 #' @importFrom svDialogs dlgInput dlg_message
 #' @examples
 #' \dontrun{
-#' GC_databaseProcess(
+#' workLib(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   lib_metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
 #'   extension = ".mzXML",
@@ -33,7 +33,7 @@
 #' )
 #' }
 #'
-GC_databaseProcess <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE) {
+workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE) {
 
   # ask for parallelization mode
   if (!example == TRUE) {

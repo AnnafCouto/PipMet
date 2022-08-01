@@ -1,4 +1,4 @@
-#' GC_dataProcess
+#' workData
 #'
 #' Main function for GC data processing.
 #' @keywords metadata
@@ -19,7 +19,7 @@
 #' @importFrom tcltk tkmessageBox
 #' @examples
 #' \dontrun{
-#' result <- GC_dataProcess(
+#' result <- workData(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
 #'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
 #'   extension = ".mzXML",
@@ -29,7 +29,7 @@
 #' )
 #' }
 #'
-GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE) {
@@ -106,12 +106,12 @@ GC_dataProcess <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, ext
   # normalize, choose peaks and plot images
   quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example))
 
-  if (pictures == TRUE & nrow(xdata@phenoData@data) > 1) {
+  if (pictures == TRUE & nrow(metadata) > 1) {
     if (!example == TRUE) {
       # plot volcanos
       okay <- 1
       while (okay == 1) {
-        quiet(x <- try(vol_lvl1(n, metadata, myDir)))
+        quiet(volDir <- try(vol_lvl1(n, metadata, myDir)))
         okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
       }
 
