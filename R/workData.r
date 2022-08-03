@@ -9,6 +9,7 @@
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
 #' @param pictures Logical. If pictures should be plotted or not.
 #' @param example Logical. If is example, pop-ups won't appear.
+#' @param filter Intensity filter. Integer. Default to zero.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message
@@ -29,7 +30,7 @@
 #' )
 #' }
 #'
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, filter = 0, pictures = TRUE, example = FALSE) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE) {
@@ -68,7 +69,9 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     register(SerialParam(), default = TRUE)
   }
 
+
   # ask informations and read files
+  print('Processing step 1/4 - Reading files...')
   quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example))
   colors <- read[[1]]
   metadata <- read[[2]]
@@ -77,9 +80,11 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   rm(read)
 
   # process samples
-  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures))
+  print('Processing step 2/4 - Preprocessing files...')
+  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures, filter = filter))
 
   # define spectra and create .msp files
+  print('Processing step 3/4 - Writing spectra...')
   quiet(spectra <- getSpectra(xdata4, example, raw_data, colors))
   anIC <- spectra[[1]]
   result <- spectra[[3]]
@@ -99,6 +104,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   }
 
   # update annotated spectra and plot images
+  print('Processing step 4/4 - Statistics...')
   quiet(annot <- annot_images(pslist, myDir, pictures))
   apslist <- annot$apslist
   pre_anno <- annot$r

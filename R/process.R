@@ -9,6 +9,8 @@
 #' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param example Logical. If is example, pop-ups won't appear.
+#' @param filter Intensity filter. Integer. Default to zero.
+#' @param group_factor Character. Name of column of characteristics from which the sample will be grouped. Default to none. If none, the user may answer in a pop-up window.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
 #' @return A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
 #' @importFrom grDevices dev.off pdf png tiff
@@ -25,7 +27,7 @@
 #' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
 #' }
 #'
-process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE, example = FALSE) {
+process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE, example = FALSE, filter = 0, group_factor = NULL) {
 
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
@@ -35,11 +37,13 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
   }
 
   if (example == FALSE) {
-    # apply intensity filter? how much?
-    filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
-    if (filt == 1) {
-      filter <- dlgInput("Intensity threshold ", "0")$res
-      xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo"))
+    if (filter == 0) {
+      # apply intensity filter? how much?
+      filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
+      if (filt == 1) {
+        filter <- dlgInput("Intensity threshold ", "0")$res
+        xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo"))
+      }
     }
   }
 
@@ -52,14 +56,16 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
     }
 
     if (example == FALSE) {
-      # ask condition to compare from the metadata table
-      x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ")
+      if (is.null(group_factor) | !group_factor %in% colnames(metadata)) {
+        # ask condition to compare from the metadata table
+        group_factor <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ")
+      } else {group_factor <- which(metadata(colnames))==group_factor}
     } else {
       x <- 2
     }
 
     # grouping peaks
-    xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
+    xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, group_factor], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
     if (!example == TRUE) {
       save(xdata3, file = "xdata3.RData")
     }
@@ -88,7 +94,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
       ints <- split(log2(chromPeaks(xdata3)[, "into"]),
         f = chromPeaks(xdata3)[, "sample"]
       )
-      names(ints) <- metadata$all2
+      names(ints) <- metadata$sample
       for (i in 1:length(colors)) {
         # tiff
         tiff(paste0(names(colors)[i], "_boxplotLog2Postprocessed.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -98,8 +104,8 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
           ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
         )
         grid(nx = NA, ny = NULL)
-        text(seq_along(metadata$all2), par("usr")[3],
-          labels = metadata$all2, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
+        text(seq_along(metadata$sample), par("usr")[3],
+          labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
         )
         dev.off()
         # png
@@ -110,8 +116,8 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
           ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
         )
         grid(nx = NA, ny = NULL)
-        text(seq_along(metadata$all2), par("usr")[3],
-          labels = metadata$all2, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
+        text(seq_along(metadata$sample), par("usr")[3],
+          labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
         )
         dev.off()
       }
