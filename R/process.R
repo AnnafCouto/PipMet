@@ -18,13 +18,14 @@
 #' @importFrom xcms MatchedFilterParam findChromPeaks refineChromPeaks FilterIntensityParam adjustRtime ObiwarpParam groupChromPeaks PeakDensityParam fillChromPeaks ChromPeakAreaParam plotChromPeakImage chromPeaks plotAdjustedRtime chromatogram fillPeaks
 #' @importFrom utils choose.dir memory.limit menu read.csv select.list write.csv write.table
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "raw_data.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' load(system.file("extdata", "colors.RData", package = "PipMet"))
 #' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
 #' }
-#'
+#' }
 process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE, example = FALSE) {
 
   # peak picking

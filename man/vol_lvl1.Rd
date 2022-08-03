@@ -20,10 +20,11 @@ A directory for volcano plots.
 This function plots volcanos .
 }
 \examples{
+\donttest{
 \dontrun{
 load(system.file("extdata", "n.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 vol_lvl1(n, metadata, myDir = "~/")
 }
-
+}
 }

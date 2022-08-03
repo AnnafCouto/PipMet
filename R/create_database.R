@@ -11,11 +11,12 @@
 #' @importFrom metaMS write.msp
 #' @importFrom webchem get_cid pc_prop cts_convert nist_ri
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "pslist.RData", package = "PipMet"))
 #' create_database(pslist)
 #' }
-#'
+#' }
 create_database <- function(pslist, polarity) {
 
   # get only annotated spectra

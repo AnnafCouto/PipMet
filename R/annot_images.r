@@ -12,11 +12,12 @@
 #' @importFrom utils read.csv
 #' @importFrom CluMSID addAnnotations distanceMatrix networkplot HCplot
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "pslist.RData", package = "PipMet"))
 #' annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, example = TRUE)
 #' }
-#'
+#' }
 annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE) {
   if (example == TRUE) {
     r <- read.csv(system.file("extdata", "pre_anno.csv", package = "PipMet"), sep = ",", na.string = c("NA", ""))

@@ -13,12 +13,13 @@
 #' @import ggplot2
 #' @importFrom ggrepel geom_text_repel
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "n.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' vol_lvl1(n, metadata, myDir = "~/")
 #' }
-#'
+#' }
 vol_lvl1 <- function(n, metadata, myDir) {
   mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)

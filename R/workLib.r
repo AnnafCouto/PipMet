@@ -23,6 +23,7 @@
 #' @importFrom ddpcr quiet
 #' @importFrom svDialogs dlgInput dlg_message
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' workLib(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
@@ -32,7 +33,7 @@
 #'   example = TRUE
 #' )
 #' }
-#'
+#' }
 workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE) {
 
   # ask for parallelization mode

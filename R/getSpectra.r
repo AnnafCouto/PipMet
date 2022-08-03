@@ -15,11 +15,13 @@
 #' @importFrom utils memory.limit
 #' @importFrom svDialogs dlg_message dlg_input dlg_list
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "xdata4.RData", package = "PipMet"))
 #' spectra <- getSpectra(xdata4, example = TRUE)
 #' }
-#'
+#' }
+
 getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
   if (class(xdata4)[1] == "XCMSnExp") {
     xset <- as(xdata4, "xcmsSet")

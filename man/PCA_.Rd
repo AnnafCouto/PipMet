@@ -22,11 +22,12 @@ None.
 This function plots PCA.
 }
 \examples{
+\donttest{
 \dontrun{
 load(system.file("extdata", "n.RData", package = "PipMet"))
 load(system.file("extdata", "colors.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 PCA_(n, metadata, myDir = "~/", colors)
 }
-
+}
 }

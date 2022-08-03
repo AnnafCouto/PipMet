@@ -27,6 +27,7 @@ workLib(
 Main function for GC-MS standards processing for internal library development.
 }
 \examples{
+\donttest{
 \dontrun{
 workLib(
   sample_dir = system.file("extdata", package = "PipMet"),
@@ -36,7 +37,7 @@ workLib(
   example = TRUE
 )
 }
-
+}
 }
 \keyword{internal}
 \keyword{library,}

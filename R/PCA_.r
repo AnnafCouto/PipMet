@@ -15,13 +15,14 @@
 #' @import ggplot2
 #' @importFrom ggrepel geom_text_repel
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "n.RData", package = "PipMet"))
 #' load(system.file("extdata", "colors.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' PCA_(n, metadata, myDir = "~/", colors)
 #' }
-#'
+#'}
 PCA_ <- function(n, metadata, myDir, colors) {
   mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)

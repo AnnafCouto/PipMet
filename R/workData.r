@@ -18,6 +18,7 @@
 #' @importFrom BiocParallel register SerialParam SnowParam MulticoreParam
 #' @importFrom tcltk tkmessageBox
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' result <- workData(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
@@ -28,7 +29,7 @@
 #'   pictures = TRUE
 #' )
 #' }
-#'
+#' }
 workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
