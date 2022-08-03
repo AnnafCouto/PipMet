@@ -33,6 +33,7 @@ A list containing (1) the path of working folder, (2) the metadata table, (3) th
 Main function for GC data processing.
 }
 \examples{
+\donttest{
 \dontrun{
 result <- workData(
   sample_dir = system.file("extdata", package = "PipMet"),
@@ -43,6 +44,6 @@ result <- workData(
   pictures = TRUE
 )
 }
-
+}
 }
 \keyword{metadata}

@@ -14,10 +14,11 @@
 #' @import ggplot2
 #' @importFrom ggrepel geom_text_repel
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' vol_lvl2(n, metadata, myDir = "~/", volDir = "~/")
 #' }
-#'
+#' }
 vol_lvl2 <- function(n, metadata, myDir, volDir) {
   mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)

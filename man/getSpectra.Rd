@@ -22,9 +22,10 @@ A list with 'xsAnnotate' object with peaks grouped by retention time and correla
 This function computes the first subsetp of third step of the workflow. It defines the spectra to proper annotate in NIST MS Search Software.
 }
 \examples{
+\donttest{
 \dontrun{
 load(system.file("extdata", "xdata4.RData", package = "PipMet"))
 spectra <- getSpectra(xdata4, example = TRUE)
 }
-
+}
 }

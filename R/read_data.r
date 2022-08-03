@@ -22,6 +22,7 @@
 #' @importFrom pheatmap pheatmap
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' read <- read_data(
 #'   sample_dir = system.file("extdata", package = "PipMet"),
@@ -37,7 +38,7 @@
 #' myDir <- read[[4]]
 #' rm(read)
 #' }
-#'
+#' }
 read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
   if (!example == TRUE) {
 

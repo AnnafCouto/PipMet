@@ -22,8 +22,9 @@ None.
 This function plots volcanos with two levels of comparison.
 }
 \examples{
+\donttest{
 \dontrun{
 vol_lvl2(n, metadata, myDir = "~/", volDir = "~/")
 }
-
+}
 }

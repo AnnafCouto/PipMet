@@ -26,6 +26,7 @@ A matrix of all spectra, with their annotation (if available), most intense peak
 This function normalize data.
 }
 \examples{
+\donttest{
 \dontrun{
 pre_anno <- read.csv(system.file("extdata", "pre_anno.csv", package = "PipMet"))
 load(system.file("extdata", "pslist.RData", package = "PipMet"))
@@ -40,5 +41,5 @@ normalized <- normalize_data(
   example = TRUE
 )
 }
-
+}
 }

@@ -19,6 +19,7 @@
 #' @import NormalyzerDE
 #' @import ggplot2
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' pre_anno <- read.csv(system.file("extdata", "pre_anno.csv", package = "PipMet"))
 #' load(system.file("extdata", "pslist.RData", package = "PipMet"))
@@ -33,7 +34,7 @@
 #'   example = TRUE
 #' )
 #' }
-#'
+#' }
 normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
 
   # check if representative ions are ok

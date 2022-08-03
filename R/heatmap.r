@@ -14,13 +14,14 @@
 #' @importFrom utils read.csv write.csv write.table
 #' @importFrom pheatmap pheatmap
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "n.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' load(system.file("extdata", "colors.RData", package = "PipMet"))
 #' heatmap(n, metadata, myDir = "~/", colors)
 #' }
-#'
+#' }
 heatmap <- function(n, metadata, myDir, colors) {
 
   # set to statistic pictures folder

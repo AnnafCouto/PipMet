@@ -18,11 +18,12 @@ None.
 Function for creating a in-house database from processed GC-MS experiment files. The user may choose to add more information, such as Formula, Monoisotopic Mass, CAS, ChemSpider, InChIKey, PubChem ID, Class and retention index. The function is capable of search and retrieving most of the information from the online databases such as PubChem and NIST uatomatically through 'webchem' package or add manually the information.
 }
 \examples{
+\donttest{
 \dontrun{
 load(system.file("extdata", "pslist.RData", package = "PipMet"))
 create_database(pslist)
 }
-
+}
 }
 \keyword{database}
 \keyword{spectra}
