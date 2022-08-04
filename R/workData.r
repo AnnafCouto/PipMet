@@ -31,28 +31,30 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = 0) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = 0, peakMonitor = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE) {
-    EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
-    ions <- list()
-    if (EIC == 1) {
-      okay <- 1
-      ei <- 1
-      while (okay == 1) {
-        ions[[ei]] <- vector(mode = "list", length = 2)
-        names(ions[[ei]]) <- c("mz", "rt")
-        # names(ions)[ei] <- as.character(dlgInput(paste0('Name monitoring ion ', ei, ' :'), 'First')$res)
-        ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, ":"), "0")$res)
-        ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be added +/- 5s to Rt):"), "0")$res)
-        okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor another one?")
-        ei <- ei + 1
+    if (is.null (peakMonitor)) {
+      EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
+      ions <- list()
+      if (EIC == 1) {
+        okay <- 1
+        ei <- 1
+        while (okay == 1) {
+          ions[[ei]] <- vector(mode = "list", length = 2)
+          names(ions[[ei]]) <- c("mz", "rt")
+          # names(ions)[ei] <- as.character(dlgInput(paste0('Name monitoring ion ', ei, ' :'), 'First')$res)
+          ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, ":"), "0")$res)
+          ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be added +/- 5s to Rt):"), "0")$res)
+          okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor another one?")
+          ei <- ei + 1
+        }
       }
     }
-  } else {
-    EIC <- 2
-  }
+  } #else {
+    #EIC <- 2
+  #}
 
   # ask for parallelization mode
   if (!example == TRUE) {
@@ -71,7 +73,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   }
 
   # ask informations and read files
-  quiet(read <- read_data(EIC, ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example))
+  quiet(read <- read_data(peakMonitor, ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example))
   colors <- read[[1]]
   metadata <- read[[2]]
   raw_data <- read[[3]]
