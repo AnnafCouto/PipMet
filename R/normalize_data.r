@@ -166,7 +166,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
     gridExtra::grid.arrange(a, b, ncol = 1)
     dev.off()
     png("boxplot.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    par(mfrow = c(1, 4))
+    par(mfrow = c(2,1))
     boxplot(y$Variance, main = "Variance", horizontal = TRUE)
     boxplot(y$sd, main = "Standard Deviation", horizontal = TRUE)
     dev.off()
@@ -174,8 +174,8 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
     tiff("variance_dp.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     gridExtra::grid.arrange(a, b, ncol = 1)
     dev.off()
-    tiff("boxplot.tiff", res = 900, bg = "NA")
-    par(mfrow = c(1, 2))
+    tiff("boxplot.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    par(mfrow = c(2,1))
     boxplot(y$Variance, main = "Variance", horizontal = TRUE)
     boxplot(y$sd, main = "Standard Deviation", horizontal = TRUE)
     dev.off()
@@ -195,7 +195,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
         y_1 <- y[-which(y$Variance >= boxplot.stats(y$Variance)$stats[5]), ]
         n_1 <- n[-which(y$Variance >= boxplot.stats(y$Variance)$stats[5]), ]
         png("boxplot_withoutOutliers.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        par(mfrow = c(1, 2))
+        par(mfrow = c(2,1))
         boxplot(y_1$Variance, main = "Variance", horizontal = TRUE)
         boxplot(y_1$sd, main = "Standard Deviation", horizontal = TRUE)
         dev.off()
@@ -223,7 +223,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example) {
         y_2 <- y[-which(y$Variance >= th), ]
         n_2 <- n[-which(y$Variance >= th), ]
         png(paste0("boxplot_varianceUpTo", th, ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        par(mfrow = c(1, 2))
+        par(mfrow = c(2,1))
         boxplot(y_2$Variance, main = "Variance", horizontal = TRUE)
         boxplot(y_2$sd, main = "Standard Deviation", horizontal = TRUE)
         dev.off()

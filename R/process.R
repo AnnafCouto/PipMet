@@ -10,6 +10,7 @@
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param example Logical. If is example, pop-ups won't appear.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
+#' @param filter Numeric. Intensity threshold for the peak detection. Default to 0.
 #' @return A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
@@ -26,7 +27,7 @@
 #' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
 #' }
 #' }
-process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE, example = FALSE) {
+process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE, example = FALSE, filter = 0) {
 
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
@@ -36,11 +37,14 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
   }
 
   if (example == FALSE) {
-    # apply intensity filter? how much?
-    filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
-    if (filt == 1) {
-      filter <- dlgInput("Intensity threshold ", "0")$res
+    if (!as.numeric(filter)==0) {
       xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo"))
+    } else {
+      filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
+      if (filt == 1) {
+        filter <- dlgInput("Intensity threshold ", "0")$res
+        xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo"))
+      }
     }
   }
 

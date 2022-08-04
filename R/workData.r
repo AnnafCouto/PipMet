@@ -9,6 +9,7 @@
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
 #' @param pictures Logical. If pictures should be plotted or not.
 #' @param example Logical. If is example, pop-ups won't appear.
+#' @param filter Numeric. Intensity threshold for the peak detection. Default to 0.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message
@@ -30,7 +31,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = 0) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE) {
@@ -78,7 +79,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   rm(read)
 
   # process samples
-  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures))
+  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures, filter))
 
   # define spectra and create .msp files
   quiet(spectra <- getSpectra(xdata4, example, raw_data, colors))

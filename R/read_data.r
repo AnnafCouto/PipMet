@@ -55,8 +55,10 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     myDir <- getwd()
 
     # file extension
-    if (is.null(extension)) {
-      extension <- dlg_list(c(".mzML", ".mzXML"), multiple = TRUE, title = "Files extension:")$res
+    if (is.null(metadata)) {
+      if (is.null(extension)) {
+        extension <- dlg_list(c(".mzML", ".mzXML"), multiple = TRUE, title = "Files extension:")$res
+      }
     }
 
     # set up metadata table

@@ -12,7 +12,8 @@ process(
   EIC = 2,
   ions = NULL,
   pictures = TRUE,
-  example = FALSE
+  example = FALSE,
+  filter = 0
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ process(
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
 
 \item{example}{Logical. If is example, pop-ups won't appear.}
+
+\item{filter}{Numeric. Intensity threshold for the peak detection. Default to 0.}
 }
 \value{
 A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.

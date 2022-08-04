@@ -10,7 +10,8 @@ workData(
   metadata = NULL,
   extension = NULL,
   pictures = TRUE,
-  example = FALSE
+  example = FALSE,
+  filter = 0
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ workData(
 \item{pictures}{Logical. If pictures should be plotted or not.}
 
 \item{example}{Logical. If is example, pop-ups won't appear.}
+
+\item{filter}{Numeric. Intensity threshold for the peak detection. Default to 0.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
