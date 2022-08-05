@@ -93,7 +93,7 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
       ints <- split(log2(chromPeaks(xdata3)[, "into"]),
         f = chromPeaks(xdata3)[, "sample"]
       )
-      names(ints) <- metadata$all2
+      names(ints) <- metadata$sample
       for (i in 1:length(colors)) {
         # tiff
         tiff(paste0(names(colors)[i], "_boxplotLog2Postprocessed.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -103,8 +103,8 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
           ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
         )
         grid(nx = NA, ny = NULL)
-        text(seq_along(metadata$all2), par("usr")[3],
-          labels = metadata$all2, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
+        text(seq_along(metadata$sample), par("usr")[3],
+          labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
         )
         dev.off()
         # png
@@ -115,8 +115,8 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
           ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
         )
         grid(nx = NA, ny = NULL)
-        text(seq_along(metadata$all2), par("usr")[3],
-          labels = metadata$all2, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
+        text(seq_along(metadata$sample), par("usr")[3],
+          labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
         )
         dev.off()
       }
