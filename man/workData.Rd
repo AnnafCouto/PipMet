@@ -11,8 +11,11 @@ workData(
   extension = NULL,
   pictures = TRUE,
   example = FALSE,
-  filter = 0,
-  peakMonitor = NULL
+  filter = NULL,
+  peakMonitor = NULL,
+  pic_extension = c(".tiff", ".png"),
+  parallel = NULL,
+  group = "group"
 )
 }
 \arguments{
@@ -28,7 +31,15 @@ workData(
 
 \item{example}{Logical. If is example, pop-ups won't appear.}
 
-\item{filter}{Numeric. Intensity threshold for the peak detection. Default to 0.}
+\item{filter}{Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.}
+
+\item{peakMonitor}{Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.}
+
+\item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
+
+\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. If parallel = NULL, the user will be asked.}
+
+\item{group}{Character. Name from 'metadata' column names to group the samples. Default to 'group'.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table

@@ -4,7 +4,13 @@
 \alias{annot_images}
 \title{Annotation images}
 \usage{
-annot_images(pslist, myDir, pictures = TRUE, example = FALSE)
+annot_images(
+  pslist,
+  myDir,
+  pictures = TRUE,
+  example = FALSE,
+  pic_extension = c(".tiff", ".png")
+)
 }
 \arguments{
 \item{pslist}{List of spectra.}
@@ -14,6 +20,8 @@ annot_images(pslist, myDir, pictures = TRUE, example = FALSE)
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
 
 \item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
+
+\item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 }
 \value{
 A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package) and (2) a table with annotation.

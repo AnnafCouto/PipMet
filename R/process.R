@@ -6,11 +6,13 @@
 #' @param raw_data A 'MSnExp' from MSnbase package.
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param colors A list with colors generated from "read_data()".
-#' @param peakMonitor Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
+#' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param example Logical. If is example, pop-ups won't appear.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
-#' @param filter Numeric. Intensity threshold for the peak detection. Default to 0.
+#' @param filter Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.
+#' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
+#' @param group Character. Name from 'metadata' column names to group the samples. Default to 'group'.
 #' @return A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
@@ -27,7 +29,7 @@
 #' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
 #' }
 #' }
-process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pictures = TRUE, example = FALSE, filter = 0) {
+process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions = NULL, pictures = TRUE, example = FALSE, filter = NULL, pic_extension = c('.tiff', '.png'), group = 'group') {
 
   # peak picking
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
@@ -37,8 +39,8 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
   }
 
   if (example == FALSE) {
-    if (!as.numeric(filter)==0) {
-      xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo"))
+    if (!is.null(filter)) {
+      xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo")) 
     } else {
       filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
       if (filt == 1) {
@@ -58,13 +60,14 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
 
     if (example == FALSE) {
       # ask condition to compare from the metadata table
-      x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ")
+      group <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ")
+      #group <- dlg_list(colnames(metadata), multiple = FALSE, title = "Choose conditions (from metadata table) to group samples: ")$res
     } else {
-      x <- 2
+      group <- 'group'
     }
 
     # grouping peaks
-    xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, x], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
+    xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, group], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
     if (!example == TRUE) {
       save(xdata3, file = "xdata3.RData")
     }
@@ -79,15 +82,19 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
 
       # heatmap of identified peaks per region of chromatogram
       # tiff
-      tiff("plotChromPeakImage.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      par(mar = c(5, 9, 4, 1) + .1)
-      plotChromPeakImage(xdata3)
-      dev.off()
+      if ('.tiff' %in% pic_extension) {
+        tiff("plotChromPeakImage.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        par(mar = c(5, 9, 4, 1) + .1)
+        plotChromPeakImage(xdata3)
+        dev.off()
+      }
       # png
-      png("plotChromPeakImage.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      par(mar = c(5, 9, 4, 1) + .1)
-      plotChromPeakImage(xdata3)
-      dev.off()
+      if ('.png' %in% pic_extension) {
+        png("plotChromPeakImage.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        par(mar = c(5, 9, 4, 1) + .1)
+        plotChromPeakImage(xdata3)
+        dev.off()
+      }
 
       # boxplot of log2 intensities per sample
       ints <- split(log2(chromPeaks(xdata3)[, "into"]),
@@ -96,54 +103,62 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
       names(ints) <- metadata$sample
       for (i in 1:length(colors)) {
         # tiff
-        tiff(paste0(names(colors)[i], "_boxplotLog2Postprocessed.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1)
-        boxplot(ints,
-          varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
-          ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
-        )
-        grid(nx = NA, ny = NULL)
-        text(seq_along(metadata$sample), par("usr")[3],
-          labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
-        )
-        dev.off()
+        if ('.tiff' %in% pic_extension) {
+          tiff(paste0(names(colors)[i], "_boxplotLog2Postprocessed.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1)
+          boxplot(ints,
+            varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
+            ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
+          )
+          grid(nx = NA, ny = NULL)
+          text(seq_along(metadata$sample), par("usr")[3],
+            labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
+          )
+          dev.off()
+        }
         # png
-        png(paste0(names(colors)[i], "_boxplotLog2Postprocessed.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1)
-        boxplot(ints,
-          varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
-          ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
-        )
-        grid(nx = NA, ny = NULL)
-        text(seq_along(metadata$sample), par("usr")[3],
-          labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
-        )
-        dev.off()
+        if ('.png' %in% pic_extension) {
+          png(paste0(names(colors)[i], "_boxplotLog2Postprocessed.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1)
+          boxplot(ints,
+            varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
+            ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
+          )
+          grid(nx = NA, ny = NULL)
+          text(seq_along(metadata$sample), par("usr")[3],
+            labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
+          )
+          dev.off()
+        }
       }
 
       # chromatogram postprocessed
       bpc_after <- chromatogram(xdata3, aggregationFun = "max", include = "none")
       for (i in 1:length(colors)) {
         # tiff
-        tiff(paste0(names(colors)[i], "_postprocessedChromatogram.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        par(mfrow = c(2, 1), mar = c(4.5, 4.2, 1, 0.5))
-        plot(bpc_after, col = colors[[i]][[2]][colors[[i]][[1]]])
-        legend("topright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
-        plotAdjustedRtime(xdata3, col = colors[[i]][[2]][colors[[i]][[1]]])
-        legend("bottomright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
-        dev.off()
+        if ('.tiff' %in% pic_extension) {        
+          tiff(paste0(names(colors)[i], "_postprocessedChromatogram.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          par(mfrow = c(2, 1), mar = c(4.5, 4.2, 1, 0.5))
+          plot(bpc_after, col = colors[[i]][[2]][colors[[i]][[1]]])
+          legend("topright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
+          plotAdjustedRtime(xdata3, col = colors[[i]][[2]][colors[[i]][[1]]])
+          legend("bottomright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
+          dev.off()
+        }
         # png
-        png(paste0(names(colors)[i], "_postprocessedChromatogram.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        par(mfrow = c(2, 1), mar = c(4.5, 4.2, 1, 0.5))
-        plot(bpc_after, col = colors[[i]][[2]][colors[[i]][[1]]])
-        legend("topright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
-        plotAdjustedRtime(xdata3, col = colors[[i]][[2]][colors[[i]][[1]]])
-        legend("bottomright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
-        dev.off()
+        if ('.png' %in% pic_extension) {
+          png(paste0(names(colors)[i], "_postprocessedChromatogram.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          par(mfrow = c(2, 1), mar = c(4.5, 4.2, 1, 0.5))
+          plot(bpc_after, col = colors[[i]][[2]][colors[[i]][[1]]])
+          legend("topright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
+          plotAdjustedRtime(xdata3, col = colors[[i]][[2]][colors[[i]][[1]]])
+          legend("bottomright", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 1, bg = "transparent")
+          dev.off()
+        }
       }
 
       # cromatograma de íons extraído
-      if (EIC == 1) {
+      if (peakMonitor==TRUE) {
         dir.create("Monitoring ions")
         setwd("Monitoring ions")
 
@@ -151,15 +166,19 @@ process <- function(raw_data, metadata, myDir, colors, EIC = 2, ions = NULL, pic
           crom <- chromatogram(xdata3, rt = c(ions[[ii]][["rt"]] - 5, ions[[ii]][["rt"]] + 5), mz = ions[[ii]][["mz"]], include = "none")
           for (i in 1:length(colors)) {
             # tiff
-            tiff(paste0(names(colors)[i], "_", ii, "_postPross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-            plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
-            legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-            dev.off()
+            if ('.tiff' %in% pic_extension) {
+              tiff(paste0(names(colors)[i], "_", ii, "_postPross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+              plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
+              legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+              dev.off()
+            }
             # png
-            png(paste0(names(colors)[i], "_", ii, "_postPross_EIC.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-            plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
-            legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-            dev.off()
+            if ('.png' %in% pic_extension) {
+              png(paste0(names(colors)[i], "_", ii, "_postPross_EIC.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+              plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
+              legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+              dev.off()
+            }
           }
         }
       }

@@ -9,11 +9,13 @@ process(
   metadata,
   myDir,
   colors,
-  EIC = 2,
+  peakMonitor = FALSE,
   ions = NULL,
   pictures = TRUE,
   example = FALSE,
-  filter = 0
+  filter = NULL,
+  pic_extension = c(".tiff", ".png"),
+  group = "group"
 )
 }
 \arguments{
@@ -25,15 +27,19 @@ process(
 
 \item{colors}{A list with colors generated from "read_data()".}
 
+\item{peakMonitor}{Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.}
+
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
 
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
 
 \item{example}{Logical. If is example, pop-ups won't appear.}
 
-\item{filter}{Numeric. Intensity threshold for the peak detection. Default to 0.}
+\item{filter}{Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.}
 
-\item{peakMonitor}{Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.}
+\item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
+
+\item{group}{Character. Name from 'metadata' column names to group the samples. Default to 'group'.}
 }
 \value{
 A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.

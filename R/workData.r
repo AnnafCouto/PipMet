@@ -9,7 +9,11 @@
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
 #' @param pictures Logical. If pictures should be plotted or not.
 #' @param example Logical. If is example, pop-ups won't appear.
-#' @param filter Numeric. Intensity threshold for the peak detection. Default to 0.
+#' @param filter Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.
+#' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.
+#' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. If parallel = NULL, the user will be asked.
+#' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
+#' @param group Character. Name from 'metadata' column names to group the samples. Default to 'group'.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message
@@ -31,7 +35,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = 0, peakMonitor = NULL) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = 'group') {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE) {
@@ -58,22 +62,23 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # ask for parallelization mode
   if (!example == TRUE) {
-    parallel <- menu(c("Serial Param (disable)", "Snow Param", "MultiCore Param"), graphics = TRUE, title = "Choose parallelization mode:")
-    if (parallel == 1) {
+    if (is.null (parallel)) {
+      parallel <- dlg_list(c("Serial Param", "Snow Param", "MultiCore Param"), multiple = FALSE, title = "Choose parallelization mode:")$res
+    }
+    #parallel <- menu(c("Serial Param (disable)", "Snow Param", "MultiCore Param"), graphics = TRUE, title = "Choose parallelization mode:")
+    if (parallel == 'Serial Param') {
       register(SerialParam(), default = TRUE)
     }
-    if (parallel == 2) {
+    if (parallel == 'Snow Param') {
       register(SnowParam(), default = TRUE)
     }
-    if (parallel == 3) {
+    if (parallel == 'MultiCore Param') {
       register(MulticoreParam(), default = TRUE)
     }
-  } else {
-    register(SerialParam(), default = TRUE)
-  }
+  } else {register(SerialParam(), default = TRUE)}
 
   # ask informations and read files
-  quiet(read <- read_data(peakMonitor, ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example))
+  quiet(read <- read_data(peakMonitor = peakMonitor, ions = ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example, pic_extension = pic_extension))
   colors <- read[[1]]
   metadata <- read[[2]]
   raw_data <- read[[3]]
@@ -81,7 +86,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   rm(read)
 
   # process samples
-  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, EIC, ions, pictures, filter))
+  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, peakMonitor, ions, pictures, filter = filter, pic_extension = pic_extension, group = group))
 
   # define spectra and create .msp files
   quiet(spectra <- getSpectra(xdata4, example, raw_data, colors))
@@ -103,33 +108,33 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   }
 
   # update annotated spectra and plot images
-  quiet(annot <- annot_images(pslist, myDir, pictures))
+  quiet(annot <- annot_images(pslist, myDir, pictures, pic_extension = pic_extension))
   apslist <- annot$apslist
   pre_anno <- annot$r
 
   # normalize, choose peaks and plot images
-  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example))
+  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = pic_extension))
 
   if (pictures == TRUE & nrow(metadata) > 1) {
     if (!example == TRUE) {
       # plot volcanos
       okay <- 1
       while (okay == 1) {
-        quiet(volDir <- try(vol_lvl1(n, metadata, myDir)))
+        quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
         okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
       }
 
       okay <- 1
       while (okay == 1) {
-        quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir)))
+        quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
         okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 2 level-comparison again?")
       }
     }
     # plot PCA
-    quiet(PCA_(n, metadata, myDir, colors))
+    quiet(PCA_(n, metadata, myDir, colors, pic_extension = pic_extension))
 
     # plot heatmaps
-    quiet(heatmap(n, metadata, myDir, colors))
+    quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension))
   }
 
   # save session

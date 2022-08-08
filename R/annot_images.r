@@ -6,6 +6,7 @@
 #' @param myDir Path to the directory of work.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
+#' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @return A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package) and (2) a table with annotation.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics par
@@ -18,7 +19,7 @@
 #' annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, example = TRUE)
 #' }
 #' }
-annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE) {
+annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE, pic_extension = c('.tiff', '.png')) {
   if (example == TRUE) {
     r <- read.csv(system.file("extdata", "pre_anno.csv", package = "PipMet"), sep = ",", na.string = c("NA", ""))
     apslist <- addAnnotations(featlist = pslist, annolist = system.file("extdata", "pre_anno.csv", package = "PipMet"))
@@ -44,7 +45,7 @@ annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE) {
     }
     setwd("Statistics")
 
-    # network plot - not working
+    # network plot
     # tiff
     # tiff("network_plot_0.7.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     # networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
@@ -54,29 +55,31 @@ annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE) {
     # networkplot(pseudodistmat, highlight_annotated = TRUE, show_labels = TRUE, exclude_singletons = TRUE, min_similarity = 0.7)
     # dev.off()
 
-    # hierarchy plot
     # tiff
+    # hierarchy plot
+    if ('.tiff' %in% pic_extension) {
     tiff("hierarchy_plot.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(4.5, 4.2, 1, 0.5))
     HCplot(pseudodistmat, h = 0.7, cex = 0.2)
     dev.off()
+    # heatmap plot
+    tiff("heatmap.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    par(mar = c(4.5, 4.2, 1, 0.5))
+    HCplot(pseudodistmat, type = "heatmap", cexRow = 0.2, cexCol = 0.24, margins = c(7, 7))
+    dev.off()}
+
     # png
+    # hierarchy plot
+    if ('.png' %in% pic_extension) {
     png("hierarchy_plot.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(4.5, 4.2, 1, 0.5))
     HCplot(pseudodistmat, h = 0.7, cex = 0.2)
     dev.off()
-
     # heatmap plot
-    # tiff
-    tiff("heatmap.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    par(mar = c(4.5, 4.2, 1, 0.5))
-    HCplot(pseudodistmat, type = "heatmap", cexRow = 0.2, cexCol = 0.24, margins = c(7, 7))
-    dev.off()
-    # png
     png("heatmap.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
     par(mar = c(4.5, 4.2, 1, 0.5))
     HCplot(pseudodistmat, type = "heatmap", cexRow = 0.2, cexCol = 0.2, margins = c(7, 7))
-    dev.off()
+    dev.off()}
   }
 
   # set to main folder

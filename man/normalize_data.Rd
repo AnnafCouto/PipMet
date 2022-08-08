@@ -4,7 +4,15 @@
 \alias{normalize_data}
 \title{Normalize}
 \usage{
-normalize_data(anIC, pslist, metadata, myDir, pre_anno, example)
+normalize_data(
+  anIC,
+  pslist,
+  metadata,
+  myDir,
+  pre_anno,
+  example,
+  pic_extension = c(".tiff", ".png")
+)
 }
 \arguments{
 \item{anIC}{A 'xsAnnotate' CAMERA object with grouped spectra.}
@@ -18,6 +26,8 @@ normalize_data(anIC, pslist, metadata, myDir, pre_anno, example)
 \item{pre_anno}{A table with annotations for spectra. or path to .csv file.}
 
 \item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
+
+\item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 }
 \value{
 A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.

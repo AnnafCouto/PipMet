@@ -5,18 +5,19 @@
 \title{read_data}
 \usage{
 read_data(
-  EIC = 2,
+  peakMonitor = NULL,
   ions = NULL,
   myDir = NULL,
   sample_dir = NULL,
   metadata = NULL,
   extension = NULL,
   pictures = TRUE,
-  example = FALSE
+  example = FALSE,
+  pic_extension = c(".tiff", ".png")
 )
 }
 \arguments{
-\item{EIC}{Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.}
+\item{peakMonitor}{Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.}
 
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
 
@@ -31,6 +32,8 @@ read_data(
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
 
 \item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
+
+\item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 }
 \value{
 A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.

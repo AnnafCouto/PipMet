@@ -4,7 +4,6 @@
 #' @keywords metadata
 #' @export
 #' @return A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.
-#' @param EIC Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
 #' @param myDir Path to working directory
 #' @param sample_dir Path to sample directory.
@@ -12,6 +11,8 @@
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
+#' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.
+#' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @importFrom grDevices dev.off png tiff rainbow
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
@@ -39,7 +40,7 @@
 #' rm(read)
 #' }
 #' }
-read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE) {
+read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, pic_extension = c('.tiff', '.png')) {
   if (!example == TRUE) {
 
     # ask user about samples and folders path and create a new folder named after a "Project"
@@ -161,21 +162,25 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
     # chromatograms
     for (i in 1:length(colors)) {
       # tiff
-      tiff(paste0(names(colors)[i], "_chromatograms.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      par(mfrow = c(2, 1))
-      plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
-      legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-      plot(tic, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Total Ion Current Chromatogram")
-      legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-      dev.off()
+      if ('.tiff' %in% pic_extension) {
+        tiff(paste0(names(colors)[i], "_chromatograms.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        par(mfrow = c(2, 1))
+        plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
+        legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+        plot(tic, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Total Ion Current Chromatogram")
+        legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+        dev.off()
+      }
       # png
-      png(paste0(names(colors)[i], "_chromatograms.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      par(mfrow = c(2, 1))
-      plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
-      legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-      plot(tic, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Total Ion Current Chromatogram")
-      legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-      dev.off()
+      if ('.png' %in% pic_extension) {
+        png(paste0(names(colors)[i], "_chromatograms.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        par(mfrow = c(2, 1))
+        plot(bpc, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Base Peak Chromatogram")
+        legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+        plot(tic, col = colors[[i]][[2]][colors[[i]][[1]]], main = "Total Ion Current Chromatogram")
+        legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+        dev.off()
+      }
     }
 
     # boxplot of total ion current - FIX
@@ -208,19 +213,23 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
         ant <- list(colors[[i]][[2]])
         names(ant) <- names(colors)[i]
         # tiff
-        tiff(paste0(names(colors)[i], "_", 'sample', "_", "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
-        dev.off()
+        if ('.tiff' %in% pic_extension) {
+          tiff(paste0(names(colors)[i], "_", 'sample', "_", "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
+          dev.off()
+        }
         # png
-        png(paste0(names(colors)[i], "_", 'sample', "_", "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
-        dev.off()
+        if ('.png' %in% pic_extension) {
+          png(paste0(names(colors)[i], "_", 'sample', "_", "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+          pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
+          dev.off()
+        }
       }
       rm(tic_bin)
     }
 
     # extracted ion chromatogram based on mz and rt asked previously by user
-    if (EIC == 1) {
+    if (peakMonitor==TRUE) {
       dir.create("Monitoring ions")
       setwd("Monitoring ions")
 
@@ -228,16 +237,20 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
         crom <- chromatogram(raw_data, rt = c(as.numeric(ions[[ii]][["rt"]] - 5), as.numeric(ions[[ii]][["rt"]] + 5)), mz = as.numeric(ions[[ii]][["mz"]]))
         for (i in 1:length(colors)) {
           # tiff
-          tiff(paste0(names(colors)[i], "_", ii, "_prePross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-          plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
-          legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-          dev.off()
+          if ('.tiff' %in% pic_extension) {
+            tiff(paste0(names(colors)[i], "_", ii, "_prePross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+            plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
+            legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+            dev.off()
+          }
 
           # png
-          png(paste0(names(colors)[i], "_", ii, "_prePross_EIC.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-          plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
-          legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-          dev.off()
+          if ('.png' %in% pic_extension) {
+            png(paste0(names(colors)[i], "_", ii, "_prePross_EIC.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+            plot(crom, col = colors[[i]][[2]][colors[[i]][[1]]])
+            legend("right", legend = names(colors[[i]][[2]]), col = colors[[i]][[2]], fill = colors[[i]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+            dev.off()
+          }
         }
       }
     }

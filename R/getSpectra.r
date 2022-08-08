@@ -7,7 +7,7 @@
 #' @param raw_data A 'XCMSnExp' object.
 #' @param colors A list with colors generated from "read_data()".
 #' @return A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format and the ion mode of data acquisition ('negative' or 'positive').
-#' @importFrom grDevices dev.off pdf png tiff
+#' @importFrom grDevices dev.off pdf
 #' @importFrom methods as
 #' @importFrom CAMERA xsAnnotate groupFWHM groupCorr
 #' @importFrom CluMSID writeFeaturelist specplot
