@@ -59,8 +59,10 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
     }
 
     if (example == FALSE) {
-      # ask condition to compare from the metadata table
-      group <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ")
+      if (is.null(group)) {
+        # ask condition to compare from the metadata table
+        group <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ")
+      }
       #group <- dlg_list(colnames(metadata), multiple = FALSE, title = "Choose conditions (from metadata table) to group samples: ")$res
     } else {
       group <- 'group'
