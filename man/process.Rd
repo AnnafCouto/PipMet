@@ -25,8 +25,6 @@ process(
 
 \item{colors}{A list with colors generated from "read_data()".}
 
-\item{EIC}{Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.}
-
 \item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
 
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
@@ -34,6 +32,8 @@ process(
 \item{example}{Logical. If is example, pop-ups won't appear.}
 
 \item{filter}{Numeric. Intensity threshold for the peak detection. Default to 0.}
+
+\item{peakMonitor}{Numeric. 1 = there are ions to monitor through the processing. 2 = there are none. Default to 2.}
 }
 \value{
 A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.

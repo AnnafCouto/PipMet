@@ -11,7 +11,8 @@ workData(
   extension = NULL,
   pictures = TRUE,
   example = FALSE,
-  filter = 0
+  filter = 0,
+  peakMonitor = NULL
 )
 }
 \arguments{

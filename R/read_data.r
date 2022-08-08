@@ -115,20 +115,20 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
         x <- x[-which(x == i)]
       }
     }
-    if (length(x) > 1) {
-      for (i in 1:nrow(metadata)) {
-        f <- metadata[i, x[[1]]]
-        for (ii in 2:length(x)) {
-          f <- paste0(f, "_", metadata[i, x[[ii]]])
-        }
-        metadata[i, "all"] <- f
-        metadata$all2[i] <- paste0(i, " - ", metadata$all[i])
-      }
-    } else {
-      metadata$all <- metadata[, x]
-      # metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
-      metadata$all2 <- c(1:nrow(metadata))
-    }
+#    if (length(x) > 1) {
+#      for (i in 1:nrow(metadata)) {
+#        f <- metadata[i, x[[1]]]
+#        for (ii in 2:length(x)) {
+#          f <- paste0(f, "_", metadata[i, x[[ii]]])
+#        }
+#        metadata[i, "all"] <- f
+#        metadata$all2[i] <- paste0(i, " - ", metadata$all[i])
+#      }
+#    } else {
+#      metadata$all <- metadata[, x]
+#      # metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
+#      metadata$all2 <- c(1:nrow(metadata))
+#    }
 
     # colors for each column in metadata except 'sample' and 'tec_rep'
     colors <- vector(mode = "list", length = length(x))
@@ -199,24 +199,22 @@ read_data <- function(EIC = 2, ions = NULL, myDir = NULL, sample_dir = NULL, met
       cl <- do.call(cbind, lapply(tic_bin, intensity))
       cl[cl == 0] <- NA
       cormat <- cor(log2(cl), use = "pairwise.complete.obs")
-      for (ii in c("sample", "all2")) {
-        colnames(cormat) <- rownames(cormat) <- metadata[, ii]
-        # for each set of colors (conditions of experiment)
-        for (i in 1:length(colors)) {
-          ann <- data.frame(colors[[i]][[1]])
-          colnames(ann) <- names(colors)[i]
-          rownames(ann) <- metadata[, ii]
-          ant <- list(colors[[i]][[2]])
-          names(ant) <- names(colors)[i]
-          # tiff
-          tiff(paste0(names(colors)[i], "_", ii, "_", "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-          pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
-          dev.off()
-          # png
-          png(paste0(names(colors)[i], "_", ii, "_", "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-          pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
-          dev.off()
-        }
+      colnames(cormat) <- rownames(cormat) <- metadata[, 'sample']
+      # for each set of colors (conditions of experiment)
+      for (i in 1:length(colors)) {
+        ann <- data.frame(colors[[i]][[1]])
+        colnames(ann) <- names(colors)[i]
+        rownames(ann) <- metadata[, 'sample']
+        ant <- list(colors[[i]][[2]])
+        names(ant) <- names(colors)[i]
+        # tiff
+        tiff(paste0(names(colors)[i], "_", 'sample', "_", "_cluster.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
+        dev.off()
+        # png
+        png(paste0(names(colors)[i], "_", 'sample', "_", "_cluster.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+        pheatmap(cormat, annotation = ann, annotation_colors = ant, border_color = "NA", cluster_rows = FALSE, )
+        dev.off()
       }
       rm(tic_bin)
     }
