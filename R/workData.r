@@ -11,11 +11,16 @@
 #' @param example Logical. If is example, pop-ups won't appear.
 #' @param filter Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.
 #' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.
-#' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. If parallel = NULL, the user will be asked.
+#' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to 'Serial Param'. If parallel = NULL, the user will be asked.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @param group Character. Name from 'metadata' column names to group the samples. Default to 'group'.
 #' @param derivatization Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.
 #' @param cores Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.
+#' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
+#' @param prog A list with colors generated from "read_data()".
+#' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
+#' @param plot_eic Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.
+#' @param lib_build Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to FALSE.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message
@@ -34,34 +39,31 @@
 #'   extension = ".mzXML",
 #'   myDir = "~/",
 #'   example = TRUE,
-#'   pictures = TRUE
+#'   pictures = TRUE 
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = 'group', derivatization = NULL, cores = 1) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = FALSE, pic_extension = c('.tiff', '.png'), parallel = 'Serial Param', group = 'group', derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE, lib_build = FALSE) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
-  if (!example == TRUE & pictures == TRUE) {
+  if (!example == TRUE & pictures == TRUE & !peakMonitor == FALSE) {
     if (is.null (peakMonitor)) {
-      EIC <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor EICs?")
-      ions <- list()
-      if (EIC == 1) {
-        okay <- 1
-        ei <- 1
-        while (okay == 1) {
-          ions[[ei]] <- vector(mode = "list", length = 2)
-          names(ions[[ei]]) <- c("mz", "rt")
-          # names(ions)[ei] <- as.character(dlgInput(paste0('Name monitoring ion ', ei, ' :'), 'First')$res)
-          ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, ":"), "0")$res)
-          ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be added +/- 5s to Rt):"), "0")$res)
-          okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor another one?")
-          ei <- ei + 1
-        }
+      peakMonitor <- dlg_list(c("Yes", "No"), multiple = FALSE, title = "Would you like to monitor EICs?")$res
+    } 
+    ions <- list()
+    if (peakMonitor == 'Yes' | peakMonitor == TRUE) {
+      okay <- 1
+      ei <- 1
+      while (okay == 1) {
+        ions[[ei]] <- vector(mode = "list", length = 2)
+        names(ions[[ei]]) <- c("mz", "rt")
+        ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, ":"), "0")$res)
+        ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be added +/- 5s to Rt):"), "0")$res)
+        okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor another one?")
+        ei <- ei + 1
       }
     }
-  } #else {
-    #EIC <- 2
-  #}
+  }
 
   # ask for parallelization mode
   if (!example == TRUE) {
@@ -87,7 +89,6 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   metadata <- read[[2]]
   raw_data <- read[[3]]
   myDir <- read[[4]]
-  rm(read)
 
   # process samples
   quiet(xdata4 <- process(raw_data, metadata, myDir, colors, peakMonitor, ions, pictures, filter = filter, pic_extension = pic_extension, group = group))
@@ -146,13 +147,12 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension))
   }
 
-  # save session
-  save.image(paste0(Sys.Date(), ".RData"))
-
   dlg_message("Processing done!")$res
 
-  if (dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res == "yes") {
-    create_database(apslist, polarity)
+  if (!lib_build == FALSE) {
+    if (dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res == "yes") {
+      create_database(apslist, polarity)
+    }
   }
 
   return(list(myDir = myDir, metadata = metadata, apslist = apslist, raw_data = raw_data, xdata4 = xdata4, anIC = anIC, colors = colors, quantification_table = n))

@@ -12,12 +12,17 @@ workData(
   pictures = TRUE,
   example = FALSE,
   filter = NULL,
-  peakMonitor = NULL,
+  peakMonitor = FALSE,
   pic_extension = c(".tiff", ".png"),
-  parallel = NULL,
+  parallel = "Serial Param",
   group = "group",
   derivatization = NULL,
-  cores = 1
+  cores = 1,
+  column_set = NULL,
+  prog = NULL,
+  ion_mode = NULL,
+  plot_eic = FALSE,
+  lib_build = FALSE
 )
 }
 \arguments{
@@ -39,13 +44,23 @@ workData(
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
-\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. If parallel = NULL, the user will be asked.}
+\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to 'Serial Param'. If parallel = NULL, the user will be asked.}
 
 \item{group}{Character. Name from 'metadata' column names to group the samples. Default to 'group'.}
 
 \item{derivatization}{Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.}
 
 \item{cores}{Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.}
+
+\item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
+
+\item{prog}{A list with colors generated from "read_data()".}
+
+\item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
+
+\item{plot_eic}{Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.}
+
+\item{lib_build}{Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to FALSE.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
@@ -62,7 +77,7 @@ result <- workData(
   extension = ".mzXML",
   myDir = "~/",
   example = TRUE,
-  pictures = TRUE
+  pictures = TRUE 
 )
 }
 }

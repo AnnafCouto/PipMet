@@ -6,6 +6,10 @@
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @param raw_data A 'XCMSnExp' object.
 #' @param colors A list with colors generated from "read_data()".
+#' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
+#' @param prog Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.
+#' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
+#' @param plot_eic Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.
 #' @return A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format and the ion mode of data acquisition ('negative' or 'positive').
 #' @importFrom grDevices dev.off pdf
 #' @importFrom methods as
@@ -22,18 +26,20 @@
 #' }
 #' }
 
-getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
+getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE) {
   if (class(xdata4)[1] == "XCMSnExp") {
     xset <- as(xdata4, "xcmsSet")
   } else {
     xset <- xdata4
   }
   if (example == TRUE) {
-    polarity <- "positive"
-  } else {
-    polarity <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Polarity:")$res # ask user for the polarity
+    ion_mode <- "positive"
   }
-  an <- xsAnnotate(xset, polarity = polarity)
+  if (is.null(ion_mode)) {
+    ion_mode <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Polarity:")$res # ask user for the polarity}
+  }
+  
+  an <- xsAnnotate(xset, polarity = ion_mode)
   anF <- groupFWHM(an, perfwhm = 1)
   rm(an, xset)
   try(memory.limit(100000))
@@ -48,9 +54,8 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
   writeFeaturelist(pslist)
 
   # get information about data acquisition
-  column <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res
-  prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res
-  Instrument_type <- dlg_input("Type of instrument of acquisition", "GC-EI-Q")$res
+  if (is.null(column)) {column <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res}
+  if (is.null(prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res}
 
   # creates a .msp file for spectra
   spectra <- list()
@@ -65,7 +70,6 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
     result[[i]]$rt <- pslist[[i]]@rt
     result[[i]]$Name <- paste0("Unknown ", pslist[[i]]@id)
     result[[i]]$Date <- as.character(Sys.Date())
-    result[[i]]$Instrument_type <- Instrument_type
     result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog)
     result[[i]]$Ion_mode <- polarity
   }
@@ -74,10 +78,9 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
   # generate a pdf file with the spectrum, its chromatogram and the XIC of the 6 most intense m/z individually,
   # for every one of the generated spectrum
   if (!example == TRUE) {
-    y <- dlg_message("Plot spectra, with EIC of each of the 6 most intense m/z?", "yesno")$res
-    if (y == "yes") {
-      z <- as.numeric(menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: "))
-      z <- colnames(metadata)[z]
+    if (is.null(plot_eic)) {plot_eic <- dlg_message("Plot spectra, with EIC of each of the 6 most intense m/z?", "yesno")$res}
+    if (plot_eic == "yes" | plot_eic == TRUE) {
+      z <- 'group'
       rt <- list()
       for (i in 1:length(pslist)) {
         rt[[i]] <- as.numeric(pslist[[i]]@rt)

@@ -4,7 +4,16 @@
 \alias{getSpectra}
 \title{getSpectra}
 \usage{
-getSpectra(xdata4, example = FALSE, raw_data, colors)
+getSpectra(
+  xdata4,
+  example = FALSE,
+  raw_data,
+  colors,
+  column_set = NULL,
+  prog = NULL,
+  ion_mode = NULL,
+  plot_eic = FALSE
+)
 }
 \arguments{
 \item{xdata4}{A 'xcmsSet' or 'XCMSnExp' object.}
@@ -14,6 +23,14 @@ getSpectra(xdata4, example = FALSE, raw_data, colors)
 \item{raw_data}{A 'XCMSnExp' object.}
 
 \item{colors}{A list with colors generated from "read_data()".}
+
+\item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
+
+\item{prog}{Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.}
+
+\item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
+
+\item{plot_eic}{Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.}
 }
 \value{
 A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format and the ion mode of data acquisition ('negative' or 'positive').
