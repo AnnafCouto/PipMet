@@ -348,15 +348,25 @@ quantification table and normalizing the results. The user may provide
 the informations required through parameters to the
 <code>workData()</code> function or provide them through pop-up
 windows.</p>
+<p>Therefore, the only function the user needs to call is as
+follows:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PipMet)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">workData</span>()</span></code></pre></div>
+<p>Information regarding the processing may be passed through parameters
+to the <code>workData()</code> function, according to the documentation,
+so that the pop-ups don’t show.</p>
+</div>
+<div id="data-processing-example" class="section level2">
+<h2>Data processing example</h2>
+<p>The PipMet R package accompanies four GC-MS analysis of sugarcane
+colms and its commercial variety energycane for examples. The samples
+were collected and analysed as described by Abreu and
+colleges<sup>1</sup>.</p>
 </div>
 <div id="files-reading" class="section level2">
 <h2>## Files reading</h2>
-<p>The <code>html_vignette</code> template includes a basic CSS theme.
-To override this theme you can specify your own CSS in the document
-metadata as follows:</p>
-<pre><code>output: 
-  rmarkdown::html_vignette:
-    css: mystyles.css</code></pre>
+<p>The PipMet package is capable of reading ‘.mzML’ and ‘.mzXML’ files
+through the xcms, MSnbase and mzR packages.</p>
 </div>
 <div id="figures" class="section level2">
 <h2>## Figures</h2>
@@ -558,6 +568,16 @@ X\beta + \epsilon\)</span>, footnotes<a href="#fn1" class="footnote-ref" id="fnr
 <p>“He who gives up [code] safety for [code] speed deserves neither.”
 (<a href="https://twitter.com/hadleywickham/status/504368538874703872">via</a>)</p>
 </blockquote>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ol style="list-style-type: decimal">
+<li>Abreu LGF, Silva N, Ferrari A, Carvalho L, Fiamenghi M, Carazolle M,
+Fill T, Pilau E, Pereira G, Grassi M: <strong>Metabolite profiles of
+energy cane and sugarcane reveal different strategies during the
+axillary bud outgrowth</strong>. <em>Plant Physiology and
+Biochemistry</em>, 2021, <strong><em>167</em></strong>:504-516.</li>
+</ol>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr />

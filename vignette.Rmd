@@ -22,14 +22,25 @@ knitr::opts_chunk$set(
 This vignette describe the usage of the global function `workData()` from the PipMet R package in order to process GC-MS acquired data. 
 The `workData()` is a wrapper for read files, preprocessing the raw data into viable spectra and a quantification table and normalizing the results. The user may provide the informations required through parameters to the `workData()` function or provide them through pop-up windows. 
 
+Therefore, the only function the user needs to call is as follows:
+
+```{r, echo =TRUE, results = 'hide', eval = FALSE}
+library(PipMet)
+result <- workData()
+```
+
+Information regarding the processing may be passed through parameters to the `workData()` function, according to the documentation, so that the pop-ups don't show.
+
+## Data processing example
+
+The PipMet R package accompanies four GC-MS analysis of sugarcane colms and its commercial variety energycane for examples. The samples were collected and analysed as described by Abreu and colleges^1^.
+
+
+
 ## Files reading
 ---
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+The PipMet package is capable of reading '.mzML' and '.mzXML' files through the xcms, MSnbase and mzR packages. 
 
 ## Figures
 ---
@@ -61,3 +72,7 @@ Also a quote using `>`:
 
 > "He who gives up [code] safety for [code] speed deserves neither."
 ([via](https://twitter.com/hadleywickham/status/504368538874703872))
+
+## References
+
+1. Abreu LGF, Silva N, Ferrari A, Carvalho L, Fiamenghi M, Carazolle M, Fill T, Pilau E, Pereira G, Grassi M: **Metabolite profiles of energy cane and sugarcane reveal different strategies during the axillary bud outgrowth**. *Plant Physiology and Biochemistry*, 2021, ***167***:504-516. 
