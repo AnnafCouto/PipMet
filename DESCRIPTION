@@ -14,3 +14,5 @@ RoxygenNote: 7.2.1
 Imports: xcms, MSnbase, CluMSID, metaMS, ggplot2, BiocParallel, svDialogs, tcltk, RColorBrewer, tools, pheatmap, ddpcr, CAMERA, NormalyzerDE, gridExtra, methods, ggrepel, stats, Biobase, utils, grDevices, graphics, webchem, ProtGenerics
 Depends: R (>= 4.0.0)
 biocViews: MassSpectrometry, Metabolomics
+VignetteBuilder: knitr
+Suggests: knitr, rmarkdown
