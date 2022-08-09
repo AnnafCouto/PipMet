@@ -31,7 +31,9 @@
 #' }
 process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions = NULL, pictures = TRUE, example = FALSE, filter = NULL, pic_extension = c('.tiff', '.png'), group = 'group') {
 
+  #message (paste0('Processing ', lenght (raw_data$files), ' files...'))
   # peak picking
+  message (paste0('Detecting peaks...'))
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
   xdata <- findChromPeaks(raw_data, param = mfp)
   if (!example == TRUE) {
@@ -40,11 +42,13 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
 
   if (example == FALSE) {
     if (!is.null(filter)) {
+      message (paste0('Filtering peaks...'))
       xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo")) 
     } else {
       filt <- menu(c("Yes", "No"), graphics = TRUE, title = "Apply intensity filter?")
       if (filt == 1) {
         filter <- dlgInput("Intensity threshold ", "0")$res
+        message (paste0('Filtering peaks...'))
         xdata <- refineChromPeaks(xdata, param = FilterIntensityParam(threshold = as.integer(filter), nValues = 1, value = "maxo"))
       }
     }
@@ -53,6 +57,7 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
   # check if there is more than one file
   if (nrow(xdata@phenoData@data) > 1) {
     # retention time correction
+    message (paste0('Adjusting retention time along samples...'))
     xdata2 <- adjustRtime(xdata, param = ObiwarpParam(binSize = 0.6))
     if (!example == TRUE) {
       save(xdata2, file = "xdata2.RData")
@@ -69,6 +74,7 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
     }
 
     # grouping peaks
+    message (paste0('Grouping peaks along samples...'))
     xdata3 <- groupChromPeaks(xdata2, param = PeakDensityParam(sampleGroups = metadata[, group], bw = 0.5, minSamples = 1, maxFeatures = 500, minFraction = 0.4))
     if (!example == TRUE) {
       save(xdata3, file = "xdata3.RData")
@@ -201,6 +207,7 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
         sampclass(xdata4) <- NA
       }
     }
+    message (paste0('Filling missing peaks...'))
     xdata4 <- fillPeaks(xdata4)
     if (!example == TRUE) {
       save(xdata4, file = "xdata4.RData")

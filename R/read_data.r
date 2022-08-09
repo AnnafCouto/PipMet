@@ -116,20 +116,6 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
         x <- x[-which(x == i)]
       }
     }
-#    if (length(x) > 1) {
-#      for (i in 1:nrow(metadata)) {
-#        f <- metadata[i, x[[1]]]
-#        for (ii in 2:length(x)) {
-#          f <- paste0(f, "_", metadata[i, x[[ii]]])
-#        }
-#        metadata[i, "all"] <- f
-#        metadata$all2[i] <- paste0(i, " - ", metadata$all[i])
-#      }
-#    } else {
-#      metadata$all <- metadata[, x]
-#      # metadata$all2 <- paste0(c(1:nrow(metadata)), " - ", metadata$all)
-#      metadata$all2 <- c(1:nrow(metadata))
-#    }
 
     # colors for each column in metadata except 'sample' and 'tec_rep'
     colors <- vector(mode = "list", length = length(x))
@@ -146,6 +132,7 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
   }
 
   # read data into R
+  message (paste0('Reading ', nrow(metadata), ' files...'))
   raw_data <- readMSData(metadata$file, pdata = new("NAnnotatedDataFrame", metadata), mode = "onDisk")
 
   if (pictures == TRUE) {

@@ -9,6 +9,7 @@
 #' @param pre_anno A table with annotations for spectra. or path to .csv file.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
+#' @param derivatization Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.
 #' @return A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
 #' @importFrom grDevices dev.off pdf png tiff boxplot.stats
 #' @importFrom graphics boxplot grid legend par text
@@ -36,7 +37,7 @@
 #' )
 #' }
 #' }
-normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = c('.tiff', '.png')) {
+normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = c('.tiff', '.png'), derivatization = NULL) {
 
   # check if representative ions are ok
   okay <- 2
@@ -55,14 +56,17 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
 
     # ask about derivatizations
     if (example == TRUE) {
-      der <- 1
+      derivatization <- 'Trimethylsilyl'
     } else {
-      der <- menu(c("Yes", "No"), graphics = TRUE, title = "Are those samples derivatized with trimethylsilyl?")
+      if (is.null(derivatization)) {
+        #derivatization <- menu(c('Trimethylsilyl','None'), graphics = TRUE, title = "Sort of derivatization: ")
+        derivatization <- dlg_list(c('Trimethylsilyl','None'), multiple = FALSE, title = "Sort of derivatization: ")$res
+      }
     }
 
     for (i in 1:nrow(quant)) {
       temp <- anIC@pspectra[[as.integer(quant[i, 1])]]
-      if (der == 1 && 73 %in% round(pslist[[i]]@spectrum[, 1])) { # if der=1, ion m/z 73 is present
+      if (derivatization == 'Trimethylsilyl' && 73 %in% round(pslist[[i]]@spectrum[, 1])) { # if derivatization='Trimethylsilyl', ion m/z 73 is present
         x <- sort(pslist[[i]]@spectrum[-which(round(pslist[[i]]@spectrum[, 1]) == 73), 2], decreasing = TRUE) # remove m/z 73 from possibilities of representative ion
       } else {
         x <- sort(pslist[[i]]@spectrum[, 2], decreasing = TRUE)

@@ -15,7 +15,9 @@ workData(
   peakMonitor = NULL,
   pic_extension = c(".tiff", ".png"),
   parallel = NULL,
-  group = "group"
+  group = "group",
+  derivatization = NULL,
+  cores = 1
 )
 }
 \arguments{
@@ -40,6 +42,10 @@ workData(
 \item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. If parallel = NULL, the user will be asked.}
 
 \item{group}{Character. Name from 'metadata' column names to group the samples. Default to 'group'.}
+
+\item{derivatization}{Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.}
+
+\item{cores}{Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table

@@ -14,12 +14,15 @@
 #' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. If parallel = NULL, the user will be asked.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @param group Character. Name from 'metadata' column names to group the samples. Default to 'group'.
+#' @param derivatization Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.
+#' @param cores Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message
 #' @importFrom ddpcr quiet
 #' @importFrom utils choose.dir menu read.csv write.csv write.table
 #' @importFrom metaMS addRI write.msp
+#' @importFrom parallel detectCores
 #' @importFrom BiocParallel register SerialParam SnowParam MulticoreParam
 #' @importFrom tcltk tkmessageBox
 #' @examples
@@ -35,7 +38,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = 'group') {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = 'group', derivatization = NULL, cores = 1) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE) {
@@ -70,7 +73,8 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
       register(SerialParam(), default = TRUE)
     }
     if (parallel == 'Snow Param') {
-      register(SnowParam(), default = TRUE)
+      if (is.null(cores)) {cores <- dlgInput(paste0("Number of cores used (you have ", detectCores()," cores available):"),  detectCores()-2)$res}
+      register(SnowParam(workers = as.numeric(cores)), default = TRUE)
     }
     if (parallel == 'MultiCore Param') {
       register(MulticoreParam(), default = TRUE)
@@ -89,6 +93,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   quiet(xdata4 <- process(raw_data, metadata, myDir, colors, peakMonitor, ions, pictures, filter = filter, pic_extension = pic_extension, group = group))
 
   # define spectra and create .msp files
+  message (paste0('Grouping peaks into spectra...'))
   quiet(spectra <- getSpectra(xdata4, example, raw_data, colors))
   anIC <- spectra[[1]]
   result <- spectra[[3]]
@@ -100,6 +105,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     ri <- menu(c("Yes", "No"), graphics = TRUE, title = 'Would you like to add retention index data to your spectra? For that, you must provide a .csv file with column "rt" and "RI" in you directory.')
     if (ri == 1) {
       RI <- read.csv(choose.files())
+      message (paste0('Calculating retention index...'))
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
       dlg_message("The retention index for the spectra was calculated and added to the .msp file.")$res
@@ -108,13 +114,16 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   }
 
   # update annotated spectra and plot images
+  message (paste0('Annotating the spectra ...'))
   quiet(annot <- annot_images(pslist, myDir, pictures, pic_extension = pic_extension))
   apslist <- annot$apslist
   pre_anno <- annot$r
 
   # normalize, choose peaks and plot images
-  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = pic_extension))
+  message (paste0('Normalizing data...'))
+  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = pic_extension, derivatization))
 
+  message (paste0('Statistics pictures...'))
   if (pictures == TRUE & nrow(metadata) > 1) {
     if (!example == TRUE) {
       # plot volcanos
@@ -131,7 +140,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
       }
     }
     # plot PCA
-    quiet(PCA_(n, metadata, myDir, colors, pic_extension = pic_extension))
+    quiet(PCA_(n, metadata, myDir, colors, pic_extension = pic_extension, example))
 
     # plot heatmaps
     quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension))

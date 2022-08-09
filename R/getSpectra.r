@@ -36,7 +36,7 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors) {
   an <- xsAnnotate(xset, polarity = polarity)
   anF <- groupFWHM(an, perfwhm = 1)
   rm(an, xset)
-  memory.limit(100000)
+  try(memory.limit(100000))
   anIC <- groupCorr(anF, calcIso = FALSE)
   rm(anF)
 

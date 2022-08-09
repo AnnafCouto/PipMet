@@ -11,7 +11,8 @@ normalize_data(
   myDir,
   pre_anno,
   example,
-  pic_extension = c(".tiff", ".png")
+  pic_extension = c(".tiff", ".png"),
+  derivatization = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ normalize_data(
 \item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
+
+\item{derivatization}{Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.}
 }
 \value{
 A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
