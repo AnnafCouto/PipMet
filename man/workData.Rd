@@ -22,7 +22,8 @@ workData(
   prog = NULL,
   ion_mode = NULL,
   plot_eic = FALSE,
-  lib_build = FALSE
+  lib_build = FALSE,
+  RI = FALSE
 )
 }
 \arguments{
@@ -54,13 +55,15 @@ workData(
 
 \item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
 
-\item{prog}{A list with colors generated from "read_data()".}
+\item{prog}{Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.}
 
 \item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
 
 \item{plot_eic}{Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.}
 
 \item{lib_build}{Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to FALSE.}
+
+\item{RI}{Logical or path to retention index .csv file. Addition of retention index information to the spectra. If RI = TRUE, the user will be asked to provide a .csv file with 'rt' and 'RI' columns. If RI = path to the .csv files, the retention index will be calculated. Default to FALSE.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table

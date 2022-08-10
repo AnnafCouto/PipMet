@@ -17,7 +17,8 @@
 #' @param derivatization Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.
 #' @param cores Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.
 #' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
-#' @param prog A list with colors generated from "read_data()".
+#' @param prog Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.
+#' @param RI Logical or path to retention index .csv file. Addition of retention index information to the spectra. If RI = TRUE, the user will be asked to provide a .csv file with 'rt' and 'RI' columns. If RI = path to the .csv files, the retention index will be calculated. Default to FALSE.
 #' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
 #' @param plot_eic Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.
 #' @param lib_build Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to FALSE.
@@ -30,6 +31,7 @@
 #' @importFrom parallel detectCores
 #' @importFrom BiocParallel register SerialParam SnowParam MulticoreParam
 #' @importFrom tcltk tkmessageBox
+#' @importFrom fritools is_path
 #' @examples
 #' \donttest{
 #' \dontrun{
@@ -43,7 +45,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = FALSE, pic_extension = c('.tiff', '.png'), parallel = 'Serial Param', group = 'group', derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE, lib_build = FALSE) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = FALSE, pic_extension = c('.tiff', '.png'), parallel = 'Serial Param', group = 'group', derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE, lib_build = FALSE, RI = FALSE) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE & !peakMonitor == FALSE) {
@@ -95,23 +97,32 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # define spectra and create .msp files
   message (paste0('Grouping peaks into spectra...'))
-  quiet(spectra <- getSpectra(xdata4, example, raw_data, colors))
+  quiet(spectra <- getSpectra(xdata4, example, raw_data, colors, column_set, prog, ion_mode, plot_eic))
   anIC <- spectra[[1]]
   result <- spectra[[3]]
   pslist <- spectra[[2]]
-  polarity <- spectra[[4]]
+  ion_mode <- spectra[[4]]
+
+  dlg_message("Annotatation step: The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
 
   # add retention index info if needed
   if (!example == TRUE) {
-    ri <- menu(c("Yes", "No"), graphics = TRUE, title = 'Would you like to add retention index data to your spectra? For that, you must provide a .csv file with column "rt" and "RI" in you directory.')
-    if (ri == 1) {
-      RI <- read.csv(choose.files())
+    if (!RI == FALSE) {
+      if (is.null(RI)) {
+        if (dlg_message("Add retention index information?", "yesno")$res == 'yes') {
+          RI <- read.csv(choose.files())
+        }
+      } else if (RI == TRUE) {
+        RI <- read.csv(choose.files())
+      } else if (is_path(RI)) {
+        RI <- read.csv(RI)
+      }
       message (paste0('Calculating retention index...'))
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
-      dlg_message("The retention index for the spectra was calculated and added to the .msp file.")$res
+      dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
+      rm(spectra, result, ri)
     }
-    rm(spectra, result, ri)
   }
 
   # update annotated spectra and plot images
@@ -141,7 +152,8 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
       }
     }
     # plot PCA
-    quiet(PCA_(n, metadata, myDir, colors, pic_extension = pic_extension, example))
+    quiet(PCA_general(n, metadata, myDir, colors, pic_extension = pic_extension, example))
+    quiet(PCA_identified(n, metadata, myDir, colors, pic_extension = pic_extension, example))
 
     # plot heatmaps
     quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension))
@@ -151,7 +163,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   if (!lib_build == FALSE) {
     if (dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res == "yes") {
-      create_database(apslist, polarity)
+      create_database(apslist, ion_mode)
     }
   }
 

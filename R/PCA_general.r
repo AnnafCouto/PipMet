@@ -1,4 +1,4 @@
-#' PCA
+#' PCA_general
 #'
 #' This function plots PCA.
 #' @export
@@ -25,16 +25,16 @@
 #' PCA_(n, metadata, myDir = "~/", colors)
 #' }
 #'}
-PCA_ <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png'), example) {
+PCA_general <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png'), example) {
   mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
   rownames(mat) <- n[, 1]
 
   # new folder for PCA results
-  if (!dir.exists("PCA")) {
-    dir.create("PCA")
+  if (!dir.exists("PCA_general")) {
+    dir.create("PCA_general")
   }
-  setwd("PCA")
+  setwd("PCA_general")
 
   # all samples togheter
   # set for PCA calculations
@@ -92,8 +92,13 @@ PCA_ <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png'),
     subgroup <- c('Sugar', 'Energy')
   }
   
-  mat_selected <- mat [,which (metadata[,group] == subgroup)]
-  pc <- prcomp(t(na.omit(mat[, metadata$sample [which (metadata[,group] == subgroup)]])), center = TRUE)
+  # get intensities only from selected columns (samples)
+  z <- vector()
+  for (i in 1:length(subgroup)) {
+    z <- c(z, which (metadata[,group] == subgroup[[i]]))
+  }
+  mat_selected <- mat [,z]
+  pc <- prcomp(t(na.omit(mat[, metadata$sample [z]])), center = TRUE)
   pcSummary <- summary(pc)
 
   if (!dir.exists(group)) {
@@ -104,19 +109,19 @@ PCA_ <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png'),
     # png
     if ('.png' %in% pic_extension) {
     png(paste0("PCAselected_", names(colors)[[i]], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], color = colors[[i]][[1]][which (metadata[,group] == subgroup)])) +
+    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], color = colors[[i]][[1]][z])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +
       labs(title = "PCA", x = paste0("PC1: ", format(pcSummary$importance[2, 1] * 100, digits = 3), " % variance"), y = paste0("PC2: ", format(pcSummary$importance[2, 2] * 100, digits = 3), " % variance"), fill = names(colors)[[i]], colour = names(colors)[[i]]) +
-      stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]][which (metadata[,group] == subgroup)]), alpha = 0.25) +
+      stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]][z]), alpha = 0.25) +
       theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black", size = 16, face = "bold")))
     dev.off()
     png(paste0("PCAselected_named_", names(colors)[[i]], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], label = metadata$sample[which (metadata[,group] == subgroup)], color = colors[[i]][[1]][which (metadata[,group] == subgroup)])) +
+    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], label = metadata$sample[z], color = colors[[i]][[1]][z])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +
       labs(title = "PCA", x = paste0("PC1: ", format(pcSummary$importance[2, 1] * 100, digits = 3), " % variance"), y = paste0("PC2: ", format(pcSummary$importance[2, 2] * 100, digits = 3), " % variance"), fill = names(colors)[[i]], colour = names(colors)[[i]]) +
-      stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]][which (metadata[,group] == subgroup)]), alpha = 0.10) +
+      stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]][z]), alpha = 0.10) +
       theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black", size = 16, face = "bold")) +
       geom_text_repel())
     dev.off()}
@@ -124,19 +129,19 @@ PCA_ <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png'),
     # tiff
     if ('.tiff' %in% pic_extension) {
     tiff(paste0("PCAselected_", names(colors)[[i]], ".tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], color = colors[[i]][[1]][which (metadata[,group] == subgroup)])) +
+    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], color = colors[[i]][[1]][z])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +
       labs(title = "PCA", x = paste0("PC1: ", format(pcSummary$importance[2, 1] * 100, digits = 3), " % variance"), y = paste0("PC2: ", format(pcSummary$importance[2, 2] * 100, digits = 3), " % variance"), fill = names(colors)[[i]], colour = names(colors)[[i]]) +
-      stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]][which (metadata[,group] == subgroup)]), alpha = 0.25) +
+      stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]][z]), alpha = 0.25) +
       theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black", size = 16, face = "bold")))
     dev.off()
     tiff(paste0("PCAselected_named_", names(colors)[[i]], ".tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], label = metadata$sample[which (metadata[,group] == subgroup)], color = colors[[i]][[1]][which (metadata[,group] == subgroup)])) +
+    print(ggplot(data = as.data.frame.array(pc$x), aes(x = pc$x[, 1], y = pc$x[, 2], label = metadata$sample[z], color = colors[[i]][[1]][z])) +
       geom_point(size = 3, shape = 20) +
       theme_minimal() +
       labs(title = "PCA", x = paste0("PC1: ", format(pcSummary$importance[2, 1] * 100, digits = 3), " % variance"), y = paste0("PC2: ", format(pcSummary$importance[2, 2] * 100, digits = 3), " % variance"), fill = names(colors)[[i]], colour = names(colors)[[i]]) +
-      stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]][which (metadata[,group] == subgroup)]), alpha = 0.10) +
+      stat_ellipse(geom = "polygon", aes(fill = colors[[i]][[1]][z]), alpha = 0.10) +
       theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black", size = 16, face = "bold")) +
       geom_text_repel())
     dev.off()}

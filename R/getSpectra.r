@@ -36,13 +36,13 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = N
     ion_mode <- "positive"
   }
   if (is.null(ion_mode)) {
-    ion_mode <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Polarity:")$res # ask user for the polarity}
+    ion_mode <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Data acquising mode:")$res # ask user for the mode of data acquisition (negative, positive)
   }
   
   an <- xsAnnotate(xset, polarity = ion_mode)
   anF <- groupFWHM(an, perfwhm = 1)
   rm(an, xset)
-  try(memory.limit(100000))
+  try(memory.limit(100000), silent = TRUE)
   anIC <- groupCorr(anF, calcIso = FALSE)
   rm(anF)
 
@@ -54,7 +54,7 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = N
   writeFeaturelist(pslist)
 
   # get information about data acquisition
-  if (is.null(column)) {column <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res}
+  if (is.null(column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res}
   if (is.null(prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res}
 
   # creates a .msp file for spectra
@@ -70,8 +70,8 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = N
     result[[i]]$rt <- pslist[[i]]@rt
     result[[i]]$Name <- paste0("Unknown ", pslist[[i]]@id)
     result[[i]]$Date <- as.character(Sys.Date())
-    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog)
-    result[[i]]$Ion_mode <- polarity
+    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog)
+    result[[i]]$Ion_mode <- ion_mode
   }
   write.msp(result, "spectra.msp", newFile = TRUE)
 
@@ -107,7 +107,5 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = N
     }
   }
 
-  # done (with this step)
-  dlg_message("Annotatation step: The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
-  return(list(anIC = anIC, pslist = pslist, result = result, polarity = polarity))
+  return(list(anIC = anIC, pslist = pslist, result = result, ion_mode = ion_mode))
 }

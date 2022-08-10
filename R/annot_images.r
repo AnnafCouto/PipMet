@@ -56,30 +56,32 @@ annot_images <- function(pslist, myDir, pictures = TRUE, example = FALSE, pic_ex
     # dev.off()
 
     # tiff
-    # hierarchy plot
     if ('.tiff' %in% pic_extension) {
-    tiff("hierarchy_plot.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    par(mar = c(4.5, 4.2, 1, 0.5))
-    HCplot(pseudodistmat, h = 0.7, cex = 0.2)
-    dev.off()
-    # heatmap plot
-    tiff("heatmap.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    par(mar = c(4.5, 4.2, 1, 0.5))
-    HCplot(pseudodistmat, type = "heatmap", cexRow = 0.2, cexCol = 0.24, margins = c(7, 7))
-    dev.off()}
+      # hierarchy plot
+      tiff("hierarchy_plot.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      par(mar = c(4.5, 4.2, 1, 0.5))
+      HCplot(pseudodistmat, h = 0.7, cex = 0.2)
+      dev.off()
+      # heatmap plot
+      tiff("heatmap.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      par(mar = c(4.5, 4.2, 1, 0.5))
+      HCplot(pseudodistmat, type = "heatmap", cexRow = 0.2, cexCol = 0.24, margins = c(7, 7))
+      dev.off()
+    }
 
     # png
     # hierarchy plot
     if ('.png' %in% pic_extension) {
-    png("hierarchy_plot.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    par(mar = c(4.5, 4.2, 1, 0.5))
-    HCplot(pseudodistmat, h = 0.7, cex = 0.2)
-    dev.off()
-    # heatmap plot
-    png("heatmap.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    par(mar = c(4.5, 4.2, 1, 0.5))
-    HCplot(pseudodistmat, type = "heatmap", cexRow = 0.2, cexCol = 0.2, margins = c(7, 7))
-    dev.off()}
+      png("hierarchy_plot.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      par(mar = c(4.5, 4.2, 1, 0.5))
+      HCplot(pseudodistmat, h = 0.7, cex = 0.2)
+      dev.off()
+      # heatmap plot
+      png("heatmap.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      par(mar = c(4.5, 4.2, 1, 0.5))
+      HCplot(pseudodistmat, type = "heatmap", cexRow = 0.2, cexCol = 0.2, margins = c(7, 7))
+      dev.off()
+    }
   }
 
   # set to main folder
