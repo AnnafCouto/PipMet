@@ -85,8 +85,8 @@ PCA_general <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '
 
   # Ask for a particular sort of sample
   if (!example == TRUE) {
-    group <- dlg_list(names(metadata), multiple = FALSE, title = "Choose a particular condition to plot PCA:")$res
-    subgroup <- dlg_list(as.character(unique(metadata[, group])), multiple = TRUE, title = "Choose a particular condition to plot PCA:")$res
+    group <- dlg_list(names(metadata), multiple = FALSE, title = "Condition to PCA:")$res
+    subgroup <- dlg_list(as.character(unique(metadata[, group])), multiple = TRUE, title = "Condition to PCA:")$res
   } else {
     group <- 'group'
     subgroup <- c('Sugar', 'Energy')

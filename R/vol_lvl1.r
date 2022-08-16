@@ -22,102 +22,104 @@
 #' }
 #' }
 vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
-  mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
-  mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
-  rownames(mat) <- n[, 1]
+    mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
+    mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
+    rownames(mat) <- n[, 1]
 
-  if (!dir.exists("Statistics") == TRUE) {
-    dir.create("Statistics")
-  }
-  setwd("Statistics")
-  if (!dir.exists("Volcanos") == TRUE) {
-    dir.create("Volcanos")
-  }
-  setwd("Volcanos")
-
-  volDir <- getwd()
-  x <- menu(names(metadata), graphics = TRUE, title = "Choose a condition to compare") # ask condition to compare from the metadata table
-  opt <- select.list(as.character(unique(metadata[, as.integer(x)])), preselect = NULL, multiple = TRUE, title = "Select two characteristic to compare", graphics = TRUE) # from that condition, which characteristics to compare
-  first <- grep(opt[1], metadata[, (as.integer(x))], fixed = TRUE)
-  sec <- grep(opt[2], metadata[, (as.integer(x))], fixed = TRUE)
-
-  # create folder for comparison
-  dir.create(paste0(opt[1], " X ", opt[2]))
-  setwd(paste0(opt[1], " X ", opt[2]))
-  # rawpvalue <- apply(mat, 1, ttest, grp1 = first, grp2 = sec) # calculate ttest
-
-  rawpvalue <- matrix(nrow = nrow(mat), ncol = 1)
-  # calculate t test
-  for (i in 1:nrow(mat)) {
-    rawpvalue[[i]] <- t.test(as.numeric(mat[i, first]), as.numeric(mat[i, sec]))$p.value
-  }
-
-  # calculates foldchange and plot histogram
-  firstCond <- apply(mat[, first], 1, mean)
-  secCond <- apply(mat[, sec], 1, mean)
-  foldchange <- firstCond - secCond
-  de <- as.data.frame(cbind(foldchange, rawpvalue))
-  colnames(de) <- c("foldchange", "rawpvalue")
-  for (i in 1:nrow(n)) {
-    if (is.na(n[i, 3])) {
-      de$spcId[i] <- n[i, 1]
-    } else {
-      de$spcId[i] <- n[i, 3]
+    if (!dir.exists("Statistics") == TRUE) {
+      dir.create("Statistics")
     }
-  } # add annotation if present
+    setwd("Statistics")
+    if (!dir.exists("Volcanos") == TRUE) {
+      dir.create("Volcanos")
+    }
+    setwd("Volcanos")
 
-  # add identification for relative abundance (Unchanged, Up or Down)
-  de$Relative_abundance <- "Unchanged"
-  de$Relative_abundance[de$foldchange > 0.6 & de$rawpvalue < 0.05] <- "Up"
-  de$Relative_abundance[de$foldchange < -0.6 & de$rawpvalue < 0.05] <- "Down"
+    volDir <- getwd()
+    x <- menu(names(metadata), graphics = TRUE, title = "Condition to compare:") # ask condition to compare from the metadata table
+    opt <- select.list(as.character(unique(metadata[, as.integer(x)])), preselect = NULL, multiple = TRUE, title = "Select two characteristic to compare", graphics = TRUE) # from that condition, which characteristics to compare
+    first <- grep(opt[1], metadata[, (as.integer(x))], fixed = TRUE)
+    sec <- grep(opt[2], metadata[, (as.integer(x))], fixed = TRUE)
 
-  # plot volcanos without identification
-  a <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance)) +
-    geom_point() +
-    theme_minimal() +
-    geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
-    geom_hline(yintercept = -log10(0.05), col = "red") +
-    ggtitle(label = paste0(opt[1], " X ", opt[2])) +
-    theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black"))
-  # png
-  if ('.png' %in% pic_extension) {
-  png("volcano.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  gridExtra::grid.arrange(a)
-  dev.off()}
-  # tiff
-  if ('.tiff' %in% pic_extension) {
-  tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  gridExtra::grid.arrange(a)
-  dev.off()}
+    # create folder for comparison
+    if (!dir.exists(paste0(opt[1], " X ", opt[2])) == TRUE) {
+      dir.create(paste0(opt[1], " X ", opt[2]))
+    }
+    setwd(paste0(opt[1], " X ", opt[2]))
 
-  # plot volcanos with identification
-  de$delabel <- NA
-  de$delabel[de$Relative_abundance != "Unchanged"] <- de$spcId[de$Relative_abundance != "Unchanged"]
-  b <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance, label = de$delabel)) +
-    geom_point() +
-    ggtitle(label = paste0(opt[1], " X ", opt[2])) +
-    theme_minimal() +
-    geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
-    geom_hline(yintercept = -log10(0.05), col = "red") +
-    geom_text_repel() +
-    theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
-    xlab("Log2 Mean Fold Change") +
-    ylab("-Log10 pValue")
-  # png
-  if ('.png' %in% pic_extension) {
-  png("volcano_identified.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  gridExtra::grid.arrange(b)
-  dev.off()}
-  # tiff
-  if ('.tiff' %in% pic_extension) {
-  tiff("volcano_identified.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-  gridExtra::grid.arrange(b)
-  dev.off()}
+    # calculate t test
+    rawpvalue <- matrix(nrow = nrow(mat), ncol = 1)
+    for (i in 1:nrow(mat)) {
+      rawpvalue[[i]] <- t.test(as.numeric(mat[i, first]), as.numeric(mat[i, sec]))$p.value
+    }
 
-  # set to main folder
-  setwd(volDir)
-  setwd(myDir)
+    # calculates foldchange and plot histogram
+    firstCond <- apply(mat[, first], 1, mean)
+    secCond <- apply(mat[, sec], 1, mean)
+    foldchange <- firstCond - secCond
+    de <- as.data.frame(cbind(foldchange, rawpvalue))
+    colnames(de) <- c("foldchange", "rawpvalue")
+    for (i in 1:nrow(n)) {
+      if (is.na(n[i, 3])) {
+        de$spcId[i] <- n[i, 1]
+      } else {
+        de$spcId[i] <- n[i, 3]
+      }
+    } # add annotation if present
 
-  # return results
-  return(volDir)
+    # add identification for relative abundance (Unchanged, Up or Down)
+    de$Relative_abundance <- "Unchanged"
+    de$Relative_abundance[de$foldchange > 0.6 & de$rawpvalue < 0.05] <- "Up"
+    de$Relative_abundance[de$foldchange < -0.6 & de$rawpvalue < 0.05] <- "Down"
+
+    # plot volcanos without identification
+    a <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance)) +
+      geom_point() +
+      theme_minimal() +
+      geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
+      geom_hline(yintercept = -log10(0.05), col = "red") +
+      ggtitle(label = paste0(opt[1], " X ", opt[2])) +
+      theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black"))
+    # png
+    if ('.png' %in% pic_extension) {
+    png("volcano.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    gridExtra::grid.arrange(a)
+    dev.off()}
+    # tiff
+    if ('.tiff' %in% pic_extension) {
+    tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    gridExtra::grid.arrange(a)
+    dev.off()}
+
+    # plot volcanos with identification
+    de$delabel <- NA
+    de$delabel[de$Relative_abundance != "Unchanged"] <- de$spcId[de$Relative_abundance != "Unchanged"]
+    b <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance, label = de$delabel)) +
+      geom_point() +
+      ggtitle(label = paste0(opt[1], " X ", opt[2])) +
+      theme_minimal() +
+      geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
+      geom_hline(yintercept = -log10(0.05), col = "red") +
+      geom_text_repel() +
+      theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
+      xlab("Log2 Mean Fold Change") +
+      ylab("-Log10 pValue")
+    # png
+    if ('.png' %in% pic_extension) {
+    png("volcano_identified.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    gridExtra::grid.arrange(b)
+    dev.off()}
+    # tiff
+    if ('.tiff' %in% pic_extension) {
+    tiff("volcano_identified.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    gridExtra::grid.arrange(b)
+    dev.off()}
+
+    # set to main folder
+    setwd(volDir)
+    setwd(myDir)
+
+    # return results
+    return(volDir)
+
 }

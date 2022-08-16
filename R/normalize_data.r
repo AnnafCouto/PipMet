@@ -45,7 +45,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
     setwd(myDir)
     quant <- matrix(nrow = nrow(pre_anno), ncol = 5 + (2 * nrow(metadata)))
     colnames(quant) <- c("id", "Fragment Ion (m/z Quant)", "Compound Name", "Chemical Formula", "Metabolic Class", metadata$sample, metadata$sample)
-    quant[, "id"] <- pre_anno[, "id"]
+    quant[, "id"] <- as.numeric(pre_anno[, "id"])
     quant[, "Compound Name"] <- pre_anno[, "annotation"]
 
     # set to folder

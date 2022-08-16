@@ -22,6 +22,7 @@
 #' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
 #' @param plot_eic Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.
 #' @param lib_build Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to FALSE.
+#' @param replicate Character or Logical. If FALSE, there is no replicate informations in the metadata table. Otherwise, inform the name in the metadata column containing replicate information. If NULL, the user will be asked. Default to NULL.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message
@@ -45,7 +46,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = FALSE, pic_extension = c('.tiff', '.png'), parallel = 'Serial Param', group = 'group', derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE, lib_build = FALSE, RI = FALSE) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = FALSE, pic_extension = c('.tiff', '.png'), parallel = 'Serial Param', group = 'group', derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE, lib_build = FALSE, RI = FALSE, replicate = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (!example == TRUE & pictures == TRUE & !peakMonitor == FALSE) {
@@ -135,6 +136,8 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   message (paste0('Normalizing data...'))
   quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = pic_extension, derivatization))
 
+  if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
+
   message (paste0('Statistics pictures...'))
   if (pictures == TRUE & nrow(metadata) > 1) {
     if (!example == TRUE) {
@@ -142,13 +145,13 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
       okay <- 1
       while (okay == 1) {
         quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
-        okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 1 level-comparison again?")
+        okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Repeat?")
       }
 
       okay <- 1
       while (okay == 1) {
         quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
-        okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Plot volcano 2 level-comparison again?")
+        okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Repeat?")
       }
     }
     # plot PCA
@@ -156,7 +159,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     quiet(PCA_identified(n, metadata, myDir, colors, pic_extension = pic_extension, example))
 
     # plot heatmaps
-    quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension))
+    quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension, replicate = replicate))
   }
 
   dlg_message("Processing done!")$res
