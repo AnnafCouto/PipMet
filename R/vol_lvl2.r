@@ -27,10 +27,13 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
 
   ### ask for user inputs
   setwd(volDir)
-  x <- menu(names(metadata), graphics = TRUE, title = "Choose a condition to compare - first level")
-  y <- menu(names(metadata), graphics = TRUE, title = "Choose a condition to compare - second level")
-  opt <- select.list(as.character(unique(metadata[, as.integer(x)])), preselect = NULL, multiple = TRUE, title = "Select two characteristic to compare", graphics = TRUE) # from that condition, which characteristics to compare
-  opt2 <- select.list(as.character(unique(metadata[, as.integer(y)])), preselect = NULL, multiple = TRUE, title = "Select two characteristic to compare", graphics = TRUE) # from that condition, which characteristics to compare
+  dlg_message("Volcano level two. First, choose two conditions to compare. The resulting volcanos will represent 'First-condition: Second-condition A X Second-condition B' and 'Second-condition: First-condition C X First condition D'")$res
+
+  # colocar um dlg_message aqui explicando que vc pode escolher pro vulcano 2 coisa.
+  x <- menu(names(metadata), graphics = TRUE, title = "Condition 1")
+  y <- menu(names(metadata), graphics = TRUE, title = "Condition 2")
+  opt <- select.list(as.character(unique(metadata[, as.integer(x)])), preselect = NULL, multiple = TRUE, title = "From Condition 1:", graphics = TRUE) # from that condition, which characteristics to compare
+  opt2 <- select.list(as.character(unique(metadata[, as.integer(y)])), preselect = NULL, multiple = TRUE, title = "From Condition 2:", graphics = TRUE) # from that condition, which characteristics to compare
 
   ### first comparison
   if (!dir.exists(opt[1]) == TRUE) {

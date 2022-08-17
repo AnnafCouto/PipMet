@@ -9,6 +9,7 @@
 #' @param replicate Character or Logical. If FALSE, there is no replicate informations in the metadata table. Otherwise, inform the name in the metadata column containing replicate information. If NULL, the user will be asked. Default to NULL.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @return None.
+#' @importFrom svDialogs dlgInput dlg_message dlg_list
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
 #' @importFrom methods as new
@@ -26,8 +27,10 @@
 #' }
 heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png'), replicate = NULL) {
 
-  group <- dlg_list(names(metadata), multiple = FALSE, title = "Specify groups:")$res
-  subgroup <- dlg_list(as.character(unique(metadata[, group])), multiple = TRUE, title = "Specify condition:")$res
+  #group <- dlg_list(names(metadata), multiple = FALSE, title = "Specify groups:")$res
+  #subgroup <- dlg_list(as.character(unique(metadata[, group])), multiple = TRUE, title = "Specify condition:")$res
+
+  sample_names <- dlg_list(names(metadata), multiple = FALSE, title = "Name sample as:")$res
 
   # set to statistic pictures folder
   if (!dir.exists("Statistics")) {
@@ -41,11 +44,11 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
   setwd("Heatmaps")
 
   n[n == ""] <- NA
-  mat <- n[, 6:(ncol(n) - 2)] # remove aditional information from the normalized table of spectra
+  mat <- n[, 6:(ncol(n) - 2)] # remove aditional information from the normalized quantification table
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
   rownames(mat) <- n[, 1]
 
-  # plot heatmap of metabolites per sample
+  # plot heatmap of metabolites per sample - named as 'sample' from metadata
   mat_scaled <- scale(mat)
   colnames(mat_scaled) <- metadata$sample
   m <- n[, "Compound Name"]
@@ -55,24 +58,45 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
   for (i in 1:length(colors)) {
     ann <- data.frame(colors[[i]][[1]])
     colnames(ann) <- names(colors)[i]
-    rownames(ann) <- metadata[, 'sample']
+    rownames(ann) <- metadata$sample
     ant <- list(colors[[i]][[2]])
     names(ant) <- names(colors)[i]
 
     if ('.png' %in% pic_extension) {
       png(paste0(names(colors)[i],"_heatmap_scaled_geral.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      pheatmap(mat_scaled, cluster_rows = FALSE,annotation = ann, annotation_colors = ant, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5, show_rownames = FALSE, border_color = "NA")
+      pheatmap(mat_scaled, cluster_rows = FALSE,annotation = ann, annotation_colors = ant, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 4, show_rownames = FALSE, border_color = "NA")
       dev.off()
     }
     if ('.tiff' %in% pic_extension) {
       tiff(paste0(names(colors)[i],"_heatmap_scaled_geral.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      pheatmap(mat_scaled, cluster_rows = FALSE,annotation = ann, annotation_colors = ant, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 5, show_rownames = FALSE, border_color = "NA")
+      pheatmap(mat_scaled, cluster_rows = FALSE,annotation = ann, annotation_colors = ant, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 4, show_rownames = FALSE, border_color = "NA")
+      dev.off()
+    }
+  }
+
+
+  # plot heatmap of metabolites per sample - named as the user set
+  mat_scaled <- scale(mat)
+  colnames(mat_scaled) <- metadata[, sample_names]
+  m <- n[, "Compound Name"]
+  m[m == ""] <- NA
+  rownames(mat_scaled) <- m
+
+  for (i in 1:length(colors)) {
+    if ('.png' %in% pic_extension) {
+      png(paste0('named_', sample_names,'grouped_', names(colors)[i],"_heatmap_scaled_geral.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 4, show_rownames = FALSE, border_color = "NA")
+      dev.off()
+    }
+    if ('.tiff' %in% pic_extension) {
+      tiff(paste0('named_', sample_names,'grouped_', names(colors)[i],"_heatmap_scaled_geral.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 4, show_rownames = FALSE, border_color = "NA")
       dev.off()
     }
   }
 
   
-  # only annotated metabolites per sample
+  # only annotated metabolites per sample - samples named after 'sample' from metadata
   if (!sum(is.na(n[, 3])) <= 0) {
     mat_ident <- mat[-which(is.na(n[, 3])), ]
   } else {
@@ -90,17 +114,43 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
     names(ant) <- names(colors)[i]
 
     if ('.png' %in% pic_extension) {
-    png(paste0("heatmap_scaled_ident_", names(colors)[i],"_.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5,annotation = ann, annotation_colors = ant, border_color = "NA", fontsize_row = 5)  
-    dev.off()}
+      png(paste0("heatmap_scaled_ident_", names(colors)[i],"_.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5,annotation = ann, annotation_colors = ant, border_color = "NA", fontsize_row = 4)  
+      dev.off()
+    }
     if ('.tiff' %in% pic_extension) {
-    tiff(paste0("heatmap_scaled_ident_", names(colors)[i],"_.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5,annotation = ann, annotation_colors = ant, border_color = "NA", fontsize_row = 5)
-    dev.off()}
+      tiff(paste0("heatmap_scaled_ident_", names(colors)[i],"_.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5,annotation = ann, annotation_colors = ant, border_color = "NA", fontsize_row = 4)
+      dev.off()
+    }
   }
 
+  # only annotated metabolites per sample - samples named after user set
+  if (!sum(is.na(n[, 3])) <= 0) {
+    mat_ident <- mat[-which(is.na(n[, 3])), ]
+  } else {
+    mat_ident <- mat
+  }
+  mat_ident_scaled <- scale(mat_ident)
+  colnames(mat_ident_scaled) <- metadata[,sample_names]
+  rownames(mat_ident_scaled) <- n[-which(is.na(n[, 3])), 3]
+
+  for (i in 1:length(colors)) {
+    if ('.png' %in% pic_extension) {
+      png(paste0('named_', sample_names,"heatmap_scaled_ident_", names(colors)[i],"_.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 4)  
+      dev.off()
+    }
+    if ('.tiff' %in% pic_extension) {
+      tiff(paste0('named_', sample_names,"heatmap_scaled_ident_", names(colors)[i],"_.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 4)
+      dev.off()
+    }
+  }
+
+  # REPLICATE MEAN
   # calculate mean of technical replicates
-  if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
+  if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate data:")$res}
   if (!replicate == FALSE & !replicate == 'No information') {
     nhmedia <- matrix(nrow = nrow(mat), ncol = length(unique(metadata [,replicate])))
     colnames(nhmedia) <- unique(metadata [,replicate])
@@ -115,12 +165,12 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
     # plot heatmaps for ident + non_ident metabolites (MEAN)
     if ('.png' %in% pic_extension) {
       png("heatmap_repMean_scaled_geral.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 5)
+      pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 4)
       dev.off()
     }
     if ('.tiff' %in% pic_extension) {
       tiff("heatmap_repMean_scaled_geral.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-      pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 5)
+      pheatmap(nhmedia_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 4)
       dev.off()
     }
 
@@ -144,14 +194,16 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
   # plot heatmaps
   # png
     if ('.png' %in% pic_extension) {
-    png("heatmap_repMean_scaled_ident_unique.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 5, fontsize_col = 5, border_color = "NA")
-    dev.off()}
+      png("heatmap_repMean_scaled_ident_unique.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 4, fontsize_col = 5, border_color = "NA")
+      dev.off()
+    }
     # tiff
     if ('.tiff' %in% pic_extension) {
-    tiff("heatmap_repMean_scaled_ident_unique.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 5, fontsize_col = 5, border_color = "NA")
-    dev.off()}
+      tiff("heatmap_repMean_scaled_ident_unique.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      pheatmap(nhmedia_scaled_ident, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_row = 4, fontsize_col = 5, border_color = "NA")
+      dev.off()
+    }
   }
 
   # back to main folder

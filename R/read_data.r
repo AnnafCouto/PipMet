@@ -17,7 +17,7 @@
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
 #' @importFrom utils choose.dir menu read.csv write.csv write.table choose.files
-#' @importFrom svDialogs dlgInput dlg_message
+#' @importFrom svDialogs dlgInput dlg_message dlg_list
 #' @import xcms
 #' @import MSnbase
 #' @importFrom pheatmap pheatmap

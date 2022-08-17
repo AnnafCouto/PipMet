@@ -7,13 +7,15 @@
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param anIC A 'xsAnnotate' CAMERA object with grouped spectra.
 #' @param pre_anno A table with annotations for spectra. or path to .csv file.
+#' @param removeCompounds Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.
+#' @param mergeCompounds Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @param derivatization Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.
 #' @return A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
 #' @importFrom grDevices dev.off pdf png tiff boxplot.stats
 #' @importFrom graphics boxplot grid legend par text
-#' @importFrom svDialogs dlg_message
+#' @importFrom svDialogs dlg_message dlg_list
 #' @importFrom methods as new
 #' @importFrom stats cor sd t.test var
 #' @importFrom utils choose.dir menu read.csv select.list write.csv write.table
@@ -37,7 +39,7 @@
 #' )
 #' }
 #' }
-normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = c('.tiff', '.png'), derivatization = NULL) {
+normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = c('.tiff', '.png'), derivatization = NULL, mergeCompounds = NULL, removeCompounds = NULL) {
 
   # check if representative ions are ok
   okay <- 2
@@ -59,7 +61,6 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
       derivatization <- 'Trimethylsilyl'
     } else {
       if (is.null(derivatization)) {
-        #derivatization <- menu(c('Trimethylsilyl','None'), graphics = TRUE, title = "Sort of derivatization: ")
         derivatization <- dlg_list(c('Trimethylsilyl','None'), multiple = FALSE, title = "Sort of derivatization: ")$res
       }
     }
@@ -77,6 +78,53 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
       quant[i, 6:(5 + nrow(metadata))] <- z[1, which(colnames(z) == "X1"):which(colnames(z) == paste0("X", nrow(metadata)))]
       quant[i, (6 + nrow(metadata)):(5 + 2 * nrow(metadata))] <- z[2, which(colnames(z) == "X1"):which(colnames(z) == paste0("X", nrow(metadata)))]
     }
+
+    # merge any identified compound (ex: double identified)
+    if (is.null(mergeCompounds)) {
+      a <- dlg_message('Merge compounds?', type = 'yesno')$res
+    } else {
+      if (mergeCompounds == TRUE ) {a <- 'yes'}
+      if (mergeCompounds == FALSE) {a <- 'no'}
+    }
+    if (a =='yes') {
+      okay <- 'yes'
+      while (okay=='yes') {
+        z <- dlg_list(sort(quant[which(!is.na(quant[,'Compound Name']) &!quant[,'Compound Name']==''),'Compound Name']), multiple = TRUE, title = "Merge")$res
+        if(length(z) >= 2) {  # the user must choose at least two compounds to merge
+          y <- vector()
+          for (i in 1:length(unique(z))) {
+            y <- rbind(y,quant[which(quant[,'Compound Name']==unique(z)[i]),])
+          }
+          x <- rbind(y[which(y[,'id']==sort(as.integer(y[,'id']))[1]),])
+          for (i in 6:ncol(quant)) {
+            x[1,i] <- sum(unlist(lapply(y[,i], as.numeric)))
+          }
+          quant[which(quant[,'id']==sort(as.integer(y[,'id']))[1]),] <- x[1,]
+          for (i in 2:length(z)) { # remove the row of the others identified compounds after summing to the first
+            quant <- quant[-which(quant[,'id']==sort(as.integer(y[,'id']))[i]),]
+          }
+          okay <- dlg_message('Repeat?', type = 'yesno')$res
+        } else {okay <- 'no'}
+      }
+    }
+
+    # remove any compound identified?
+    if (is.null(removeCompounds)) {
+      a <- dlg_message('Remove compounds?', type = 'yesno')$res
+    } else {
+      if (removeCompounds == TRUE ) {a <- 'yes'}
+      if (removeCompounds == FALSE) {a <- 'no'}
+    }
+    if (a == 'yes') {
+      okay <- 'yes'
+      while (okay=='yes') {
+        z <- dlg_list(sort(quant[which(!is.na(quant[,'Compound Name']) &!quant[,'Compound Name']==''),'Compound Name']), multiple = TRUE, title = "Remove")$res
+        quant <- quant[-which(quant[,'Compound Name']==unique(z)[i]),]
+        okay <- dlg_message('Repeat?', type = 'yesno')$res
+      }
+    }
+
+    # get the quantification data
     mat <- quant[, 6:ncol(quant)]
     mat <- apply(mat, c(1, 2), FUN = as.numeric)
 
@@ -98,7 +146,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
     if (example == TRUE) {
       x <- 2
     } else {
-      x <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group for normalization: ")
+      x <- menu(colnames(metadata), graphics = TRUE, title = "Conditions to group from: ")
     }
     normalyzer(jobName = "Normalyzer_results", designPath = designFp, dataPath = dataFp, outputDir = myDir, sampleColName = "sample", groupColName = colnames(metadata)[x], requireReplicates = FALSE)
 
@@ -145,7 +193,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
     # if everything is ok, use only first ion for the rest of statistics
     y <- data.frame()
     for (ii in 6:(5 + nrow(metadata))) {
-      for (i in 1:nrow(n)) {
+      for (i in 1:(nrow(n))) {
         y[i, (ii - 5)] <- as.double(n[i, ii]) / as.double(n[i, (ii + nrow(metadata))])
       }
     }
@@ -189,6 +237,43 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
     boxplot(y$sd, main = "Standard Deviation", horizontal = TRUE)
     dev.off()}
 
+    # plot histogram of dp and var for only identified
+    a <- ggplot(y[which(!quant[,'Compound Name']=='' & !is.na(quant[,'Compound Name'])),], aes(x = y[which(!quant[,'Compound Name']=='' & !is.na(quant[,'Compound Name'])), nrow(metadata) + 1])) +
+      geom_histogram() +
+      ggtitle("Variance Distribution") +
+      xlab("Variance") +
+      ylab("Frequency") +
+      theme(rect = element_rect(fill = "transparent")) # histograma da variância. O ideal é que tenha pouca variância alta
+    b <- ggplot(y[which(!quant[,'Compound Name']=='' & !is.na(quant[,'Compound Name'])),], aes(x = y[which(!quant[,'Compound Name']=='' & !is.na(quant[,'Compound Name'])), nrow(metadata) + 2])) +
+      geom_histogram() +
+      ggtitle("Standard Deviation") +
+      xlab("Standard Deviation") +
+      ylab("Frequency") +
+      theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrão.
+
+    # png
+    if ('.png' %in% pic_extension) {
+    png("identified_variance_dp.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    gridExtra::grid.arrange(a, b, ncol = 1)
+    dev.off()
+    png("identified_boxplot.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    par(mfrow = c(2,1))
+    boxplot(y$Variance, main = "Variance", horizontal = TRUE)
+    boxplot(y$sd, main = "Standard Deviation", horizontal = TRUE)
+    dev.off()}
+
+    # tiff
+    if ('.tiff' %in% pic_extension) {
+    tiff("identified_variance_dp.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    gridExtra::grid.arrange(a, b, ncol = 1)
+    dev.off()
+    tiff("identified_boxplot.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+    par(mfrow = c(2,1))
+    boxplot(y$Variance, main = "Variance", horizontal = TRUE)
+    boxplot(y$sd, main = "Standard Deviation", horizontal = TRUE)
+    dev.off()}
+
+    # set up quantification data
     n <- cbind(n[, 1:(5 + nrow(metadata))], y[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
     write.csv(n, "Normalized_quantification.csv", row.names = FALSE, na = "")
 

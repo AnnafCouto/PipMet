@@ -12,7 +12,9 @@ normalize_data(
   pre_anno,
   example,
   pic_extension = c(".tiff", ".png"),
-  derivatization = NULL
+  derivatization = NULL,
+  mergeCompounds = NULL,
+  removeCompounds = NULL
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ normalize_data(
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
 \item{derivatization}{Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.}
+
+\item{mergeCompounds}{Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.}
+
+\item{removeCompounds}{Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.}
 }
 \value{
 A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.

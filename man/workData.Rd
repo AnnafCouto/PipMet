@@ -12,10 +12,10 @@ workData(
   pictures = TRUE,
   example = FALSE,
   filter = NULL,
-  peakMonitor = FALSE,
+  peakMonitor = NULL,
   pic_extension = c(".tiff", ".png"),
-  parallel = "Serial Param",
-  group = "group",
+  parallel = NULL,
+  group = NULL,
   derivatization = NULL,
   cores = 1,
   column_set = NULL,
@@ -23,7 +23,10 @@ workData(
   ion_mode = NULL,
   plot_eic = FALSE,
   lib_build = FALSE,
-  RI = FALSE
+  RI = FALSE,
+  replicate = NULL,
+  mergeCompounds = NULL,
+  removeCompounds = NULL
 )
 }
 \arguments{
@@ -41,11 +44,11 @@ workData(
 
 \item{filter}{Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.}
 
-\item{peakMonitor}{Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.}
+\item{peakMonitor}{Logical. Are there peak to monitor throuhout the workflow? If NULL, the user will be asked. Default to NULL.}
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
-\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to 'Serial Param'. If parallel = NULL, the user will be asked.}
+\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.}
 
 \item{group}{Character. Name from 'metadata' column names to group the samples. Default to 'group'.}
 
@@ -64,6 +67,12 @@ workData(
 \item{lib_build}{Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to FALSE.}
 
 \item{RI}{Logical or path to retention index .csv file. Addition of retention index information to the spectra. If RI = TRUE, the user will be asked to provide a .csv file with 'rt' and 'RI' columns. If RI = path to the .csv files, the retention index will be calculated. Default to FALSE.}
+
+\item{replicate}{Character or Logical. If FALSE, there is no replicate informations in the metadata table. Otherwise, inform the name in the metadata column containing replicate information. If NULL, the user will be asked. Default to NULL.}
+
+\item{mergeCompounds}{Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.}
+
+\item{removeCompounds}{Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table

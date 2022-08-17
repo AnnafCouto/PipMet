@@ -33,14 +33,95 @@ Information regarding the processing may be passed through parameters to the `wo
 
 ## Data processing example
 
-The PipMet R package accompanies four GC-MS analysis of sugarcane colms and its commercial variety energycane for examples. The samples were collected and analysed as described by Abreu and colleges^1^.
+The PipMet R package accompanies four GC-MS analysis of sugarcane colms and its commercial variety energycane collected 0h and 48h after collection for examples. The samples were collected and analysed as described by Abreu and colleges^1^. The files contain data from 630s to 690s.
+Bellow we loaded the package and initialize the processing data function.
 
+```{r, echo =TRUE, results = 'hide', eval = FALSE}
+library(PipMet)
+result <- workData()
 
-
-## Files reading
+# Files reading
 ---
 
-The PipMet package is capable of reading '.mzML' and '.mzXML' files through the xcms, MSnbase and mzR packages. 
+Before the processing starts, the user must point what kind of parallelization he must apply to the process. For more information, read on the the BiocParallel package. 
+
+ADD FIGURA 01
+
+Furthermore, the user may inform m/z and rt (retentions time) for specific ions to be monitored throuhout the entire processing. For example, internal standards can be monitored.
+
+ADD FIGURA 02
+
+As a first step, the user will be asked to point the directory where the files to be processed are located.
+
+ADD FIGURA 1
+
+Following that, the user is asked to provide a name for the processing project, wich will be used as the name of the directory where the processing will ocurr and provide the output files. For the example, the project will be named 'Example'.
+
+ADD FIGURA 2
+
+The files extension will be asked, then. The PipMet package is capable of reading '.mzML' and '.mzXML' files through the xcms, MSnbase and mzR packages. Files with different extensions may be converted using the Mass++ or Proteowizard Softwares, for example. 
+
+ADD FIGURA 3
+
+The metadata file must be provided in order to proper process the analysis files. It is a sheet .csv file containing a 'Sample' for the samples names and the 'file' with the file path to each of the samples. Each row represent a sample. More columns can and should be added in order to enhance grouping-demanding steps. In the set of examples, we have two replicates of samples collected from Energycane, a Pool and a Blank sample. The metadata.csv file will be as follow:
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(read.csv(system.file("extdata", "metadata.csv", package = "PipMet")))
+```
+ADD FIGURA 4
+
+The PipMet asks if the user already have a metadata.csv file prepared. If 'Yes', the user will be asked to point the path to the metadata file. Though, if 'No', a metadat.csv file will be created with basic names for files with the extension given in the sample_dir so the user can fill it. Here, the user may create different categories to describe the samples with simples name as column names. It is important to make sure there is no other filled columns or rows except those containing the samples. For that, select the empty columns and rows and delete its content before saving. If there is the content, the software will alert the user to delete and reupload the metadata file.
+
+ADD FIGURA 5
+
+When the files are properly read, a 'Visualization_results' directory will be created in your project directory. The pictures re created using the information in the metadata table provided in .tiff and .png format.
+
+ADD VISUALIZATION PICTURES
+
+# Processing
+---
+The first step in the processing phase is the selection of peaks among noise, done with the MatchedFilter algorythm from xcms. Therefore, the true peaks will be picked as the one that can pass gaussian filters. There is also de possibility of applying a filter to selec only peaks above a certain intensity threshold.In the present example, we will be using a 150 intensity threshold for final spectra quality improvement.
+
+ADD FIGURA 6 E 7
+
+Afterwards, a retention time correction and features grouping algorythms will be applied and the user may also be asked to provide one category from the metadata to lead the grouping step if there is more than one. As a final step to the pre-processing step regarding to select viable peaks, the raw data is used to fill peaks that seems to be missing.
+
+# Spectra definition
+---
+
+The peaks selected are furthered grouped into spectra using retention time information and correlation information among the peaks. The user will be asked the data acquisition mode (positive and negative), column setup (polar and non-polar), temperatura program (isothermal, ramp, custom). For the example, select the following: 'positive', 'non-polar' and 'ramp'.
+
+## Identification
+---
+When the spectra are finalized, the PipMet software will create a .msp file and a pre_anno.csv file. The first is to be uploaded in the NIST MS Search Software for the spectra search in the available databases. Also, it is possible to generate a .pdf file with EIC of the 6 most intense ions of each of spectrum.
+
+ADD FIGURA 03
+
+The user must identify each of the spectrum and write the name of the compound identified in the pre_anno.csv sheet, using the id of the spectrum, present in the .msp file and the table in pre_anno. Non-indentified spectra may remaing unnanotated. When finished, the user must save the pre_anno.csv file and click 'Ok' in the pop-up.
+
+ADD FIGURA 9
+
+For the 23 spectra generated, the pre_anno.csv with the annotation information is as follow:
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(read.csv(system.file("extdata", "pre_anno.csv", package = "PipMet")))
+```
+The annotation may vary due to different available libraries in the NIST MS Search software.
+
+## Quantiation
+---
+Once the spectra werer grouped and identified, the quantification step will proceed by extracting the intensity of the most intense ion (called representative ion) of each spectrum to represent the intensity of the entire spectrum. However, GC-MS analysis often require some sort of sample preparation that may alter the the representative ion of the analyte. For example, sample derivatized with trimethylsilyl groups present the m/z 73 fragment-ion as the most intense in almost every spectrum, even though they represent the trimethylsilyl groups in the analyte. For that occurrence, the PipMet asks the user if the samples were derivatized (Trimethylsilation is currently supported) in order to avoid the m/z 73 as the representative peak, what would include too much variation in the the data. Therefore, if the m/z 73 is the most intense, the second peak will be used as representative.
+
+ADD FIGURA 10
+
+Another feature for improve the quantification step is to merge or remove compounds. In derivatization cases, the same compound may be identified more than once, for the different numbers of trimethylsilyl groups in the analyte, called derivates. For proper quantification, the intensity of all derivatives that originated from the same molecule must be summed in order to represent the real intensity of the analyte. 
+The user may also remove a compound identified previously from the quantification, such as contaminantes or column bleeding.
+
+# Data normalization
+---
+The PipMet package, through the NormalyzerDE package, offers different methods of normalization so that the user can choose the best to addapt to the data after evaluation the models and the printed report. For the normalization to occur, the user must point the category from which the samples are better grouped. For the example, select 'group'.
+
+ADD FIGURA 11
 
 ## Figures
 ---

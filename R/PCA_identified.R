@@ -12,6 +12,7 @@
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
 #' @importFrom methods as new
+#' @importFrom svDialogs dlgInput dlg_message dlg_list
 #' @importFrom stats cor sd t.test var prcomp na.omit
 #' @importFrom utils menu read.csv select.list write.csv write.table
 #' @import ggplot2
@@ -87,8 +88,8 @@ PCA_identified <- function(n, metadata, myDir, colors, pic_extension = c('.tiff'
 
   # Ask for a particular sort of sample
   if (!example == TRUE) {
-    group <- dlg_list(names(metadata), multiple = FALSE, title = "Choose a particular condition to plot PCA:")$res
-    subgroup <- dlg_list(as.character(unique(metadata[, group])), multiple = TRUE, title = "Choose a particular condition to plot PCA:")$res
+    group <- dlg_list(names(metadata), multiple = FALSE, title = "Condition to plot PCA:")$res
+    subgroup <- dlg_list(as.character(unique(metadata[, group])), multiple = TRUE, title = "Condition to plot PCA:")$res
   } else {
     group <- 'group'
     subgroup <- c('Sugar', 'Energy')

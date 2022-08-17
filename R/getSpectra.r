@@ -54,8 +54,8 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = N
   writeFeaturelist(pslist)
 
   # get information about data acquisition
-  if (is.null(column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res}
-  if (is.null(prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res}
+  if (is.null(column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE, title = 'Column setup:')$res}
+  if (is.null(prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE, title = 'Temperatura program:')$res}
 
   # creates a .msp file for spectra
   spectra <- list()

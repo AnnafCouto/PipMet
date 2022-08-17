@@ -10,8 +10,8 @@
 #' @param pictures Logical. If pictures should be plotted or not.
 #' @param example Logical. If is example, pop-ups won't appear.
 #' @param filter Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.
-#' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.
-#' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to 'Serial Param'. If parallel = NULL, the user will be asked.
+#' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? If NULL, the user will be asked. Default to NULL.
+#' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @param group Character. Name from 'metadata' column names to group the samples. Default to 'group'.
 #' @param derivatization Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.
@@ -20,12 +20,14 @@
 #' @param prog Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.
 #' @param RI Logical or path to retention index .csv file. Addition of retention index information to the spectra. If RI = TRUE, the user will be asked to provide a .csv file with 'rt' and 'RI' columns. If RI = path to the .csv files, the retention index will be calculated. Default to FALSE.
 #' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
-#' @param plot_eic Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.
-#' @param lib_build Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to FALSE.
+#' @param plot_eic Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to NULL.
+#' @param lib_build Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to NULL.
 #' @param replicate Character or Logical. If FALSE, there is no replicate informations in the metadata table. Otherwise, inform the name in the metadata column containing replicate information. If NULL, the user will be asked. Default to NULL.
+#' @param removeCompounds Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.
+#' @param mergeCompounds Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
-#' @importFrom svDialogs dlgInput dlg_message
+#' @importFrom svDialogs dlgInput dlg_message dlg_list
 #' @importFrom ddpcr quiet
 #' @importFrom utils choose.dir menu read.csv write.csv write.table
 #' @importFrom metaMS addRI write.msp
@@ -46,12 +48,12 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = FALSE, pic_extension = c('.tiff', '.png'), parallel = 'Serial Param', group = 'group', derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE, lib_build = FALSE, RI = FALSE, replicate = NULL) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
-  if (!example == TRUE & pictures == TRUE & !peakMonitor == FALSE) {
+  if (!example == TRUE & pictures == TRUE) {
     if (is.null (peakMonitor)) {
-      peakMonitor <- dlg_list(c("Yes", "No"), multiple = FALSE, title = "Would you like to monitor EICs?")$res
+      peakMonitor <- dlg_list(c("Yes", "No"), multiple = FALSE, title = "Monitor EICs?")$res
     } 
     ions <- list()
     if (peakMonitor == 'Yes' | peakMonitor == TRUE) {
@@ -62,7 +64,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
         names(ions[[ei]]) <- c("mz", "rt")
         ions[[ei]][["mz"]] <- as.integer(dlgInput(paste0("Mz of EIC ", ei, ":"), "0")$res)
         ions[[ei]][["rt"]] <- as.integer(dlgInput(paste0("Rt of EIC ", ei, " (automatically will be added +/- 5s to Rt):"), "0")$res)
-        okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Would you like to monitor another one?")
+        okay <- menu(c("Yes", "No"), graphics = TRUE, title = "Monitor another one?")
         ei <- ei + 1
       }
     }
@@ -71,7 +73,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   # ask for parallelization mode
   if (!example == TRUE) {
     if (is.null (parallel)) {
-      parallel <- dlg_list(c("Serial Param", "Snow Param", "MultiCore Param"), multiple = FALSE, title = "Choose parallelization mode:")$res
+      parallel <- dlg_list(c("Serial Param", "Snow Param", "MultiCore Param"), multiple = FALSE, title = "Parallelization mode:")$res
     }
     #parallel <- menu(c("Serial Param (disable)", "Snow Param", "MultiCore Param"), graphics = TRUE, title = "Choose parallelization mode:")
     if (parallel == 'Serial Param') {
@@ -113,16 +115,18 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
         if (dlg_message("Add retention index information?", "yesno")$res == 'yes') {
           RI <- read.csv(choose.files())
         }
-      } else if (RI == TRUE) {
+      } 
+      if (RI == TRUE) {
         RI <- read.csv(choose.files())
-      } else if (is_path(RI)) {
+      }
+      if (is_path(RI)) {
         RI <- read.csv(RI)
       }
       message (paste0('Calculating retention index...'))
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
       dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
-      rm(spectra, result, ri)
+      rm(spectra, result)
     }
   }
 
@@ -134,7 +138,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # normalize, choose peaks and plot images
   message (paste0('Normalizing data...'))
-  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = pic_extension, derivatization))
+  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds))
 
   if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
 

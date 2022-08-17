@@ -49,9 +49,9 @@ create_database <- function(pslist, polarity) {
     dataInfo[, "CAS"] <- unlist(cts_convert(dataInfo[, "PubChem ID"], "PubChem CID", "cas", match = "first"))
     # ask information for retention index search
     if (dlg_message("Look for retention index in NIST?", type = "yesno")$res == "yes") {
-      Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index")$res
-      column <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res
-      prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res
+      Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index:")$res
+      column <- dlg_list(c("polar", "non-polar"), multiple = FALSE, title = 'Column setup:')$res
+      prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE, title = 'Temperature program:')$res
       Instrument_type <- dlg_input("Type of instrument of acquisition", "GC-EI-Q")$res
       for (i in 1:length(pslist)) {
         dataInfo[i, "RI"] <- nist_ri(dataInfo[i, "Name"], from = "name", type = Ri, polarity = column, temp_prog = prog)

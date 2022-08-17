@@ -17,7 +17,7 @@
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
 #' @importFrom methods as new
-#' @importFrom svDialogs dlgInput
+#' @importFrom svDialogs dlgInput dlg_list
 #' @importFrom xcms MatchedFilterParam findChromPeaks refineChromPeaks FilterIntensityParam adjustRtime ObiwarpParam groupChromPeaks PeakDensityParam fillChromPeaks ChromPeakAreaParam plotChromPeakImage chromPeaks plotAdjustedRtime chromatogram fillPeaks
 #' @importFrom utils choose.dir memory.limit menu read.csv select.list write.csv write.table
 #' @examples
@@ -66,7 +66,7 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
     if (example == FALSE) {
       if (is.null(group)) {
         # ask condition to compare from the metadata table
-        group <- menu(colnames(metadata), graphics = TRUE, title = "Choose conditions (from metadata table) to group samples: ")
+        group <- menu(colnames(metadata), graphics = TRUE, title = "Condition to group: ")
       }
       #group <- dlg_list(colnames(metadata), multiple = FALSE, title = "Choose conditions (from metadata table) to group samples: ")$res
     } else {

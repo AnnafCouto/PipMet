@@ -36,6 +36,8 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
     setwd("Volcanos")
 
     volDir <- getwd()
+
+    dlg_message("Volcano level one. Choose a condition to compare and two characteristics within that group. The resulting volcano will represent 'Condition: A X B'.")$res
     x <- menu(names(metadata), graphics = TRUE, title = "Condition to compare:") # ask condition to compare from the metadata table
     opt <- select.list(as.character(unique(metadata[, as.integer(x)])), preselect = NULL, multiple = TRUE, title = "Select two characteristic to compare", graphics = TRUE) # from that condition, which characteristics to compare
     first <- grep(opt[1], metadata[, (as.integer(x))], fixed = TRUE)
