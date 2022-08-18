@@ -4,7 +4,7 @@
 #' @keywords database spectra
 #' @export
 #' @param pslist List of spectra with annotation. Only annotated spectra will be use for the database construction.
-#' @param polarity Character. Ion mode of data acquisition ('negative' or 'positive').
+#' @param ion_mode Character. Ion mode of data acquisition ('negative' or 'positive').
 #' @return None.
 #' @importFrom svDialogs dlg_message dlg_list
 #' @importFrom utils read.csv write.csv
@@ -17,7 +17,7 @@
 #' create_database(pslist)
 #' }
 #' }
-create_database <- function(pslist, polarity) {
+create_database <- function(pslist, ion_mode) {
 
   # get only annotated spectra
   pslist <- list()
@@ -87,7 +87,7 @@ create_database <- function(pslist, polarity) {
     result[[i]]$RI <- dataInfo[i, "RI"]
     result[[i]]$Instrument_type <- Instrument_type
     result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog)
-    result[[i]]$Ion_mode <- polarity
+    result[[i]]$Ion_mode <- ion_mode
   }
   names(result) <- dataInfo[, "Name"]
   metaMS::write.msp(result, file = paste0("Database_", Sys.Date(), ".msp"), newFile = TRUE)

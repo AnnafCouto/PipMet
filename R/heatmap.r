@@ -151,7 +151,7 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
   # REPLICATE MEAN
   # calculate mean of technical replicates
   if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate data:")$res}
-  if (!replicate == FALSE & !replicate == 'No information') {
+  if (replicate == TRUE | replicate %in% colnames(metadata)) {
     nhmedia <- matrix(nrow = nrow(mat), ncol = length(unique(metadata [,replicate])))
     colnames(nhmedia) <- unique(metadata [,replicate])
     for (i in unique(metadata [,replicate])) {

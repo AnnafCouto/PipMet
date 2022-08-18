@@ -21,9 +21,9 @@ workData(
   column_set = NULL,
   prog = NULL,
   ion_mode = NULL,
-  plot_eic = FALSE,
-  lib_build = FALSE,
-  RI = FALSE,
+  plot_eic = NULL,
+  lib_build = NULL,
+  RI = NULL,
   replicate = NULL,
   mergeCompounds = NULL,
   removeCompounds = NULL
@@ -62,9 +62,9 @@ workData(
 
 \item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
 
-\item{plot_eic}{Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.}
+\item{plot_eic}{Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to NULL.}
 
-\item{lib_build}{Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to FALSE.}
+\item{lib_build}{Logical. For lib_build == TRUE, the identified compounds will be gathered into a new internal library. Default to NULL.}
 
 \item{RI}{Logical or path to retention index .csv file. Addition of retention index information to the spectra. If RI = TRUE, the user will be asked to provide a .csv file with 'rt' and 'RI' columns. If RI = path to the .csv files, the retention index will be calculated. Default to FALSE.}
 

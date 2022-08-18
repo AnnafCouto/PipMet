@@ -110,18 +110,12 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # add retention index info if needed
   if (!example == TRUE) {
-    if (!RI == FALSE) {
-      if (is.null(RI)) {
-        if (dlg_message("Add retention index information?", "yesno")$res == 'yes') {
-          RI <- read.csv(choose.files())
-        }
-      } 
-      if (RI == TRUE) {
-        RI <- read.csv(choose.files())
-      }
-      if (is_path(RI)) {
-        RI <- read.csv(RI)
-      }
+    if (is.null(RI)) {RI <- dlg_message("Add retention index information?", "yesno")$res}
+    if (RI == TRUE | RI == 'yes') {
+      RI <- read.csv(choose.files())
+    }
+    if (is_path(RI)) {
+      RI <- read.csv(RI)
       message (paste0('Calculating retention index...'))
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
@@ -168,11 +162,11 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   dlg_message("Processing done!")$res
 
-  if (!lib_build == FALSE) {
-    if (dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res == "yes") {
-      create_database(apslist, ion_mode)
-    }
-  }
+  # check create_database first
+  #if (is.null(lib_build)) {lib_build <- dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res}
+  #if (lib_build == TRUE | lib_build == 'yes') {
+  #  create_database(apslist, ion_mode)
+  #}
 
   return(list(myDir = myDir, metadata = metadata, apslist = apslist, raw_data = raw_data, xdata4 = xdata4, anIC = anIC, colors = colors, quantification_table = n))
 }

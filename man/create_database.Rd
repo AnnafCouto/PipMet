@@ -4,12 +4,12 @@
 \alias{create_database}
 \title{In-house database from processed files}
 \usage{
-create_database(pslist, polarity)
+create_database(pslist, ion_mode)
 }
 \arguments{
 \item{pslist}{List of spectra with annotation. Only annotated spectra will be use for the database construction.}
 
-\item{polarity}{Character. Ion mode of data acquisition ('negative' or 'positive').}
+\item{ion_mode}{Character. Ion mode of data acquisition ('negative' or 'positive').}
 }
 \value{
 None.
