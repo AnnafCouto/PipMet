@@ -204,8 +204,9 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
   png("volcano_ident.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(b)
   dev.off()}
+  write.csv(de, file = 'Significance_compounds_vol_lvl2.csv', rownames=FALSE)
   setwd(volDir)
-
+  
   # set to main folder
   setwd(myDir)
 }

@@ -87,18 +87,19 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = N
       }
       pdf("EIC_XIC.pdf")
       for (i in 1:length(rt)) {
+        message (paste0('Printing spectra n.',i'...'))
         par(mfrow = c(2, 1))
         specplot(pslist[[i]])
         x <- paste0("Unknown ", pslist[[i]]@id)
-        crom <- chromatogram(raw_data, rt = c(rt[[i]] - 8, rt[[i]] + 8))
+        crom <- chromatogram(raw_data, rt = c(rt[[i]] - 5, rt[[i]] + 5))
         plot(crom, col = colors[[z]][[2]][colors[[z]][[1]]], main = paste0("Pre-processing - ", x))
         legend("right", legend = names(colors[[z]][[2]]), col = colors[[z]][[2]], fill = colors[[z]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
         # plot EIC from the 6 most intense ion-fragm
         par(mfrow = c(2, 3))
         f <- pslist[[i]]@spectrum[order(pslist[[i]]@spectrum[, 2], decreasing = TRUE)]
-        sort(pslist[[i]]@spectrum[, 1], decreasing = TRUE)
+        #sort(pslist[[i]]@spectrum[, 1], decreasing = TRUE)
         for (ii in 1:6) {
-          crom <- chromatogram(raw_data, rt = c(rt[[i]] - 8, rt[[i]] + 8), mz = c(as.numeric(f[[ii]]) - 0.6, as.numeric(f[[ii]]) + 0.6))
+          crom <- chromatogram(raw_data, rt = c(rt[[i]] - 5, rt[[i]] + 5), mz = c(as.numeric(f[[ii]]) - 0.6, as.numeric(f[[ii]]) + 0.6))
           plot(crom, col = colors[[z]][[2]][colors[[z]][[1]]], main = paste0("EIC - mz", f[[ii]]))
           legend("right", legend = names(colors[[z]][[2]]), col = colors[[z]][[2]], fill = colors[[z]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
         }

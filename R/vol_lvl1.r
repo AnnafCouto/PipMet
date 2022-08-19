@@ -117,6 +117,8 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
     gridExtra::grid.arrange(b)
     dev.off()}
 
+    write.csv(de, file = 'Significance_compounds_vol_lvl1.csv', rownames=FALSE)
+
     # set to main folder
     setwd(volDir)
     setwd(myDir)

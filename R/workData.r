@@ -89,6 +89,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   } else {register(SerialParam(), default = TRUE)}
 
   # ask informations and read files
+  message ('Reading files...')
   quiet(read <- read_data(peakMonitor = peakMonitor, ions = ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example, pic_extension = pic_extension))
   colors <- read[[1]]
   metadata <- read[[2]]
@@ -96,6 +97,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   myDir <- read[[4]]
 
   # process samples
+  message ('Pre-processing files...')
   quiet(xdata4 <- process(raw_data, metadata, myDir, colors, peakMonitor, ions, pictures, filter = filter, pic_extension = pic_extension, group = group))
 
   # define spectra and create .msp files
@@ -116,7 +118,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     }
     if (is_path(RI)) {
       RI <- read.csv(RI)
-      message (paste0('Calculating retention index...'))
+      message ('Calculating retention index...')
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
       dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
