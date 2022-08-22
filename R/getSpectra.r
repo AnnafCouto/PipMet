@@ -87,7 +87,7 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = N
       }
       pdf("EIC_XIC.pdf")
       for (i in 1:length(rt)) {
-        message (paste0('Printing spectra n.',i'...'))
+        message (paste0('Printing spectra n.',i,'...'))
         par(mfrow = c(2, 1))
         specplot(pslist[[i]])
         x <- paste0("Unknown ", pslist[[i]]@id)
