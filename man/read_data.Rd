@@ -19,7 +19,7 @@ read_data(
 \arguments{
 \item{peakMonitor}{Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.}
 
-\item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.}
+\item{ions}{List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to NULL.}
 
 \item{myDir}{Path to working directory}
 
@@ -31,7 +31,7 @@ read_data(
 
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
 
-\item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
+\item{example}{Logical. If example = TRUE, the metadata and other needed files will be loaded from package files.}
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 }
@@ -45,10 +45,6 @@ This function creates a sheet for the user to fill with the experiment design in
 \donttest{
 \dontrun{
 read <- read_data(
-  sample_dir = system.file("extdata", package = "PipMet"),
-  metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
-  extension = ".mzML",
-  myDir = "~/",
   pictures = FALSE,
   example = TRUE
 )

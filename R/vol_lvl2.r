@@ -26,6 +26,7 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
   rownames(mat) <- n[, 1]
 
   ### ask for user inputs
+  setwd(myDir)
   setwd(volDir)
   dlg_message("Volcano level two. First, choose two conditions to compare. The resulting volcanos will represent 'First-condition: Second-condition A X Second-condition B' and 'Second-condition: First-condition C X First condition D'")$res
 
@@ -205,7 +206,6 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
   gridExtra::grid.arrange(b)
   dev.off()}
   write.csv(de, file = 'Significance_compounds_vol_lvl2.csv', rownames=FALSE)
-  setwd(volDir)
   
   # set to main folder
   setwd(myDir)

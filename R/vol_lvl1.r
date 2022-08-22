@@ -26,6 +26,7 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
     mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
     rownames(mat) <- n[, 1]
 
+    setwd(myDir)
     if (!dir.exists("Statistics") == TRUE) {
       dir.create("Statistics")
     }
@@ -117,10 +118,9 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
     gridExtra::grid.arrange(b)
     dev.off()}
 
-    write.csv(de, file = 'Significance_compounds_vol_lvl1.csv', rownames=FALSE)
+    write.csv(de, file = 'Significance_compounds_vol_lvl1.csv')
 
     # set to main folder
-    setwd(volDir)
     setwd(myDir)
 
     # return results

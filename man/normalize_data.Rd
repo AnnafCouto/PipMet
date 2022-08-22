@@ -10,11 +10,11 @@ normalize_data(
   metadata,
   myDir,
   pre_anno,
-  example,
   pic_extension = c(".tiff", ".png"),
   derivatization = NULL,
   mergeCompounds = NULL,
-  removeCompounds = NULL
+  removeCompounds = NULL,
+  group = NULL
 )
 }
 \arguments{
@@ -28,8 +28,6 @@ normalize_data(
 
 \item{pre_anno}{A table with annotations for spectra. or path to .csv file.}
 
-\item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
-
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
 \item{derivatization}{Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.}
@@ -37,6 +35,8 @@ normalize_data(
 \item{mergeCompounds}{Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.}
 
 \item{removeCompounds}{Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.}
+
+\item{group}{Character. Name of metadata column to group the samples for normaliation. Default to NULL.}
 }
 \value{
 A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
@@ -57,7 +57,6 @@ normalized <- normalize_data(
   metadata,
   myDir = "~/",
   pre_anno = pre_anno,
-  example = TRUE
 )
 }
 }

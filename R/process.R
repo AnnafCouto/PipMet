@@ -166,8 +166,10 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
       }
 
       # cromatograma de íons extraído
-      if (peakMonitor==TRUE) {
-        dir.create("Monitoring ions")
+      if (peakMonitor==TRUE | peakMonitor == 'Yes') {
+        if (!dir.exists("Monitoring ions") == TRUE) {
+          dir.create("Monitoring ions")
+        }
         setwd("Monitoring ions")
 
         for (ii in 1:length(ions)) {
@@ -217,5 +219,5 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
   }
 
   # return results
-  return(xdata4)
+  return(list (xdata4 = xdata4, group = group))
 }

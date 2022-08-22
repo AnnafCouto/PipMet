@@ -32,6 +32,7 @@ PCA_identified <- function(n, metadata, myDir, colors, pic_extension = c('.tiff'
   rownames(mat) <- n[which(!n$`Compound Name` == ''), 1]
 
   # new folder for PCA results
+  setwd(myDir)
   if (!dir.exists("PCA_identified")) {
     dir.create("PCA_identified")
   }

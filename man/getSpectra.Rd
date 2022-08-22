@@ -6,7 +6,6 @@
 \usage{
 getSpectra(
   xdata4,
-  example = FALSE,
   raw_data,
   colors,
   column_set = NULL,
@@ -17,8 +16,6 @@ getSpectra(
 }
 \arguments{
 \item{xdata4}{A 'xcmsSet' or 'XCMSnExp' object.}
-
-\item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
 
 \item{raw_data}{A 'XCMSnExp' object.}
 
@@ -42,7 +39,7 @@ This function computes the first subsetp of third step of the workflow. It defin
 \donttest{
 \dontrun{
 load(system.file("extdata", "xdata4.RData", package = "PipMet"))
-spectra <- getSpectra(xdata4, example = TRUE)
+spectra <- getSpectra(xdata4)
 }
 }
 }

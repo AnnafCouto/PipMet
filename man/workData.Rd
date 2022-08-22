@@ -40,7 +40,7 @@ workData(
 
 \item{pictures}{Logical. If pictures should be plotted or not.}
 
-\item{example}{Logical. If is example, pop-ups won't appear.}
+\item{example}{Logical. If example = TRUE, the metadata and other needed files will be loaded from package files.}
 
 \item{filter}{Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.}
 
@@ -84,8 +84,6 @@ Main function for GC data processing.
 \donttest{
 \dontrun{
 result <- workData(
-  sample_dir = system.file("extdata", package = "PipMet"),
-  metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
   extension = ".mzXML",
   myDir = "~/",
   example = TRUE,

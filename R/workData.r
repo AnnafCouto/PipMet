@@ -8,7 +8,7 @@
 #' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included. Default to none.
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
 #' @param pictures Logical. If pictures should be plotted or not.
-#' @param example Logical. If is example, pop-ups won't appear.
+#' @param example Logical. If example = TRUE, the metadata and other needed files will be loaded from package files.
 #' @param filter Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.
 #' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? If NULL, the user will be asked. Default to NULL.
 #' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.
@@ -39,8 +39,6 @@
 #' \donttest{
 #' \dontrun{
 #' result <- workData(
-#'   sample_dir = system.file("extdata", package = "PipMet"),
-#'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
 #'   extension = ".mzXML",
 #'   myDir = "~/",
 #'   example = TRUE,
@@ -51,7 +49,7 @@
 workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
-  if (!example == TRUE & pictures == TRUE) {
+  if (pictures == TRUE) {
     if (is.null (peakMonitor)) {
       peakMonitor <- dlg_list(c("Yes", "No"), multiple = FALSE, title = "Monitor EICs?")$res
     } 
@@ -71,7 +69,6 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   }
 
   # ask for parallelization mode
-  if (!example == TRUE) {
     if (is.null (parallel)) {
       parallel <- dlg_list(c("Serial Param", "Snow Param", "MultiCore Param"), multiple = FALSE, title = "Parallelization mode:")$res
     }
@@ -86,7 +83,6 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     if (parallel == 'MultiCore Param') {
       register(MulticoreParam(), default = TRUE)
     }
-  } else {register(SerialParam(), default = TRUE)}
 
   # ask informations and read files
   message ('Reading files...')
@@ -98,11 +94,13 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # process samples
   message ('Pre-processing files...')
-  quiet(xdata4 <- process(raw_data, metadata, myDir, colors, peakMonitor, ions, pictures, filter = filter, pic_extension = pic_extension, group = group))
+  quiet(processed <- process(raw_data = raw_data, metadata = metadata, myDir = myDir, colors = colors, peakMonitor = peakMonitor, ions = ions, pictures = pictures, filter = filter, pic_extension = pic_extension, group = group))
+  xdata4 <- processed$xdata4
+  group <- processed$group
 
   # define spectra and create .msp files
   message (paste0('Grouping peaks into spectra...'))
-  quiet(spectra <- getSpectra(xdata4, example, raw_data, colors, column_set, prog, ion_mode, plot_eic))
+  quiet(spectra <- getSpectra(xdata4, raw_data, colors, column_set = column_set, prog = prog, ion_mode = ion_mode, plot_eic = plot_eic))
   anIC <- spectra[[1]]
   result <- spectra[[3]]
   pslist <- spectra[[2]]
@@ -111,7 +109,6 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   dlg_message("Annotatation step: The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
 
   # add retention index info if needed
-  if (!example == TRUE) {
     if (is.null(RI)) {RI <- dlg_message("Add retention index information?", "yesno")$res}
     if (RI == TRUE | RI == 'yes') {
       RI <- read.csv(choose.files())
@@ -124,7 +121,6 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
       dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
       rm(spectra, result)
     }
-  }
 
   # update annotated spectra and plot images
   message (paste0('Annotating the spectra ...'))
@@ -134,26 +130,24 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # normalize, choose peaks and plot images
   message (paste0('Normalizing data...'))
-  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds))
+  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds, group))
 
   if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
 
   message (paste0('Statistics pictures...'))
   if (pictures == TRUE & nrow(metadata) > 1) {
-    if (!example == TRUE) {
       # plot volcanos
       okay <- 1
       while (okay == 1) {
         quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
         okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Repeat?")
       }
-
       okay <- 1
       while (okay == 1) {
         quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
         okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Repeat?")
       }
-    }
+
     # plot PCA
     quiet(PCA_general(n, metadata, myDir, colors, pic_extension = pic_extension, example))
     quiet(PCA_identified(n, metadata, myDir, colors, pic_extension = pic_extension, example))
@@ -167,7 +161,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   # check create_database first
   #if (is.null(lib_build)) {lib_build <- dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res}
   #if (lib_build == TRUE | lib_build == 'yes') {
-  #  create_database(apslist, ion_mode)
+  #  create_database(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode)
   #}
 
   return(list(myDir = myDir, metadata = metadata, apslist = apslist, raw_data = raw_data, xdata4 = xdata4, anIC = anIC, colors = colors, quantification_table = n))

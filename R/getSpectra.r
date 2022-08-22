@@ -3,7 +3,6 @@
 #' This function computes the first subsetp of third step of the workflow. It defines the spectra to proper annotate in NIST MS Search Software.
 #' @export
 #' @param xdata4 A 'xcmsSet' or 'XCMSnExp' object.
-#' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @param raw_data A 'XCMSnExp' object.
 #' @param colors A list with colors generated from "read_data()".
 #' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
@@ -22,19 +21,17 @@
 #' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "xdata4.RData", package = "PipMet"))
-#' spectra <- getSpectra(xdata4, example = TRUE)
+#' spectra <- getSpectra(xdata4)
 #' }
 #' }
 
-getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE) {
+getSpectra <- function(xdata4, raw_data, colors, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE) {
   if (class(xdata4)[1] == "XCMSnExp") {
     xset <- as(xdata4, "xcmsSet")
   } else {
     xset <- xdata4
   }
-  if (example == TRUE) {
-    ion_mode <- "positive"
-  }
+
   if (is.null(ion_mode)) {
     ion_mode <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Data acquising mode:")$res # ask user for the mode of data acquisition (negative, positive)
   }
@@ -77,36 +74,35 @@ getSpectra <- function(xdata4, example = FALSE, raw_data, colors, column_set = N
 
   # generate a pdf file with the spectrum, its chromatogram and the XIC of the 6 most intense m/z individually,
   # for every one of the generated spectrum
-  if (!example == TRUE) {
-    if (is.null(plot_eic)) {plot_eic <- dlg_message("Plot spectra, with EIC of each of the 6 most intense m/z?", "yesno")$res}
-    if (plot_eic == "yes" | plot_eic == TRUE) {
-      z <- 'group'
-      rt <- list()
-      for (i in 1:length(pslist)) {
-        rt[[i]] <- as.numeric(pslist[[i]]@rt)
-      }
-      pdf("EIC_XIC.pdf")
-      for (i in 1:length(rt)) {
-        message (paste0('Printing spectra n.',i,'...'))
-        par(mfrow = c(2, 1))
-        specplot(pslist[[i]])
-        x <- paste0("Unknown ", pslist[[i]]@id)
-        crom <- chromatogram(raw_data, rt = c(rt[[i]] - 5, rt[[i]] + 5))
-        plot(crom, col = colors[[z]][[2]][colors[[z]][[1]]], main = paste0("Pre-processing - ", x))
-        legend("right", legend = names(colors[[z]][[2]]), col = colors[[z]][[2]], fill = colors[[z]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-        # plot EIC from the 6 most intense ion-fragm
-        par(mfrow = c(2, 3))
-        f <- pslist[[i]]@spectrum[order(pslist[[i]]@spectrum[, 2], decreasing = TRUE)]
-        #sort(pslist[[i]]@spectrum[, 1], decreasing = TRUE)
-        for (ii in 1:6) {
-          crom <- chromatogram(raw_data, rt = c(rt[[i]] - 5, rt[[i]] + 5), mz = c(as.numeric(f[[ii]]) - 0.6, as.numeric(f[[ii]]) + 0.6))
-          plot(crom, col = colors[[z]][[2]][colors[[z]][[1]]], main = paste0("EIC - mz", f[[ii]]))
-          legend("right", legend = names(colors[[z]][[2]]), col = colors[[z]][[2]], fill = colors[[z]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
-        }
-      }
-      dev.off()
+  if (is.null(plot_eic)) {plot_eic <- dlg_message("Plot spectra, with EIC of each of the 6 most intense m/z?", "yesno")$res}
+  if (plot_eic == "yes" | plot_eic == TRUE) {
+    z <- 'group'
+    rt <- list()
+    for (i in 1:length(pslist)) {
+      rt[[i]] <- as.numeric(pslist[[i]]@rt)
     }
+    pdf("EIC_XIC.pdf")
+    for (i in 1:length(rt)) {
+      message (paste0('Printing spectra n.',i,'...'))
+      par(mfrow = c(2, 1))
+      specplot(pslist[[i]])
+      x <- paste0("Unknown ", pslist[[i]]@id)
+      crom <- chromatogram(raw_data, rt = c(rt[[i]] - 5, rt[[i]] + 5))
+      plot(crom, col = colors[[z]][[2]][colors[[z]][[1]]], main = paste0("Pre-processing - ", x))
+      legend("right", legend = names(colors[[z]][[2]]), col = colors[[z]][[2]], fill = colors[[z]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+      # plot EIC from the 6 most intense ion-fragm
+      par(mfrow = c(2, 3))
+      f <- pslist[[i]]@spectrum[order(pslist[[i]]@spectrum[, 2], decreasing = TRUE)]
+      #sort(pslist[[i]]@spectrum[, 1], decreasing = TRUE)
+      for (ii in 1:6) {
+        crom <- chromatogram(raw_data, rt = c(rt[[i]] - 5, rt[[i]] + 5), mz = c(as.numeric(f[[ii]]) - 0.6, as.numeric(f[[ii]]) + 0.6))
+        plot(crom, col = colors[[z]][[2]][colors[[z]][[1]]], main = paste0("EIC - mz", f[[ii]]))
+        legend("right", legend = names(colors[[z]][[2]]), col = colors[[z]][[2]], fill = colors[[z]][[2]], box.lty = 0, cex = 0.8, bg = "transparent")
+      }
+    }
+    dev.off()
   }
+
 
   return(list(anIC = anIC, pslist = pslist, result = result, ion_mode = ion_mode))
 }

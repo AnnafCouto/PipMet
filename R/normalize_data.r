@@ -6,11 +6,11 @@
 #' @param pslist List of spectra.
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param anIC A 'xsAnnotate' CAMERA object with grouped spectra.
+#' @param group Character. Name of metadata column to group the samples for normaliation. Default to NULL.
 #' @param pre_anno A table with annotations for spectra. or path to .csv file.
 #' @param removeCompounds Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.
 #' @param mergeCompounds Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
-#' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
 #' @param derivatization Character. Kind of derivatization the samples were prepared with. Supported are 'Trimethylsilyl' and 'None'. If NULL, the user will be asked. Default to 'NULL'.
 #' @return A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
 #' @importFrom grDevices dev.off pdf png tiff boxplot.stats
@@ -35,11 +35,10 @@
 #'   metadata,
 #'   myDir = "~/",
 #'   pre_anno = pre_anno,
-#'   example = TRUE
 #' )
 #' }
 #' }
-normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic_extension = c('.tiff', '.png'), derivatization = NULL, mergeCompounds = NULL, removeCompounds = NULL) {
+normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, pic_extension = c('.tiff', '.png'), derivatization = NULL, mergeCompounds = NULL, removeCompounds = NULL, group = NULL) {
 
   # check if representative ions are ok
   okay <- 2
@@ -57,13 +56,10 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
     setwd("Statistics")
 
     # ask about derivatizations
-    if (example == TRUE) {
-      derivatization <- 'Trimethylsilyl'
-    } else {
-      if (is.null(derivatization)) {
-        derivatization <- dlg_list(c('Trimethylsilyl','None'), multiple = FALSE, title = "Sort of derivatization: ")$res
-      }
+    if (is.null(derivatization)) {
+      derivatization <- dlg_list(c('Trimethylsilyl','None'), multiple = FALSE, title = "Sort of derivatization: ")$res
     }
+
 
     for (i in 1:nrow(quant)) {
       temp <- anIC@pspectra[[as.integer(quant[i, 1])]]
@@ -142,25 +138,19 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
     designFp <- file_path_as_absolute("design.tsv")
     dataFp <- file_path_as_absolute("data.tsv")
 
-    # ask condition to compare from the metadata table
-    if (example == TRUE) {
-      x <- 2
-    } else {
-      x <- menu(colnames(metadata), graphics = TRUE, title = "Conditions to group from: ")
+    if (is.null(group)) {
+      # ask condition to compare from the metadata table
+      group <- menu(colnames(metadata), graphics = TRUE, title = "Conditions to group from: ")
     }
-    normalyzer(jobName = "Normalyzer_results", designPath = designFp, dataPath = dataFp, outputDir = myDir, sampleColName = "sample", groupColName = colnames(metadata)[x], requireReplicates = FALSE)
+    normalyzer(jobName = "Normalyzer_results", designPath = designFp, dataPath = dataFp, outputDir = myDir, sampleColName = "sample", groupColName = colnames(metadata)[group], requireReplicates = FALSE)
 
     # Pick method and apply
     fill <- list.files(paste0(myDir, "/Normalyzer_results"), full.names = TRUE, pattern = "-normalized.txt", recursive = TRUE)
     norms <- sub("-normalized.txt", replacement = "", fixed = TRUE, x = basename(fill))
-    # ask method for normalization. Standard method for the example is CycLoess.
-    if (example == TRUE) {
-      dlg_message("Normalization done! Check the report from NormalyzerDE. As example, the chosen one is CycLoess method.")$res
-      bestNormMat <- 1
-      okay <- 1
-    } else {
-      bestNormMat <- menu(norms, graphics = TRUE, title = "Choose the best normalization")
-    }
+
+    # ask method for normalization.
+    bestNormMat <- menu(norms, graphics = TRUE, title = "Choose the best normalization")
+
     mat[mat == 0] <- NA
     mat[mat > 0 & mat < 1] <- 0
     if (norms[bestNormMat] == "CycLoess") {
@@ -188,6 +178,15 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
       mat <- performVSNNormalization(mat)
     }
     n <- as.data.frame(cbind(quant[, 1:5], mat))
+
+    # normalize by another criteria (ex: mass, number of cells)
+    g <- dlg_message('Normalize by mass/numer of cells/etc?', "yesno")$res
+    if (g=='yes') {
+      write.csv(n, "Normalized_quantification.csv", row.names = FALSE, na = "")
+      dlg_message('Normalize the "Normalized_quantification.csv" file as you wish and press "ok" to continue.', 'ok')$res
+      n <- read.csv("Normalized_quantification.csv", na = "", check.names = FALSE)
+    }
+
 
     # Confirm if the chosen ions are indeed from the same spectrum
     # if everything is ok, use only first ion for the rest of statistics
@@ -277,82 +276,82 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, example, pic
     n <- cbind(n[, 1:(5 + nrow(metadata))], y[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
     write.csv(n, "Normalized_quantification.csv", row.names = FALSE, na = "")
 
-    if (example == FALSE) {
-      res <- menu(c("Conclude normalization", "Re-do normalization", "Remove all outliers", "Remove spectra with variance bigger than defined"), graphics = TRUE, title = "Choose the best normalization")
-      if (res == 1) {
-        okay <- 1
-      }
-      if (res == 2) {
-        okay <- 2
-      }
-      if (res == 3) {
-        y_1 <- y[-which(y$Variance >= boxplot.stats(y$Variance)$stats[5]), ]
-        n_1 <- n[-which(y$Variance >= boxplot.stats(y$Variance)$stats[5]), ]
+    res <- menu(c("Conclude normalization", "Re-do normalization", "Remove all outliers", "Remove spectra with variance bigger than defined"), graphics = TRUE, title = "Choose the best normalization")
+    if (res == 1) {
+      okay <- 1
+    }
+    if (res == 2) {
+      okay <- 2
+    }
+    if (res == 3) {
+      y_1 <- y[-which(y$Variance >= boxplot.stats(y$Variance)$stats[5]), ]
+      n_1 <- n[-which(y$Variance >= boxplot.stats(y$Variance)$stats[5]), ]
 
-        # png
-        if ('.png' %in% pic_extension) {
-        png("boxplot_withoutOutliers.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        par(mfrow = c(2,1))
-        boxplot(y_1$Variance, main = "Variance", horizontal = TRUE)
-        boxplot(y_1$sd, main = "Standard Deviation", horizontal = TRUE)
-        dev.off()}
-        # tiff
-        if ('.tiff' %in% pic_extension) {
-        tiff("boxplot_withoutOutliers.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        par(mfrow = c(2,1))
-        boxplot(y_1$Variance, main = "Variance", horizontal = TRUE)
-        boxplot(y_1$sd, main = "Standard Deviation", horizontal = TRUE)
-        dev.off()}
+      # png
+      if ('.png' %in% pic_extension) {
+      png("boxplot_withoutOutliers.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      par(mfrow = c(2,1))
+      boxplot(y_1$Variance, main = "Variance", horizontal = TRUE)
+      boxplot(y_1$sd, main = "Standard Deviation", horizontal = TRUE)
+      dev.off()}
+      # tiff
+      if ('.tiff' %in% pic_extension) {
+      tiff("boxplot_withoutOutliers.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      par(mfrow = c(2,1))
+      boxplot(y_1$Variance, main = "Variance", horizontal = TRUE)
+      boxplot(y_1$sd, main = "Standard Deviation", horizontal = TRUE)
+      dev.off()}
 
-        n_1 <- cbind(n_1[, 1:(5 + nrow(metadata))], y_1[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
-        write.csv(n_1, "Normalized_quantification_withoutOutliers.csv", row.names = FALSE, na = "")
-        a <- ggplot(y_1, aes(x = y[, nrow(metadata) + 1])) +
-          geom_histogram() +
-          ggtitle("Variance Distribution") +
-          xlab("Variance") +
-          ylab("Frequency") +
-          theme(rect = element_rect(fill = "transparent")) # histograma da variância. O ideal é que tenha pouca variância alta
-        b <- ggplot(y_1, aes(x = y[, nrow(metadata) + 2])) +
-          geom_histogram() +
-          ggtitle("Standard Deviation") +
-          xlab("Standard Deviation") +
-          ylab("Frequency") +
-          theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrão.
-        # png
-        if ('.png' %in% pic_extension) {
-        png("variance_dp_withoutOutliers.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        gridExtra::grid.arrange(a, b, ncol = 1)
-        dev.off()}
-        # tiff
-        if ('.tiff' %in% pic_extension) {
-        tiff("variance_dp_withoutOutliers.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-        gridExtra::grid.arrange(a, b, ncol = 1)
-        dev.off()}        
-      }
+      n_1 <- cbind(n_1[, 1:(5 + nrow(metadata))], y_1[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
+      write.csv(n_1, "Normalized_quantification_withoutOutliers.csv", row.names = FALSE, na = "")
+      a <- ggplot(y_1, aes(x = y[, nrow(metadata) + 1])) +
+        geom_histogram() +
+        ggtitle("Variance Distribution") +
+        xlab("Variance") +
+        ylab("Frequency") +
+        theme(rect = element_rect(fill = "transparent")) # histograma da variância. O ideal é que tenha pouca variância alta
+      b <- ggplot(y_1, aes(x = y[, nrow(metadata) + 2])) +
+        geom_histogram() +
+        ggtitle("Standard Deviation") +
+        xlab("Standard Deviation") +
+        ylab("Frequency") +
+        theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrão.
+      # png
+      if ('.png' %in% pic_extension) {
+      png("variance_dp_withoutOutliers.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      gridExtra::grid.arrange(a, b, ncol = 1)
+      dev.off()}
+      # tiff
+      if ('.tiff' %in% pic_extension) {
+      tiff("variance_dp_withoutOutliers.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      gridExtra::grid.arrange(a, b, ncol = 1)
+      dev.off()}        
+    }
 
-      if (res == 4) {
-        th <- as.double(dlgInput("Variance threshold ", "0")$res)
-        y_2 <- y[-which(y$Variance >= th), ]
-        n_2 <- n[-which(y$Variance >= th), ]
-        # png
-        if ('.png' %in% pic_extension) {
+    if (res == 4) {
+      th <- as.double(dlgInput("Variance threshold ", "0")$res)
+      y_2 <- y[-which(y$Variance >= th), ]
+      n_2 <- n[-which(y$Variance >= th), ]
+      # png
+      if ('.png' %in% pic_extension) {
         png(paste0("boxplot_varianceUpTo", th, ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
         par(mfrow = c(2,1))
         boxplot(y_2$Variance, main = "Variance", horizontal = TRUE)
         boxplot(y_2$sd, main = "Standard Deviation", horizontal = TRUE)
-        dev.off()}
-        # tiff
-        if ('.tiff' %in% pic_extension) {
+        dev.off()
+      }
+      # tiff
+      if ('.tiff' %in% pic_extension) {
         tiff(paste0("boxplot_varianceUpTo", th, ".tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
         par(mfrow = c(2,1))
         boxplot(y_2$Variance, main = "Variance", horizontal = TRUE)
         boxplot(y_2$sd, main = "Standard Deviation", horizontal = TRUE)
-        dev.off()}
-        n_2 <- cbind(n_2[, 1:(5 + nrow(metadata))], y_2[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
-        write.csv(n_2, paste0("Normalized_quantification_varianceUpTo", th, ".csv"), row.names = FALSE, na = "")
+        dev.off()
       }
-      okay <- menu(c("OK, keep going", "No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")
+      n_2 <- cbind(n_2[, 1:(5 + nrow(metadata))], y_2[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
+      write.csv(n_2, paste0("Normalized_quantification_varianceUpTo", th, ".csv"), row.names = FALSE, na = "")
     }
+    okay <- menu(c("OK, keep going", "No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")
   }
 
   # set to main folder

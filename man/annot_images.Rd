@@ -8,7 +8,6 @@ annot_images(
   pslist,
   myDir,
   pictures = TRUE,
-  example = FALSE,
   pic_extension = c(".tiff", ".png")
 )
 }
@@ -18,8 +17,6 @@ annot_images(
 \item{myDir}{Path to the directory of work.}
 
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
-
-\item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 }

@@ -3,12 +3,12 @@ title: "GC-MS Data Processing with PipMet"
 author: "Anna Couto"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
+  html_document:
+    df_print: paged
   rmarkdown::html_vignette: default
-vignette: >
-  %\VignetteIndexEntry{GC-MS Data Processing with PipMet}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  pdf_document: default
+vignette: "%\\VignetteIndexEntry{GC-MS Data Processing with PipMet} %\\VignetteEngine{knitr::rmarkdown}
+  %\\VignetteEncoding{UTF-8}\n"
 ---
 
 ```{r setup, include = FALSE}
@@ -34,7 +34,6 @@ The `workData()` is a wrapper for files readings, preprocessing raw data into vi
 Therefore, the only function the user needs to call is as follows:
 
 ```{r, echo =TRUE, results = 'hide', eval = FALSE}
-library(PipMet)
 result <- workData()
 ```
 
@@ -49,6 +48,16 @@ Bellow we load the package and initialize the processing data function.
 library(PipMet)
 result <- workData()
 ```
+
+One of the first steps is to locate files, determine files extension and read a metadata table. The examples files are located in the 'inst/ext' folder in the PipMet installation folder. To avoid searching through the installation files, we can set `example = TRUE` in the main function. That can be done such as:
+
+```{r, echo =TRUE, results = 'hide', eval = FALSE}
+library(PipMet)
+result <- workData(example = TRUE)
+```
+
+This way, the sample directory, metadata path and extension will not be asked to the user.
+
 
 
 ## Files reading
@@ -66,7 +75,7 @@ Furthermore, the user may inform m/z and rt (retentions time) for specific ions 
 ```{r, out.width='25%', fig.align='center', fig.cap='Peak monitoring.', echo=FALSE}
 knitr::include_graphics('02.png')
 ``` 
-As a first step, the user will be asked to point the folder where the files to be processed are located.
+As a first step, the user will be asked to point the folder where the files to be processed are located. Once we set `example = TRUE`, this pop-up will be supressed.
 
 ```{r, out.width='40%', fig.align='center', fig.cap='Choose the samples folder.', echo=FALSE}
 knitr::include_graphics('1.png')
@@ -79,20 +88,20 @@ Following that, the user is asked to provide a name for the processing project, 
 knitr::include_graphics('2.png')
 ``` 
 
-The files extension will be asked, then. The PipMet package is capable of reading '.mzML' and '.mzXML' files through the *xcms*, *MSnbase* and *mzR* packages. Files with different extensions may be converted using the *Mass++* ^3^ or *Proteowizard Softwares*^4^, for example. 
+The files extension will be asked, then, if the `example` is not set as TRUE. The PipMet package is capable of reading '.mzML' and '.mzXML' files through the *xcms*, *MSnbase* and *mzR* packages. Files with different extensions may be converted using the *Mass++* ^3^ or *Proteowizard Softwares*^4^, for example. The files provided for the examples are .mzXML files.
 
 ```{r, out.width='25%', fig.align='center', fig.cap='File extensions accepted.', echo=FALSE}
 knitr::include_graphics('3.png')
 ``` 
 
-The metadata file must be provided in order to proper process the analysis files. It is a sheet .csv file containing a 'Sample' for the samples names and the 'file' with the file path to each of the samples. Each row represent a sample. More columns can and should be added in order to enhance grouping-demanding steps. In the set of examples, we have two replicates of samples collected from Energycane and two from Sugarcane, two Pool and two Blank samples. The metadata.csv file will be as follow:
+The metadata file must be provided in order to proper process the analysis files. It is a sheet .csv file containing a 'sample' column for the samples names and the 'file' column with the file path to each of the samples. Each row represent a sample. More columns can and should be added in order to enhance grouping-demanding steps. In the set of examples, we have two replicates of samples collected from Energycane and two from Sugarcane, two Pool and two Blank samples. The metadata.csv file will be as follow:
 
 
 ```{r, echo=FALSE, results='asis', fig.cap='Metadata table.'}
 knitr::kable(read.csv(system.file("extdata", "metadata.csv", package = "PipMet")))
 ```
 
-The PipMet asks if the user already have a metadata.csv file prepared. If 'Yes', the user will be asked to point the path to the metadata file. Though, if 'No', a metadat.csv file will be created with basic names for files with the extension given in the sample_dir so the user can fill it.
+The PipMet asks if the user already have a metadata.csv file prepared, if the `example` is not set as TRUE. If 'Yes', the user will be asked to point the path to the metadata file. Though, if 'No', a metadat.csv file will be created with basic names for files with the extension given in the sample_dir so the user can fill it.
 
 ```{r, out.width='35%', fig.align='center', fig.cap='Metadata table.', echo=FALSE}
 knitr::include_graphics('4.png')
@@ -228,7 +237,7 @@ The PipMet package, through the NormalyzerDE package, offers different methods o
 knitr::include_graphics('7.png')
 ``` 
 
-The normalyzerDE R package provides different normalization methods and a report with metrics for the user to pick the best normalziation that fit his data. In the Example, a folder 'Normalyzer_results' is created and the user is invited to look at the pdf report and to choose among the methodologies. Here, we picked the CycLoess normalization. Then a histogram of the variance and standard deviation is plot in the 'Statistics' folder, along with a boxplot of the same metrics and its outliers. 
+The normalyzerDE R package provides different normalization methods and a report with metrics for the user to pick the best normalization that fit his data. In the Example, a folder 'Normalyzer_results' is created and the user is invited to look at the pdf report and to choose among the methodologies. Here, we picked the CycLoess normalization. Then a histogram of the variance and standard deviation is plot in the 'Statistics' folder, along with a boxplot of the same metrics and its outliers. 
 
 ```{r, out.width='100%', fig.align='center', fig.cap='Boxplot, variance and standard deviation.', echo=FALSE}
 par(mfrow = c(1,2))
@@ -265,6 +274,8 @@ knitr::include_graphics('18.png')
 ``` 
 
 If more than one category to describe the samples are availabe, the user may do a Level 2 volcano plot, to compare using to describers. Such as 'Energy: Control X Treatment' and 'Sugar: Control X Treatment'. 
+
+Along with each of the comparison for plotting the Volcano plot, a file containing the p-value (significance) and foldchange of the comparisons is written inside the volcano plot folder.
 
 ```{r, out.width='60%', fig.align='center', fig.cap='Volcano plot.', echo=FALSE}
 knitr::include_graphics('volcano_identified.png')
@@ -307,7 +318,7 @@ The aforementioned pictures are all generated and saved inside the project folde
 
 The pop-ups only appear if the user do not specify the information required in the parameters of the main function. If everything is given prior to the beginning of the processing, the function will work without any intervention or pop-up. For the parameters, refer to the `PipMet` documentation.
 
-```{r, out.width='40%', fig.align='center', echo=FALSE, fig.cap='Heatmap of identified spectra with samples as the mean of their replicates.'}
+```{r, out.width='40%', fig.align='center', echo=FALSE, fig.cap='Processing done.'}
 knitr::include_graphics('20.png')
 ```
 

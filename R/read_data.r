@@ -4,13 +4,13 @@
 #' @keywords metadata
 #' @export
 #' @return A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.
-#' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
+#' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to NULL.
 #' @param myDir Path to working directory
 #' @param sample_dir Path to sample directory.
 #' @param metadata Path to .csv file or an R data.frame object containing metadata. At least 'sample' and 'file' columns must be included.
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
-#' @param example Logical. If is example, pop-ups won't appear. Default to FALSE.
+#' @param example Logical. If example = TRUE, the metadata and other needed files will be loaded from package files.
 #' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @importFrom grDevices dev.off png tiff rainbow
@@ -26,10 +26,6 @@
 #' \donttest{
 #' \dontrun{
 #' read <- read_data(
-#'   sample_dir = system.file("extdata", package = "PipMet"),
-#'   metadata = system.file("extdata", "metadata.csv", package = "PipMet"),
-#'   extension = ".mzML",
-#'   myDir = "~/",
 #'   pictures = FALSE,
 #'   example = TRUE
 #' )
@@ -98,13 +94,17 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
     }
   } else { # if example == TRUE
     metadata <- read.csv(system.file("extdata", "metadata.csv", package = "PipMet"), na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
-    metadata$file <- list.files(system.file("extdata", package = "PipMet"), pattern = extension, full.names = TRUE)
+    extension <- '.mzXML'
+    for (i in 1:nrow(metadata)) {
+      metadata$file [i] <- system.file("extdata", metadata$file [i], package = "PipMet")
+    }
     sample_dir <- system.file("extdata", package = "PipMet")
     myDir <- dlgInput("Name your project", "PipMet_example")$res
-    dir.create(myDir, showWarnings = FALSE)
+    if (!dir.exists(myDir) == TRUE) {
+      dir.create(myDir, showWarnings = FALSE)
+    }
     setwd(myDir)
     myDir <- getwd()
-    extension <- ".mzXML"
   }
 
   # if there is only a single file
@@ -216,8 +216,10 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
     }
 
     # extracted ion chromatogram based on mz and rt asked previously by user
-    if (peakMonitor==TRUE) {
-      dir.create("Monitoring ions")
+    if (peakMonitor==TRUE | peakMonitor == 'Yes') {
+      if (!dir.exists("Monitoring ions") == TRUE) {
+        dir.create("Monitoring ions")
+      }
       setwd("Monitoring ions")
 
       for (ii in 1:length(ions)) {

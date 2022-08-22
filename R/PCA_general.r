@@ -31,6 +31,7 @@ PCA_general <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '
   rownames(mat) <- n[, 1]
 
   # new folder for PCA results
+  setwd(myDir)
   if (!dir.exists("PCA_general")) {
     dir.create("PCA_general")
   }
