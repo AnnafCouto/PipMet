@@ -8,7 +8,8 @@
 #' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
 #' @param prog Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.
 #' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
-#' @param info Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL
+#' @param info Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL.
+#' @param Ri Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL.
 #' @return None.
 #' @importFrom svDialogs dlg_message dlg_list
 #' @importFrom utils read.csv write.csv
@@ -28,7 +29,7 @@
 #'                  info = FALSE)
 #' }
 #' }
-create_database <- function(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode, info = NULL) {
+create_database <- function(apslist, column_set = NULL, prog = NULL, ion_mode = NULL, info = NULL, Ri = NULL) {
 
   # get only annotated spectra
   pslist <- list()
@@ -68,7 +69,7 @@ create_database <- function(apslist, column_set = column_set, prog = prog, ion_m
     dataInfo[, "CAS"] <- unlist(cts_convert(dataInfo[, "PubChem ID"], "PubChem CID", "cas", match = "first"))
     # ask information for retention index search
     if (dlg_message("Look for retention index in NIST?", type = "yesno")$res == "yes") {
-      Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index:")$res
+      if (is.null(Ri)) {Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index:")$res}
       if (is.null (column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE, title = 'Column setup:')$res}
       if (is.null (prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE, title = 'Temperature program:')$res}
       x <- dlg_list(c("CAS", "Name", "InChIKey"), multiple = FALSE, title = "Search for retention index based on:")$res

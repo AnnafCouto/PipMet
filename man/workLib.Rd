@@ -6,14 +6,24 @@
 \usage{
 workLib(
   myDir = NULL,
+  libname = NULL,
   sample_dir = NULL,
   lib_metadata = NULL,
   extension = NULL,
-  example = FALSE
+  example = FALSE,
+  parallel = NULL,
+  ion_mode = NULL,
+  prog = NULL,
+  column_set = NULL,
+  instrument_type = NULL,
+  cores = 1,
+  Ri = NULL
 )
 }
 \arguments{
 \item{myDir}{Path to working directory. Default to none.}
+
+\item{libname}{Character. Name of the library. Default to NULL. If NULL the user will be asked.}
 
 \item{sample_dir}{Path to sample directory. Default to none.}
 
@@ -22,6 +32,20 @@ workLib(
 \item{extension}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.}
 
 \item{example}{Logical. If is example, pop-ups won't appear.}
+
+\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.}
+
+\item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
+
+\item{prog}{Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.}
+
+\item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
+
+\item{instrument_type}{Character. Instrument of acquisition. Default to NULL. If NULL, the user will be asked.}
+
+\item{cores}{Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.}
+
+\item{Ri}{Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL.}
 }
 \description{
 Main function for GC-MS standards processing for internal library development.

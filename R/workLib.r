@@ -4,10 +4,18 @@
 #' @keywords standards, library, internal
 #' @export
 #' @param myDir Path to working directory. Default to none.
+#' @param libname Character. Name of the library. Default to NULL. If NULL the user will be asked.
 #' @param sample_dir Path to sample directory. Default to none.
 #' @param lib_metadata Path to .csv file containing metadata. "compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey" columns must be included. Default to none.
 #' @param extension Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.
 #' @param example Logical. If is example, pop-ups won't appear.
+#' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.
+#' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
+#' @param prog Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.
+#' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
+#' @param instrument_type Character. Instrument of acquisition. Default to NULL. If NULL, the user will be asked.
+#' @param cores Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.
+#' @param Ri Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL.
 #' @importFrom methods as
 #' @importFrom ddpcr quiet
 #' @importFrom utils choose.dir menu read.csv write.csv
@@ -21,6 +29,7 @@
 #' @importFrom CAMERA xsAnnotate groupFWHM groupCorr
 #' @importFrom tcltk tkmessageBox
 #' @importFrom ddpcr quiet
+#' @importFrom fritools is_path
 #' @importFrom svDialogs dlgInput dlg_message
 #' @examples
 #' \donttest{
@@ -34,44 +43,50 @@
 #' )
 #' }
 #' }
-workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE) {
+workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE, parallel = NULL, ion_mode = NULL, prog = NULL, column_set = NULL, instrument_type = NULL, cores = 1, Ri = NULL) {
 
-  # ask for parallelization mode
-  if (!example == TRUE) {
-    parallel <- menu(c("Serial Param (disable)", "Snow Param", "MultiCore Param"), graphics = TRUE, title = "Choose parallelization mode:")
-    if (parallel == 1) {
-      register(SerialParam(), default = TRUE)
-    }
-    if (parallel == 2) {
-      register(SnowParam(), default = TRUE)
-    }
-    if (parallel == 3) {
-      register(MulticoreParam(), default = TRUE)
-    }
-  } else {
+ # ask for parallelization mode
+  if (is.null (parallel)) {
+    parallel <- dlg_list(c("Serial Param", "Snow Param", "MultiCore Param"), multiple = FALSE, title = "Parallelization mode:")$res
+  }
+  #parallel <- menu(c("Serial Param (disable)", "Snow Param", "MultiCore Param"), graphics = TRUE, title = "Choose parallelization mode:")
+  if (parallel == 'Serial Param') {
     register(SerialParam(), default = TRUE)
+  }
+  if (parallel == 'Snow Param') {
+    if (is.null(cores)) {cores <- dlgInput(paste0("Number of cores used (you have ", detectCores()," cores available):"),  detectCores()-2)$res}
+    register(SnowParam(workers = as.numeric(cores)), default = TRUE)
+  }
+  if (parallel == 'MultiCore Param') {
+    register(MulticoreParam(), default = TRUE)
   }
 
   # get directory for samples and project and set library metadata
   if (!example == TRUE) {
+
     # lib name
-    libname <- dlgInput("Name your library", "Library X")$res
+    if (is.null(libname)) {libname <- dlgInput("Name your library", "Library X")$res}
+
     # samples directory
-    if (is.null(sample_dir) | missing(sample_dir)) {
+    if (is.null(sample_dir)) {
       sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
     }
-    setwd("~/")
+
     # project directory
-    if (is.null(myDir) | missing(myDir)) {
-      myDir <- dlgInput("Name your library", Sys.info()["user"])$res
-      dir.create(myDir, showWarnings = FALSE)
+    if (is.null(myDir)) {
+      myDir <- dlgInput("Name your project", Sys.info()["user"])$res
+      if (!dir.exists(myDir) == TRUE) {
+        dir.create(myDir)
+      }
     }
     setwd(myDir)
     myDir <- getwd()
+
     # files extension
     if (is.null(extension)) {
       extension <- dlg_list(c(".mzML", ".mzXML"), multiple = TRUE, title = "Files extension:")$res
     }
+
     # library metadata set up
     if (is.null(lib_metadata)) {
       metd <- dlg_message("Metadata table already exists?", "yesno")$res
@@ -79,6 +94,10 @@ workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extens
         lib_metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
         if (!"file" %in% colnames(lib_metadata)) {
           lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$sample, extension)
+        } else {
+          for (i in 1:nrow(lib_metadata)) { # check if they are just filenames or filepath (they need to be path)
+            if (!is_path(lib_metadata$file [i])) {lib_metadata$file [i] <- paste0(sample_dir, "/", basename (lib_metadata$file [i]))}
+          }
         }
       } else {
         files <- list.files(sample_dir, full.names = TRUE, pattern = extension, recursive = TRUE)
@@ -100,12 +119,12 @@ workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extens
   } else {
     sample_dir <- system.file("extdata", package = "PipMet")
     lib_metadata <- read.csv(system.file("extdata", "lib_metadata.csv", package = "PipMet"), na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
-    extension <- ".mzXML"
-    setwd(sample_dir)
+    extension <- ".mzML"
     for (i in 1:nrow(lib_metadata)) {
-      lib_metadata$file[i] <- file_path_as_absolute(lib_metadata$file[i])
+      lib_metadata$file [i] <- system.file("extdata", lib_metadata$file [i], package = "PipMet")
     }
-    myDir <- "~/LibraryBuilding_example"
+    myDir <- dlgInput("Name your project", "PipMet_example")$res
+    lib_name <- 'Metabolite_mix'
     setwd("~/")
     dir.create(myDir)
     setwd(myDir)
@@ -116,49 +135,58 @@ workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extens
   lib_metadata <- lib_metadata[!apply(is.na(lib_metadata), 1, all), ] # remove empty rows
 
   # begin processing
-  # get polarity of data acquisiton
-  if (example == TRUE) {
-    polarity <- "positive"
-  } else {
-    polarity <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Polarity:")$res
-  }
+
+  # get mode of data acquisiton
+  if (is.null(ion_mode)) {ion_mode <- dlg_list(c("positive", "negative"), multiple = FALSE, title = "Ion mode of data acquisition:")$res}
+ 
+  # read and filter files to a 5s window
+  message (paste0('Reading ', length(unique(lib_metadata$file)), ' files...'))
   raw_data <- list()
   for (i in 1:nrow(lib_metadata)) {
-    # read - OK
     quiet(raw_data[[i]] <- readMSData(lib_metadata$file[i], mode = "onDisk"))
-    # filter RT
-    quiet(raw_data[[i]] <- filterRt(raw_data[[i]], c(as.numeric(lib_metadata[i, "rt"]) - 10, as.numeric(lib_metadata[i, "rt"]) + 10)))
+    quiet(raw_data[[i]] <- filterRt(raw_data[[i]], c(as.numeric(lib_metadata[i, "rt"]) - 5, as.numeric(lib_metadata[i, "rt"]) + 5)))
   }
+
   # peak picking
+  message (paste0('Preprocessing ', length(unique(lib_metadata$file)), ' files...'))
   quiet(xdata <- lapply(raw_data, FUN = findChromPeaks, param = MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)))
+  
+  message ('Grouping peaks into spectra...')
   # spectra defition
   quiet(xset <- lapply(xdata, FUN = as, Class = "xcmsSet"))
+
   # create a xsAnnotate object
-  an <- lapply(xset, FUN = xsAnnotate, polarity = polarity)
+  quiet(an <- lapply(xset, FUN = xsAnnotate, polarity = ion_mode))
+
   # group by rt
-  anF <- lapply(an, FUN = groupFWHM, perfwhm = 1)
+  quiet(anF <- lapply(an, FUN = groupFWHM, perfwhm = 1))
+
   # group by correlation information
-  anIC <- lapply(anF, FUN = groupCorr, calcIso = FALSE)
+  quiet(anIC <- lapply(anF, FUN = groupCorr, calcIso = FALSE))
+
   # extract to spectra list
-  pslist <- lapply(anIC, FUN = extractSpectra, min_peaks = 5)
+  quiet(pslist <- lapply(anIC, FUN = extractSpectra, min_peaks = 5))
 
   names(pslist) <- names(anIC) <- names(an) <- names(anF) <- names(xset) <- names(xdata) <- names(raw_data) <- lib_metadata[, "compound"]
 
   # get information on retention index, column and temperature program
-  Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index")$res
-  column <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res
-  prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res
-  Instrument_type <- dlg_input("Type of instrument of acquisition", "GC-EI-Q")$res
+  if (is.null (Ri)) {Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index")$res}
+  if (is.null (column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res}
+  if (is.null (prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res}
+  if (is.null (instrument_type)) {instrument_type <- dlg_input("Type of instrument of acquisition", "GC-EI-Q")$res}
+  
 
+  message ('Retrieving RI from CAS numbers, if available...')
   # retrieve RI from CAS numbers (from NIST database), if RI is not present
   lib_metadata[, "RI_"] <- NA
   for (i in 1:nrow(lib_metadata)) {
     lib_metadata[i, "CAS"] <- gsub(pattern = "-", replacement = "", lib_metadata[i, "CAS"]) # remove hifens from CAS
     if (is.na(lib_metadata[i, "RI_"])) {
-      lib_metadata[i, "RI_"] <- mean(nist_ri(as.cas(lib_metadata[i, "CAS"]), from = "cas", type = Ri, polarity = column, temp_prog = prog)$RI)
+      quiet(lib_metadata[i, "RI_"] <- mean(nist_ri(as.cas(lib_metadata[i, "CAS"]), from = "cas", type = Ri, polarity = column_set, temp_prog = prog)$RI))
     }
   }
 
+  message (paste0('Writing ', length(pslist), ' spectra for manual validation...'))
   # create .msp structure and files
   dir.create("spectra")
   setwd("spectra")
@@ -188,6 +216,7 @@ workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extens
   ppslist <- pslist
 
   # validating spectra
+
   done <- 2
   while (done == 2) {
     for (i in 1:length(pslist)) {
@@ -201,6 +230,7 @@ workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extens
     done <- menu(c("Continue", "Do it again"), graphics = TRUE, title = "Validation done!")
   }
 
+  message (paste0('Writing ', length(ppslist), ' validated spectra...'))
   # generate final .msp file
   spectra <- list()
   for (i in 1:length(ppslist)) {
@@ -221,9 +251,9 @@ workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extens
     result[[i]]$CAS <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "CAS"]
     result[[i]]$Class <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "class"]
     result[[i]]$Date <- as.character(Sys.Date())
-    result[[i]]$Instrument_type <- Instrument_type
-    result[[i]]$Comments <- paste0(" Column class: ", paste0("Standard ", column), "; ", "ProgramType: ", prog, "; ", "ChemSpiderID: ", lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "ChemSpiderID"], "; linear RI: ", lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI_"])
-    result[[i]]$Ion_mode <- polarity
+    result[[i]]$Instrument_type <- instrument_type
+    result[[i]]$Comments <- paste0(" Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog, "; ", "ChemSpiderID: ", lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "ChemSpiderID"], "; linear RI: ", lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI_"])
+    result[[i]]$Ion_mode <- ion_mode
     if ("RI" %in% colnames(lib_metadata)) {
       result[[i]]$RI <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI"]
     }
@@ -234,10 +264,6 @@ workLib <- function(myDir = NULL, sample_dir = NULL, lib_metadata = NULL, extens
   names(result) <- names(ppslist)
   setwd(myDir)
   metaMS::write.msp(result, paste0("Library_", libname, ".msp"), newFile = TRUE)
-  if (!example == TRUE) {
-    save.image(paste0(libname, "_", Sys.Date(), ".RData"))
-  } else {
-    save.image(paste0("LibExample_", Sys.Date(), ".RData"))
-  }
+
   dlg_message("Done! Internal library development finalized. A '.msp' file was created in your directory for conversion to NIST MS Search Library.")
 }

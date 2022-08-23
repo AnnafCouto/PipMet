@@ -69,6 +69,10 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
         metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
         if (!"file" %in% colnames(metadata)) {
           metadata$file <- paste0(sample_dir, "/", metadata$sample, extension)
+        } else {
+          for (i in 1:nrow(lib_metadata)) { # check if they are just filenames or filepath (they need to be path)
+            if (!is_path(lib_metadata$file [i])) {lib_metadata$file [i] <- paste0(sample_dir, "/", basename (lib_metadata$file [i]))}
+          }
         }
       } else {
         files <- list.files(sample_dir, full.names = TRUE, pattern = extension, recursive = TRUE)

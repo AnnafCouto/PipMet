@@ -6,10 +6,11 @@
 \usage{
 create_database(
   apslist,
-  column_set = column_set,
-  prog = prog,
-  ion_mode = ion_mode,
-  info = NULL
+  column_set = NULL,
+  prog = NULL,
+  ion_mode = NULL,
+  info = NULL,
+  Ri = NULL
 )
 }
 \arguments{
@@ -21,7 +22,9 @@ create_database(
 
 \item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
 
-\item{info}{Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL}
+\item{info}{Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL.}
+
+\item{Ri}{Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL.}
 }
 \value{
 None.
