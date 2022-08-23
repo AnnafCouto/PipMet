@@ -25,6 +25,7 @@
 #' @param replicate Character or Logical. If FALSE, there is no replicate informations in the metadata table. Otherwise, inform the name in the metadata column containing replicate information. If NULL, the user will be asked. Default to NULL.
 #' @param removeCompounds Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.
 #' @param mergeCompounds Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.
+#' @param info Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL. Only required if lib_build = TRUE or NULL.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message dlg_list
@@ -46,7 +47,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL, info = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (pictures == TRUE) {
@@ -159,10 +160,10 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   dlg_message("Processing done!")$res
 
   # check create_database first
-  #if (is.null(lib_build)) {lib_build <- dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res}
-  #if (lib_build == TRUE | lib_build == 'yes') {
-  #  create_database(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode)
-  #}
+  if (is.null(lib_build)) {lib_build <- dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res}
+  if (lib_build == TRUE | lib_build == 'yes') {
+    create_database(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode, info = info)
+  }
 
   return(list(myDir = myDir, metadata = metadata, apslist = apslist, raw_data = raw_data, xdata4 = xdata4, anIC = anIC, colors = colors, quantification_table = n))
 }

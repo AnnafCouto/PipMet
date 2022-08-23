@@ -324,6 +324,46 @@ knitr::include_graphics('20.png')
 
 
 
+## In-house database
+
+
+
+Once the processing is done, the identified compounds can be used to create a in-house database to be uploaded in NIST MS Search Software. In this case, the user is asked wether to create or not, as following:
+
+```{r, out.width='40%', fig.align='center', echo=FALSE, fig.cap='In-house database creation.'}
+knitr::include_graphics('22.png')
+```
+
+For this extra step, the user may provide more information than the name, retention time and index and spectrum. A dataInfo.csv will be created in the folder, if the user agree to add more information, where information about molecule describers such as CAS, InChiKey, PubChem ID, ChemSpider ID, retention index and more can be included. 
+
+```{r, out.width='40%', fig.align='center', echo=FALSE, fig.cap='Add more information to the compounds.'}
+knitr::include_graphics('23.png')
+knitr::include_graphics('24.png')
+```
+After filling most of the information as possible, there can still be missing information, as in the case of these example:
+
+```{r, echo=FALSE, results='asis', fig.cap='dataInfo table.'}
+knitr::kable(read.csv(system.file("extdata", "dataInfo.csv", package = "PipMet")))
+```
+
+After filling the forms and pressing 'Ok', the software will still try to recover the missing information and more. It will be asked if the user would like to add retention index information, if there missing indexes. For that, the user must provide the kind of retention index (supported one are 'linear', 'lee' and 'kovats') and from what information to look for. It is recommended that the user provide a InChiKey or CAS number for each compound for they are much more reliable and non-ambiguous to look for in the NIST system in order to recover de retention index information.If more than one retention index is present, the the software returns the RI as a mean of the registered RIs.
+
+```{r, out.width='40%', fig.align='center', echo=FALSE, fig.cap='Retention index information.'}
+knitr::include_graphics('25.png')
+```
+
+Here we use InChiKey information and the user is asked to check the DatabaseInfo.csv file and fill missing fields, if possible. 
+The resulting information file is as such:
+
+```{r, echo=FALSE, results='asis', fig.cap='DatabaseInfo.csv table.'}
+knitr::kable(read.csv(system.file("extdata", "DatabaseInfo.csv", package = "PipMet")))
+```
+And the creation of the in-house database is concluded.
+
+```{r, out.width='40%', fig.align='center', echo=FALSE, fig.cap='Retention index information.'}
+knitr::include_graphics('28.png')
+```
+
 ---
 
 ## References

@@ -8,35 +8,36 @@
 #' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
 #' @param prog Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.
 #' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
+#' @param info Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL
 #' @return None.
 #' @importFrom svDialogs dlg_message dlg_list
 #' @importFrom utils read.csv write.csv
 #' @importFrom metaMS write.msp
 #' @importFrom webchem get_cid pc_prop cts_convert nist_ri
-#' @importFrom methods .hasSlot nprcgenekeepr
-#' @importFrom nprcgenekeepr isEmpty
+#' @importFrom methods .hasSlot
+#' @importFrom stringr str_to_lower
 #' @examples
 #' \donttest{
 #' \dontrun{
-#' load(system.file("extdata", "pslist.RData", package = "PipMet"))
-#' create_database(pslist)
+#' load(system.file("extdata", "apslist.RData", package = "PipMet"))
+#' create_database(apslist, column_set = 'non-polar', prog = 'ramp', ion_mode = 'positive', info = FALSE)
 #' }
 #' }
-create_database <- function(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode) {
+create_database <- function(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode, info = NULL) {
 
   # get only annotated spectra
   pslist <- list()
   count <- 1
   for (i in 1:length(apslist)) {
-    if (!isEmpty(apslist[[i]]@annotation)) {
+    if (!isempty(apslist[[i]]@annotation)) {
       pslist[count] <- apslist[[i]]
       count <- count + 1
     }
   }
 
   # add information from internet?
-  info <- dlg_message("Would you like to add more informations about the compounds?", type = "yesno")$res
-  if (info == "yes") {
+  if (is.null(info)) {info <- dlg_message("Would you like to add more informations about the compounds?", type = "yesno")$res}
+  if (info == "yes" | info == TRUE) {
     dataInfo <- matrix(nrow = length(pslist), ncol = 10)
     colnames(dataInfo) <- c("Name", "formula", "exact.mass", "rt", "CAS", "ChemSpider", "InChIKey", "PubChem ID", "Class", "RI")
     dataInfo <- as.data.frame(dataInfo)
@@ -65,15 +66,20 @@ create_database <- function(apslist, column_set = column_set, prog = prog, ion_m
       Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index:")$res
       if (is.null (column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE, title = 'Column setup:')$res}
       if (is.null (prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE, title = 'Temperature program:')$res}
+      x <- dlg_list(c("CAS", "Name", "InChIKey"), multiple = FALSE, title = "Search for retention index based on:")$res
       for (i in 1:length(pslist)) {
-        dataInfo[i, "RI"] <- nist_ri(dataInfo[i, "Name"], from = "name", type = Ri, polarity = column_set, temp_prog = prog)
+        if (!is.na(dataInfo[i, x])) {
+          dataInfo[i, "RI"] <- mean(nist_ri(dataInfo[i, x], from = str_to_lower(x), type = Ri, polarity = column_set, temp_prog = prog)$RI)
+        } else {
+          dataInfo[i, "RI"] <- mean(nist_ri(dataInfo[i, "Name"], from = "name", type = Ri, polarity = column_set, temp_prog = prog)$RI)
+        }      
       }
     }
     # write informations for checking
     write.csv(dataInfo, file = "DatabaseInfo.csv", row.names = FALSE)
     dlg_message("Check and fill the 'DatabaseInfo.csv' file in myDir and press 'OK'.")$res
     dataInfo <- read.csv("DatabaseInfo.csv", na.string = c("NA", ""), colClasses = "character", sep = ",")
-    dataInfo <- dataInfo[-which(is.na(dataInfo$Name)),]
+    if (!sum(grep('NA', dataInfo$Name))==0) {dataInfo <- dataInfo[-which(is.na(dataInfo$Name)),]}
   }
 
   # create spectra in .msp file format
@@ -102,7 +108,6 @@ create_database <- function(apslist, column_set = column_set, prog = prog, ion_m
     }
     result[[i]]$Date <- as.character(Sys.Date())
     result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog)
-    
   }
   names(result) <- dataInfo[, "Name"]
   metaMS::write.msp(result, file = paste0("Database_", Sys.Date(), ".msp"), newFile = TRUE)
