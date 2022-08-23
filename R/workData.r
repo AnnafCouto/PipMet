@@ -1,7 +1,7 @@
 #' workData
 #'
-#' Main function for GC data processing.
-#' @keywords metadata
+#' Main function for GC data processing. It read files in '.mzXML' and '.mzML' formats, apply algorithms for for peacking, grouping, retention time correction and filling missing peaks. The next step proposes spectra based on retention time window and correlation information. After annotation, the function performs quantification by normalizing data and apply t test and principal components analysis, plotting pictures for the evaluation of the steps performed. At the end, the user can choose to generate a internal library with the identified compounds to be uploaded into NIST MS Search software.
+#' @keywords metadata in-house database preprocessing spectra spectrum peakpicking grouping RI rt
 #' @export
 #' @param myDir Path to working directory. Default to none.
 #' @param sample_dir Path to sample directory. Default to none.

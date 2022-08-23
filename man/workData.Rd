@@ -81,7 +81,7 @@ workData(
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 }
 \description{
-Main function for GC data processing.
+Main function for GC data processing. It read files in '.mzXML' and '.mzML' formats, apply algorithms for for peacking, grouping, retention time correction and filling missing peaks. The next step proposes spectra based on retention time window and correlation information. After annotation, the function performs quantification by normalizing data and apply t test and principal components analysis, plotting pictures for the evaluation of the steps performed. At the end, the user can choose to generate a internal library with the identified compounds to be uploaded into NIST MS Search software.
 }
 \examples{
 \donttest{
@@ -95,4 +95,13 @@ result <- workData(
 }
 }
 }
+\keyword{RI}
+\keyword{database}
+\keyword{grouping}
+\keyword{in-house}
 \keyword{metadata}
+\keyword{peakpicking}
+\keyword{preprocessing}
+\keyword{rt}
+\keyword{spectra}
+\keyword{spectrum}

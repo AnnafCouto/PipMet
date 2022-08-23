@@ -1,32 +1,31 @@
 ---
 title: "GC-MS Data Processing with PipMet"
-author: "Anna Couto"
-date: "`r Sys.Date()`"
+author: "Anna Clara Couto"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+website: "https://github.com/AnnafCouto"
 output:
   html_document:
-    df_print: paged
-  rmarkdown::html_vignette: default
-  pdf_document: default
-vignette: "%\\VignetteIndexEntry{GC-MS Data Processing with PipMet} %\\VignetteEngine{knitr::rmarkdown}
-  %\\VignetteEncoding{UTF-8}\n"
+    toc: yes
+    fig_caption: yes
+    theme: flatly
+    css: styles.css
+    template: template.html
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{GC-MS Data Processing with PipMet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
+<img src="logo.png" width=200 height=200 style="position:absolute;top:0px;right:100px;" />
 
-```{r, out.width='20%', fig.align='center', fig.cap=NULL, echo=FALSE}
-knitr::include_graphics('logo.png')
-```
+# Introduction
 
----
-
-## Introduction
-
-
+The PipMet is a package with functions wrappers for xcms and CAMERA GC-MS data processing workflow with additional packages in order to generate automatic images for data and algorithm evaluation, as well as the evaluation of final results. It can work entirely based on pop-ups windows after initiating the main function `workData()` if the information is not previously provided by arguments.
+It also provides a quantification method which rely on a representative ion (most intense ion) for each spectrum proposed and it is confirmed by the presence os the second most intense ion. In the case of derivatization, the software can remove ions introduced by the derivatization reactions from the quantification process, such as m/z 73 for the trimethylsilyl groups.
 
 This vignette describes the usage of the global function `workData()` from the PipMet R package in order to process GC-MS acquired data. 
 The `workData()` is a wrapper for files readings, preprocessing raw data into viable spectra and a quantification table and normalization. The user may provide the information required through parameters to the `workData()` function or through pop-up windows. 
@@ -38,7 +37,7 @@ result <- workData()
 ```
 
 
-## Data processing example
+# Data processing example
 
 
 The PipMet R package accompanies eight GC-MS analysis file of sugarcane gems and its commercial variety energycane. The samples were collected and analysed as described by Abreu and colleagues^1^. The files contain data from 630s to 690s.
@@ -126,12 +125,11 @@ knitr::include_graphics('group_sample__cluster.png')
 ``` 
 
 
-## Processing
+## Preprocessing
 
 
 
-
-The first step in the processing phase is the selection of peaks among noise, done with the MatchedFilter algorythm from xcms. Therefore, the true peaks will be picked as the one that can pass gaussian filters. There is also de possibility of applying a filter to selec only peaks above a certain intensity threshold.In the present example, we will be using a 150 intensity threshold for final spectra quality improvement.
+The first step in the preprocessing phase is the selection of peaks among noise, done with the MatchedFilter algorythm from xcms. Therefore, the true peaks will be picked as the one that can pass gaussian filters. There is also de possibility of applying a filter to selec only peaks above a certain intensity threshold.In the present example, we will be using a 150 intensity threshold for final spectra quality improvement.
 
 ```{r, out.width='25%', fig.align='center', fig.cap='Intensity filter.', echo=FALSE}
 knitr::include_graphics('6.png')
@@ -156,21 +154,15 @@ knitr::include_graphics('plotChromPeakImage.png')
 ``` 
 
 
+## Identification
 
 
-# Spectra definition
-
-
-
+### Spectra definition
 
 The peaks selected are furthered grouped into spectra using retention time information and correlation information among the peaks. The user will be asked the data acquisition mode (positive and negative), column setup (polar and non-polar), temperatura program (isothermal, ramp, custom). For the example, select the following: 'positive', 'non-polar' and 'ramp'.
 
 
----
-
-## Identification
-
----
+### Annotation
 
 
 When the spectra are finalized, the PipMet software will create a .msp file and a pre_anno.csv file. The first is to be uploaded in the NIST MS Search Software ^2^ for the spectra search in the available databases. Also, it is possible to generate a .pdf file with EIC of the 6 most intense ions of each of spectrum.
@@ -205,13 +197,9 @@ knitr::include_graphics('hierarchy_plot.png')
 ``` 
 ```{r, out.width='100%', fig.align='center', fig.cap='Heatmap.', echo=FALSE}
 knitr::include_graphics('heatmap.png')
-``` 
-
-
+```
 
 ## Quantitation
-
-
 
 
 Once the spectra werer grouped and identified, the quantification step will proceed by extracting the intensity of the most intense ion (called representative ion) of each spectrum to represent the intensity of the entire spectrum. However, GC-MS analysis often require some sort of sample preparation that may alter the the representative ion of the analyte. For example, sample derivatized with trimethylsilyl groups present the m/z 73 fragment-ion as the most intense in almost every spectrum, even though they represent the trimethylsilyl groups in the analyte. For that occurrence, the PipMet asks the user if the samples were derivatized (Trimethylsilation is currently supported) in order to avoid the m/z 73 as the representative peak, what would include too much variation in the the data. Therefore, if the m/z 73 is the most intense, the second peak will be used as representative.
@@ -224,11 +212,7 @@ Another feature for improve the quantification step is to merge or remove compou
 The user may also remove a compound identified previously from the quantification, such as contaminantes or column bleeding.
 
 
-
-
-# Data normalization
-
-
+### Data normalization
 
 
 The PipMet package, through the NormalyzerDE package, offers different methods of normalization so that the user can choose the best to addapt to the data after evaluation the models and the printed report. For the normalization to occur, the user must point the category from which the samples are better grouped. For the example, select 'group'.
@@ -258,16 +242,12 @@ Further on, the user is asked which column from the metadata table represents th
 knitr::include_graphics('15.png')
 ``` 
 
-
-
-## Figures
-
-
+### Statistics Figures
 
 
 After the quantification step is completed, it is plotted the figures regarding the statistics step of the workflow. They are: volcano plots, heatmaps and PCA.
 The first is volcano. The user is instructed to select a condition from the metadata table to compare two characteristics from that condition. Here, we choose 'group' to compare the 'Energy' and 'Sugar' compounds. 
-```{r, out.width='45%', fig.align='center', fig.cap='Volcano setup.', echo=FALSE}
+```{r, out.width='30%', fig.align='center', fig.cap='Volcano setup.', echo=FALSE}
 knitr::include_graphics('16.png')
 knitr::include_graphics('17.png')
 knitr::include_graphics('18.png')
@@ -277,13 +257,13 @@ If more than one category to describe the samples are availabe, the user may do 
 
 Along with each of the comparison for plotting the Volcano plot, a file containing the p-value (significance) and foldchange of the comparisons is written inside the volcano plot folder.
 
-```{r, out.width='60%', fig.align='center', fig.cap='Volcano plot.', echo=FALSE}
+```{r, out.width='40%', fig.align='center', fig.cap='Volcano plot.', echo=FALSE}
 knitr::include_graphics('volcano_identified.png')
 ``` 
 
 Next, the PCA of all samples are plotted, using all spectra proposed. 
 
-```{r, out.width='50%', fig.align='center', fig.cap='PCA of samples.', echo=FALSE}
+```{r, out.width='40%', fig.align='center', fig.cap='PCA of samples.', echo=FALSE}
 knitr::include_graphics('PCA_named_sample.png')
 ``` 
 The user is then asked to choose a particular condition to plot the PCA for specified samples only. For example, we choose to only look at Sugarcane and Energycane samples, therefore, we choose 'group' and select both 'Sugar' and 'Energy' describers.
@@ -322,10 +302,7 @@ The pop-ups only appear if the user do not specify the information required in t
 knitr::include_graphics('20.png')
 ```
 
-
-
 ## In-house database
-
 
 
 Once the processing is done, the identified compounds can be used to create a in-house database to be uploaded in NIST MS Search Software. In this case, the user is asked wether to create or not, as following:
@@ -360,13 +337,13 @@ knitr::kable(read.csv(system.file("extdata", "DatabaseInfo.csv", package = "PipM
 ```
 And the creation of the in-house database is concluded.
 
-```{r, out.width='40%', fig.align='center', echo=FALSE, fig.cap='Retention index information.'}
+```{r, out.width='40%', fig.align='center', echo=FALSE, fig.cap='In-house database created.'}
 knitr::include_graphics('28.png')
 ```
 
 ---
 
-## References
+# References
 
 
 

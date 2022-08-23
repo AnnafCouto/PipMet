@@ -3,7 +3,7 @@
 #' Function for creating a in-house database from processed GC-MS experiment files. The user may choose to add more information, such as Formula, Monoisotopic Mass, CAS, ChemSpider, InChIKey, PubChem ID, Class and retention index. The function is capable of search and retrieving most of the information from the online databases such as PubChem and NIST uatomatically through 'webchem' package or add manually the information.
 #' @keywords database spectra
 #' @export
-#' @param pslist List of spectra with annotation. Only annotated spectra will be use for the database construction.
+#' @param apslist List of spectra with annotation. Only annotated spectra will be use for the database construction.
 #' @param ion_mode Character. Ion mode of data acquisition ('negative' or 'positive').
 #' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
 #' @param prog Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.
@@ -15,12 +15,17 @@
 #' @importFrom metaMS write.msp
 #' @importFrom webchem get_cid pc_prop cts_convert nist_ri
 #' @importFrom methods .hasSlot
+#' @importFrom pracma isempty
 #' @importFrom stringr str_to_lower
 #' @examples
 #' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "apslist.RData", package = "PipMet"))
-#' create_database(apslist, column_set = 'non-polar', prog = 'ramp', ion_mode = 'positive', info = FALSE)
+#' create_database(apslist, 
+#'                  column_set = 'non-polar', 
+#'                  prog = 'ramp', 
+#'                  ion_mode = 'positive', 
+#'                  info = FALSE)
 #' }
 #' }
 create_database <- function(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode, info = NULL) {
