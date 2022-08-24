@@ -69,7 +69,13 @@ Before the processing starts, the user must point what kind of parallelization s
 knitr::include_graphics('01.png')
 ```
 
-As a first step, the user will be asked to point the folder where the files to be processed are located. Once we set `example = TRUE`, this pop-up will be supressed.
+As a first step, the user will be asked to name the library to be created.
+
+```{r, out.width='40%', fig.align='center', fig.cap='Library name.', echo=FALSE}
+knitr::include_graphics('a.png')
+```
+
+Then comethe user will be asked to point the folder where the files to be processed are located. Once we set `example = TRUE`, this pop-up will be supressed.
 
 ```{r, out.width='40%', fig.align='center', fig.cap='Choose the samples folder.', echo=FALSE}
 knitr::include_graphics('1.png')
