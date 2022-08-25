@@ -4,12 +4,21 @@
 \alias{create_database}
 \title{In-house database from processed files}
 \usage{
-create_database(pslist, ion_mode)
+create_database(
+  apslist,
+  column_set = column_set,
+  prog = prog,
+  ion_mode = ion_mode
+)
 }
 \arguments{
-\item{pslist}{List of spectra with annotation. Only annotated spectra will be use for the database construction.}
+\item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
 
-\item{ion_mode}{Character. Ion mode of data acquisition ('negative' or 'positive').}
+\item{prog}{Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.}
+
+\item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
+
+\item{pslist}{List of spectra with annotation. Only annotated spectra will be use for the database construction.}
 }
 \value{
 None.
