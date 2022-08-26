@@ -199,7 +199,7 @@ knitr::include_graphics('hierarchy_plot.png')
 knitr::include_graphics('heatmap.png')
 ```
 
-## Quantitation
+## Quantification
 
 
 Once the spectra werer grouped and identified, the quantification step will proceed by extracting the intensity of the most intense ion (called representative ion) of each spectrum to represent the intensity of the entire spectrum. However, GC-MS analysis often require some sort of sample preparation that may alter the the representative ion of the analyte. For example, sample derivatized with trimethylsilyl groups present the m/z 73 fragment-ion as the most intense in almost every spectrum, even though they represent the trimethylsilyl groups in the analyte. For that occurrence, the PipMet asks the user if the samples were derivatized (Trimethylsilation is currently supported) in order to avoid the m/z 73 as the representative peak, what would include too much variation in the the data. Therefore, if the m/z 73 is the most intense, the second peak will be used as representative.

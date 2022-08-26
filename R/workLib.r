@@ -227,7 +227,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
         ppslist[[i]] <- pslist[[i]][[as.numeric(id)]]
       }
     }
-    done <- menu(c("Continue", "Do it again"), graphics = TRUE, title = "Validation done!")
+    done <- menu(c("Continue", "Repeat"), graphics = TRUE, title = "Validation done!")
   }
 
   message (paste0('Writing ', length(ppslist), ' validated spectra...'))
