@@ -70,16 +70,25 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
         if (!"file" %in% colnames(metadata)) {
           metadata$file <- paste0(sample_dir, "/", metadata$sample, extension)
         } else {
-          for (i in 1:nrow(lib_metadata)) { # check if they are just filenames or filepath (they need to be path)
-            if (!is_path(lib_metadata$file [i])) {lib_metadata$file [i] <- paste0(sample_dir, "/", basename (lib_metadata$file [i]))}
+          for (i in 1:nrow(metadata)) { # check if they are just filenames or filepath (they need to be path)
+            if (!is_path(metadata$file [i])) {
+              setwd(sample_dir)
+              metadata$file [i] <- file_path_as_absolute(metadata$file [i])
+            }
           }
+          setwd(myDir)
         }
       } else {
-        files <- list.files(sample_dir, full.names = TRUE, pattern = extension, recursive = TRUE)
+        files <- list.files(sample_dir, full.names = FALSE, pattern = extension, recursive = TRUE)
         metadata <- matrix(nrow = length(files), ncol = 6)
         colnames(metadata) <- c("sample", "group", "class", "tec_rep", "bio_rep", "file")
         metadata[, "file"] <- files
         metadata[, "sample"] <- sub(basename(files), pattern = extension, replacement = "", fixed = TRUE)
+        setwd(sample_dir)
+        for (i in 1:nrow(metadata)) {
+          metadata[i, 'file'] <- file_path_as_absolute (metadata[i, 'file'])
+        }
+        setwd(myDir)
         write.csv(metadata, "metadata.csv", row.names = FALSE)
         dlg_message("A file 'metadata.csv' was created in you directory. Fill the sheet before continuing. In 'class' column, describe your samples as 'Sample', 'QC', 'Blank' or 'Pool'. You can create new columns to describe samples, such as 'strain'. After filling the sheet, press 'ok'.", type = "ok")
         while (file.exists("metadata.csv") == FALSE) {
@@ -91,9 +100,6 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
       if (!sum((is.na(metadata))) == 0) {
         dlg_message("It seems to existx empty columns/rows in you metadata file. Please, delete and press 'OK'.")$res
         metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
-        if (!"file" %in% colnames(metadata)) {
-          metadata$file <- paste0(sample_dir, "/", metadata$sample, extension)
-        }
       }
     }
   } else { # if example == TRUE

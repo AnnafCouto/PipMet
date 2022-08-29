@@ -63,46 +63,46 @@ This way, the sample directory, metadata path and extension will not be asked to
 
 
 
-Before the processing starts, the user must point what kind of parallelization should be applied to the process. For more information, read on the BiocParallel package. 
+Before the processing starts, the user must point what kind of parallelization should be applied to the process (Figure 1). For more information, read on the BiocParallel package. 
 
-```{r, out.width='25%', fig.align='center', fig.cap='PipMet parallelization options.', echo=FALSE}
+```{r, out.width='25%', fig.align='center', fig.cap='Figure 1. PipMet parallelization options.', echo=FALSE}
 knitr::include_graphics('01.png')
 ```
 
-As a first step, the user will be asked to name the library to be created.
+As a first step, the user will be asked to name the library to be created (Figure 2).
 
-```{r, out.width='40%', fig.align='center', fig.cap='Library name.', echo=FALSE}
+```{r, out.width='40%', fig.align='center', fig.cap='Figure 2.Library name.', echo=FALSE}
 knitr::include_graphics('a.png')
 ```
 
-Then the user will be asked to point the folder where the files to be processed are located. Once we set `example = TRUE`, this pop-up will be supressed.
+Then the user will be asked to point the folder where the files to be processed are located. Once we set `example = TRUE`, this pop-up will be supressed (Figure 3).
 
-```{r, out.width='40%', fig.align='center', fig.cap='Choose the samples folder.', echo=FALSE}
+```{r, out.width='40%', fig.align='center', fig.cap='Figure 3. Choose the samples folder.', echo=FALSE}
 knitr::include_graphics('1.png')
 ``` 
 
-Following that, the user is asked to provide a name for the processing project, which will be used as the name of the folder where the library will be processed occur and the output files created. For the example, the project will be named 'Example'.
+Following that, the user is asked to provide a name for the processing project, which will be used as the name of the folder where the library will be processed occur and the output files created (Figure 4). For the example, the project will be named 'Example'.
 
-```{r, out.width='40%', fig.align='center', fig.cap='Project folder name.', echo=FALSE}
+```{r, out.width='40%', fig.align='center', fig.cap='Figure 4. Project folder name.', echo=FALSE}
 knitr::include_graphics('2.png')
 ``` 
 
-The files extension will be asked, then, if the `example` is not set as TRUE. The PipMet package is capable of reading '.mzML' and '.mzXML' files through the *xcms*, *MSnbase* and *mzR* packages. Files with different extensions may be converted using the *Mass++* ^3^ or *Proteowizard Softwares*^4^, for example. The files provided for the internal library creation example are .mzML files.
+The files extension will be asked, then, if the `example` is not set as TRUE (Figure 5). The PipMet package is capable of reading '.mzML' and '.mzXML' files through the *xcms*, *MSnbase* and *mzR* packages. Files with different extensions may be converted using the *Mass++* ^3^ or *Proteowizard Softwares*^4^, for example. The files provided for the internal library creation example are .mzML files.
 
-```{r, out.width='25%', fig.align='center', fig.cap='File extensions accepted.', echo=FALSE}
+```{r, out.width='25%', fig.align='center', fig.cap='Figure 5. File extensions accepted.', echo=FALSE}
 knitr::include_graphics('3.png')
 ``` 
 
-The metadata file must be provided in order to proper process the analysis files. It is a sheet .csv file containing a 'cmpound' column for the analytes names, 'rt' for the retention time in seconds, 'formula', 'exact.mass', 'file' with the file path to each of the samples and some describers such as 'CAS', 'InChiKey', 'ChemSpider ID' and 'PubChem ID'. Each row represent a compound. In the set of examples, we have 6 compounds, with its multiple derivative molecular forms. The metadata.csv file will be as follow:
+The metadata file must be provided in order to proper process the analysis files (Table 1). It is a sheet .csv file containing a 'compound' column for the analyte names, 'rt' for the retention time in seconds, 'formula', 'exact.mass', 'file' with the file path to each of the samples and some describers such as 'CAS', 'InChiKey', 'ChemSpider ID' and 'PubChem ID'. Each row represent a compound. In the set of examples, we have 6 compounds, with its multiple derivative molecular forms. The metadata.csv file will be as follow:
 
 
-```{r, echo=FALSE, results='asis', fig.cap='Library metadata table.'}
-knitr::kable(read.csv(system.file("extdata", "lib_metadata.csv", package = "PipMet")))
+```{r, echo=FALSE, results='asis', caption='Table 1. Library metadata table.'}
+knitr::kable(read.csv(system.file("extdata", "lib_metadata.csv", package = "PipMet")),caption='Table 1. Library metadata table.')
 ```
 
-The PipMet asks if the user already have a metadata.csv file prepared, if the `example` is not set as TRUE. If 'Yes', the user will be asked to point the path to the metadata file. Though, if 'No', a lib_metadata.csv file will be created with basic names for files with the extension given in the sample_dir so the user can fill it.
+The PipMet asks if the user already have a metadata.csv file prepared, if the `example` is not set as TRUE (Figure 6). If 'Yes', the user will be asked to point the path to the metadata file. Though, if 'No', a lib_metadata.csv file will be created with basic names for files with the extension given in the sample_dir so the user can fill it.
 
-```{r, out.width='35%', fig.align='center', fig.cap='Metadata table.', echo=FALSE}
+```{r, out.width='35%', fig.align='center', fig.cap='Figure 6. Metadata table.', echo=FALSE}
 knitr::include_graphics('4.png')
 ``` 
 
@@ -122,9 +122,9 @@ As the files are processed individually, there is no need for grouping and pairi
 
 ### Spectra definition
 
-The peaks selected are furthered grouped into spectra using retention time information and correlation information among the peaks. The user will be asked the retention index desired (kovats, linear, akane and lee), column setup (polar and non-polar), temperatura program (isothermal, ramp, custom). For the example, select the following: 'kovats', 'non-polar' and 'ramp'. Then, the equipment of data acquisition information will be asked. For the following example, the data was acquired in a GC-EI-Q equipment.
+The peaks selected are furthered grouped into spectra using retention time information and correlation information among the peaks (Figure 7). The user will be asked the retention index desired (kovats, linear, akane and lee), column setup (polar and non-polar), temperatura program (isothermal, ramp, custom). For the example, select the following: 'kovats', 'non-polar' and 'ramp'. Then, the equipment of data acquisition information will be asked. For the following example, the data was acquired in a GC-EI-Q equipment.
 
-```{r, out.width='35%', fig.align='center', fig.cap='Equipment information.', echo=FALSE}
+```{r, out.width='35%', fig.align='center', fig.cap='Figure 7. Equipment information.', echo=FALSE}
 knitr::include_graphics('b.png')
 ``` 
 
@@ -133,21 +133,21 @@ Furtheron, the package will try to retrieve any available data about retention i
 ### Manual Validation
 
 
-When the spectra are finalized, it will be written in a  .msp file for each of the compound, to be uploaded in the NIST MS Search Software ^2^ the spectra manually validation with spectral databases.
+When the spectra are finalized, it will be written in a  .msp file for each of the compound, to be uploaded in the NIST MS Search Software ^2^ the spectra manually validation with spectral databases (Figure 8).
 
-```{r, out.width='35%', fig.align='center', fig.cap='Equipment information.', echo=FALSE}
+```{r, out.width='35%', fig.align='center', fig.cap='Figure 8. Equipment information.', echo=FALSE}
 knitr::include_graphics('c.png')
 ``` 
 
-In this step, the user must upload the .msp file for the compound shown in the pop-up and select the id of the spectrum that correspond to that compound, sequentially. If there is a problem, the user may restart the validation step by choosing to 'Repeat' at the end.
+In this step, the user must upload the .msp file for the compound shown in the pop-up and select the id of the spectrum that correspond to that compound, sequentially (Figure 9). If there is a problem, the user may restart the validation step by choosing to 'Repeat' at the end.
 
-```{r, out.width='35%', fig.align='center', fig.cap='Cellobiose (isomer 1) identification.', echo=FALSE}
+```{r, out.width='20%', fig.align='center', fig.cap='Figure 9. Cellobiose (isomer 1) identification.', echo=FALSE}
 knitr::include_graphics('d.png')
 ``` 
 
-After the validation, a final .msp spectra is written, named after the name choosen in the beggining with the relevant information provided by the user in the library metadata table. To upload the .msp file as a library to NIST MS Search, the user may use the conversion tool LIB2NIST ^1^.
+After the validation, a final .msp spectra is written, named after the name choosen in the beggining with the relevant information provided by the user in the library metadata table (Figure 10). To upload the .msp file as a library to NIST MS Search, the user may use the conversion tool LIB2NIST ^1^.
 
-```{r, out.width='35%', fig.align='center', fig.cap='Cellobiose (isomer 1) identification.', echo=FALSE}
+```{r, out.width='35%', fig.align='center', fig.cap='Figure 10. Internal library construction done.', echo=FALSE}
 knitr::include_graphics('e.png')
 ``` 
 
