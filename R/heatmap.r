@@ -22,7 +22,7 @@
 #' load(system.file("extdata", "n.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' load(system.file("extdata", "colors.RData", package = "PipMet"))
-#' heatmap(n, metadata, myDir = "~/", colors)
+#' heatmap(n, metadata, myDir = "~/", colors, replicate = 'group')
 #' }
 #' }
 heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png'), replicate = NULL) {

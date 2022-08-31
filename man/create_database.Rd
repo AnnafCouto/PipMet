@@ -40,7 +40,8 @@ create_database(apslist,
                  column_set = 'non-polar', 
                  prog = 'ramp', 
                  ion_mode = 'positive', 
-                 info = FALSE)
+                 info = FALSE,
+                 Ri = 'kovats')
 }
 }
 }

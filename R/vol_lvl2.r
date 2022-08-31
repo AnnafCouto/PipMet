@@ -17,6 +17,8 @@
 #' @examples
 #' \donttest{
 #' \dontrun{
+#' load(system.file("extdata", "n.RData", package = "PipMet"))
+#' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' vol_lvl2(n, metadata, myDir = "~/", volDir = "~/")
 #' }
 #' }

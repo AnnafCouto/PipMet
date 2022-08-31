@@ -28,7 +28,8 @@ workData(
   mergeCompounds = NULL,
   removeCompounds = NULL,
   info = NULL,
-  Ri = NULL
+  Ri = NULL,
+  pre_anno = NULL
 )
 }
 \arguments{
@@ -79,6 +80,8 @@ workData(
 \item{info}{Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL. Only required if lib_build = TRUE or NULL.}
 
 \item{Ri}{Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL. Only if lib_build = TRUE or NULL.}
+
+\item{pre_anno}{Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table

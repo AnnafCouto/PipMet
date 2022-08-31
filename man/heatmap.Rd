@@ -38,7 +38,7 @@ This function plots heatmaps dos metabólitos.
 load(system.file("extdata", "n.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 load(system.file("extdata", "colors.RData", package = "PipMet"))
-heatmap(n, metadata, myDir = "~/", colors)
+heatmap(n, metadata, myDir = "~/", colors, replicate = 'group')
 }
 }
 }

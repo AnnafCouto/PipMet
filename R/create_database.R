@@ -26,7 +26,8 @@
 #'                  column_set = 'non-polar', 
 #'                  prog = 'ramp', 
 #'                  ion_mode = 'positive', 
-#'                  info = FALSE)
+#'                  info = FALSE,
+#'                  Ri = 'kovats')
 #' }
 #' }
 create_database <- function(apslist, column_set = NULL, prog = NULL, ion_mode = NULL, info = NULL, Ri = NULL) {
@@ -34,10 +35,12 @@ create_database <- function(apslist, column_set = NULL, prog = NULL, ion_mode = 
   # get only annotated spectra
   pslist <- list()
   count <- 1
+  names <- vector()
   for (i in 1:length(apslist)) {
     if (!isempty(apslist[[i]]@annotation)) {
       pslist[count] <- apslist[[i]]
       count <- count + 1
+      names <- c(names, apslist[[i]]@annotation)
     }
   }
 
@@ -115,7 +118,7 @@ create_database <- function(apslist, column_set = NULL, prog = NULL, ion_mode = 
     result[[i]]$Date <- as.character(Sys.Date())
     result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog)
   }
-  names(result) <- dataInfo[, "Name"]
+  names(result) <- names
   metaMS::write.msp(result, file = paste0("Database_", Sys.Date(), ".msp"), newFile = TRUE)
   dlg_message("Database creation done!")$res
 }

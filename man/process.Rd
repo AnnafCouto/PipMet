@@ -15,7 +15,7 @@ process(
   example = FALSE,
   filter = NULL,
   pic_extension = c(".tiff", ".png"),
-  group = "group"
+  group = NULL
 )
 }
 \arguments{
@@ -39,7 +39,7 @@ process(
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
-\item{group}{Character. Name from 'metadata' column names to group the samples. Default to 'group'.}
+\item{group}{Character. Name from 'metadata' column names to group the samples. Default to NULL.}
 }
 \value{
 A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
@@ -53,7 +53,7 @@ This function computes the second step of workflow (peak picking, RT correction 
 load(system.file("extdata", "raw_data.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 load(system.file("extdata", "colors.RData", package = "PipMet"))
-xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
+xdata4 <- process(raw_data, metadata, myDir = "~/", colors, group = 'group')
 }
 }
 }

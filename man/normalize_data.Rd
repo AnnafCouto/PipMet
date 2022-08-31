@@ -2,7 +2,7 @@
 % Please edit documentation in R/normalize_data.r
 \name{normalize_data}
 \alias{normalize_data}
-\title{Normalize}
+\title{Normalize data}
 \usage{
 normalize_data(
   anIC,
@@ -36,7 +36,7 @@ normalize_data(
 
 \item{removeCompounds}{Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.}
 
-\item{group}{Character. Name of metadata column to group the samples for normaliation. Default to NULL.}
+\item{group}{Character. Name of metadata column to group the samples for normalization. Default to NULL.}
 }
 \value{
 A matrix of all spectra, with their annotation (if available), most intense peak m/z and its intensities in every sample.
@@ -56,7 +56,11 @@ normalized <- normalize_data(
   pslist,
   metadata,
   myDir = "~/",
-  pre_anno = pre_anno,
+  pre_anno = system.file("extdata", "pre_anno.csv", package = "PipMet"),
+  derivatization = 'Trimethylsilyl',
+  mergeCompounds = FALSE,
+  removeCompounds = FALSE,
+  group = 'group'
 )
 }
 }

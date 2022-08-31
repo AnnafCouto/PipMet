@@ -1,4 +1,4 @@
-#' Normalize
+#' Normalize data
 #'
 #' This function normalize data.
 #' @export
@@ -6,7 +6,7 @@
 #' @param pslist List of spectra.
 #' @param metadata A matrix or data.frame with metadata information about samples. Include, at least 'sample' and 'file' columns with name of sample and its path, respectively. More information can be added in new columns, such as 'group', 'class', 'biorep' and 'tecrep'.
 #' @param anIC A 'xsAnnotate' CAMERA object with grouped spectra.
-#' @param group Character. Name of metadata column to group the samples for normaliation. Default to NULL.
+#' @param group Character. Name of metadata column to group the samples for normalization. Default to NULL.
 #' @param pre_anno A table with annotations for spectra. or path to .csv file.
 #' @param removeCompounds Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.
 #' @param mergeCompounds Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.
@@ -34,11 +34,33 @@
 #'   pslist,
 #'   metadata,
 #'   myDir = "~/",
-#'   pre_anno = pre_anno,
+#'   pre_anno = system.file("extdata", "pre_anno.csv", package = "PipMet"),
+#'   derivatization = 'Trimethylsilyl',
+#'   mergeCompounds = FALSE,
+#'   removeCompounds = FALSE,
+#'   group = 'group'
 #' )
 #' }
 #' }
 normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, pic_extension = c('.tiff', '.png'), derivatization = NULL, mergeCompounds = NULL, removeCompounds = NULL, group = NULL) {
+
+  if (!is.null(pre_anno)) {
+    if (is_path(pre_anno)) {
+      r <- read.csv(pre_anno, sep = ",", na.string = c("NA", ""))
+      if (!"annotation" %in% colnames(r)) {
+        r <- read.csv(pre_anno, sep = ";", na.string = c("NA", ""), dec = ",")
+      }
+    } else {
+      r <- pre_anno
+    }
+  } else {
+    r <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA", ""))
+    if (!"annotation" %in% colnames(r)) {
+      r <- read.csv("pre_anno.csv", sep = ";", na.string = c("NA", ""), dec = ",")
+    }
+  }
+  r[is.na(r)] <- ""
+  pre_anno <- r
 
   # check if representative ions are ok
   okay <- 2
@@ -140,9 +162,9 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, pic_extensio
 
     if (is.null(group)) {
       # ask condition to compare from the metadata table
-      group <- menu(colnames(metadata), graphics = TRUE, title = "Conditions to group from: ")
+      group <- dlg_list(colnames(metadata), multiple = FALSE, title = "Condition to group from:")$res
     }
-    normalyzer(jobName = "Normalyzer_results", designPath = designFp, dataPath = dataFp, outputDir = myDir, sampleColName = "sample", groupColName = colnames(metadata)[group], requireReplicates = FALSE)
+    normalyzer(jobName = "Normalyzer_results", designPath = designFp, dataPath = dataFp, outputDir = myDir, sampleColName = "sample", groupColName = group, requireReplicates = FALSE)
 
     # Pick method and apply
     fill <- list.files(paste0(myDir, "/Normalyzer_results"), full.names = TRUE, pattern = "-normalized.txt", recursive = TRUE)

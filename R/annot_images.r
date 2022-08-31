@@ -6,25 +6,40 @@
 #' @param myDir Path to the directory of work.
 #' @param pictures Logical. If pictures should be plotted or not. Default to TRUE.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
+#' @param pre_anno Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.
 #' @return A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package) and (2) a table with annotation.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics par
 #' @importFrom utils read.csv
+#' @importFrom fritools is_path
 #' @importFrom CluMSID addAnnotations distanceMatrix networkplot HCplot
 #' @examples
 #' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "pslist.RData", package = "PipMet"))
-#' annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, example = TRUE)
+#' annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, pre_anno = system.file("extdata", "pre_anno.csv", package = "PipMet"))
 #' }
 #' }
-annot_images <- function(pslist, myDir, pictures = TRUE, pic_extension = c('.tiff', '.png')) {
-  r <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA", ""))
-  if (!"annotation" %in% colnames(r)) {
-    r <- read.csv("pre_anno.csv", sep = ";", na.string = c("NA", ""), dec = ",")
+annot_images <- function(pslist, myDir, pictures = TRUE, pic_extension = c('.tiff', '.png'), pre_anno) {
+  if (!is.null(pre_anno)) {
+    if (is_path(pre_anno)) {
+      r <- read.csv(pre_anno, sep = ",", na.string = c("NA", ""))
+      if (!"annotation" %in% colnames(r)) {
+        r <- read.csv(pre_anno, sep = ";", na.string = c("NA", ""), dec = ",")
+      }
+    } else {
+      r <- pre_anno
+    }
+  } else {
+    r <- read.csv("pre_anno.csv", sep = ",", na.string = c("NA", ""))
+    if (!"annotation" %in% colnames(r)) {
+      r <- read.csv("pre_anno.csv", sep = ";", na.string = c("NA", ""), dec = ",")
+    }
   }
   r[is.na(r)] <- ""
+
   ### add annotations from 'pre_anno.csv' file (if there is annotation)
+
   if (sum(is.na(r$annotation)) == nrow(r)) {
     apslist <- pslist
   }

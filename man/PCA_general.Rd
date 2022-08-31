@@ -10,7 +10,7 @@ PCA_general(
   myDir,
   colors,
   pic_extension = c(".tiff", ".png"),
-  example
+  example = FALSE
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ PCA_general(
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
-\item{example}{Logical. If is example, pop-ups won't appear.}
+\item{example}{Logical. If is example, pop-ups won't appear. Default to FALSE.}
 }
 \value{
 None.
@@ -38,7 +38,7 @@ This function plots PCA.
 load(system.file("extdata", "n.RData", package = "PipMet"))
 load(system.file("extdata", "colors.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
-PCA_(n, metadata, myDir = "~/", colors)
+PCA_general(n, metadata, myDir = "~/", colors)
 }
 }
 }

@@ -9,6 +9,13 @@
 #' @importClassesFrom CluMSID pseudospectrum
 #' @keywords pseudoespectra CAMERA spectra spectrum.
 #' @export
+#' @examples
+#' \donttest{
+#' \dontrun{
+#' load(system.file("extdata", "anIC.RData", package = "PipMet"))
+#' spectra <- extractSpectra(anIC)
+#' }
+#' }
 
 extractSpectra <- function(x, min_peaks = 5) { # intensidade: integral do pico
   if (is(x, "xsAnnotate")) {
