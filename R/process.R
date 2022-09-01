@@ -31,7 +31,7 @@
 #' }
 process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions = NULL, pictures = TRUE, example = FALSE, filter = NULL, pic_extension = c('.tiff', '.png'), group = NULL) {
 
-  message (paste0('Processing ', lenght (raw_data$files), ' files...'))
+  message (paste0('Processing ', length (raw_data$files), ' files...'))
   # peak picking
   message (paste0('Detecting peaks...'))
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)

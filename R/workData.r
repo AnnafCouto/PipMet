@@ -131,38 +131,44 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   apslist <- annot$apslist
   pre_anno <- annot$r
 
-  # normalize, choose peaks and plot images
-  message (paste0('Normalizing data...'))
-  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds, group))
+  # normalize, choose peaks and plot images, only if more than one sample
 
-  if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
+  if (nrow(metadata) > 1) {
+    message (paste0('Normalizing data...'))
+    quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds, group))
+  
 
-  message (paste0('Statistics pictures...'))
+    if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
 
-  if (pictures == TRUE & nrow(metadata) > 1) {
-    pic <- dlg_list(c('Volcano - level 1', 'Volcano - level 2', 'PCA - All spectra', 'PCA - Identified spectra only', 'Heatmaps', 'All', 'None'), multiple = TRUE, title = "Statistics pictures:")$res
-      # plot volcanos
-      okay <- 1
-      if ('Volcano - level 1' %in% pic | 'All' %in% pic) { # Volcano level 2 can only be made if volcano - level 1 is too
-        while (okay == 1) {
-          quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
-          okay <- menu(c("Repeat", "Next", ""), graphics = TRUE, title = "Repeat?")
-        }
+    message (paste0('Statistics pictures...'))
+
+    if (pictures == TRUE & nrow(metadata) > 1) {
+      pic <- dlg_list(c('Volcano - level 1', 'Volcano - level 2', 'PCA - All spectra', 'PCA - Identified spectra only', 'Heatmaps', 'All', 'None'), multiple = TRUE, title = "Statistics pictures:")$res
+        # plot volcanos
         okay <- 1
-        if ('Volcano - level 2' %in% pic | 'All' %in% pic) {
+        if ('Volcano - level 1' %in% pic | 'All' %in% pic) { # Volcano level 2 can only be made if volcano - level 1 is too
           while (okay == 1) {
-            quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
-            okay <- menu(c("Repeat", "No"), graphics = TRUE, title = "Repeat Volcanos?")
+            quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
+            okay <- menu(c("Repeat", "Next", ""), graphics = TRUE, title = "Repeat?")
+          }
+          okay <- 1
+          if ('Volcano - level 2' %in% pic | 'All' %in% pic) {
+            while (okay == 1) {
+              quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
+              okay <- menu(c("Repeat", "No"), graphics = TRUE, title = "Repeat Volcanos?")
+            }
           }
         }
-      }
 
-    # plot PCA
-    if ('PCA - All spectra' %in% pic | 'All' %in% pic) {quiet(PCA_general(n, metadata, myDir, colors, pic_extension = pic_extension, example = example))}
-    if ('PCA - Identified spectra only' %in% pic | 'All' %in% pic) {quiet(PCA_identified(n, metadata, myDir, colors, pic_extension = pic_extension, example = example))}
+      # plot PCA
+      if ('PCA - All spectra' %in% pic | 'All' %in% pic) {quiet(PCA_general(n, metadata, myDir, colors, pic_extension = pic_extension, example = example))}
+      if ('PCA - Identified spectra only' %in% pic | 'All' %in% pic) {quiet(PCA_identified(n, metadata, myDir, colors, pic_extension = pic_extension, example = example))}
 
-    # plot heatmaps
-    if ('Heatmaps' %in% pic | 'All' %in% pic) {quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension, replicate = replicate))}
+      # plot heatmaps
+      if ('Heatmaps' %in% pic | 'All' %in% pic) {quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension, replicate = replicate))}
+    }
+  } else {
+    n <- NULL
   }
 
   dlg_message("Processing done!")$res
