@@ -14,6 +14,14 @@ extractSpectra(x, min_peaks = 5)
 \description{
 This is a modified function from CluMSID package to extract the spectra from a CAMERA object output.
 }
+\examples{
+\donttest{
+\dontrun{
+load(system.file("extdata", "anIC.RData", package = "PipMet"))
+spectra <- extractSpectra(anIC)
+}
+}
+}
 \keyword{CAMERA}
 \keyword{pseudoespectra}
 \keyword{spectra}

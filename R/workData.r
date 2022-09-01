@@ -1,7 +1,7 @@
 #' workData
 #'
-#' Main function for GC data processing.
-#' @keywords metadata
+#' Main function for GC data processing. It read files in '.mzXML' and '.mzML' formats, apply algorithms for for peacking, grouping, retention time correction and filling missing peaks. The next step proposes spectra based on retention time window and correlation information. After annotation, the function performs quantification by normalizing data and apply t test and principal components analysis, plotting pictures for the evaluation of the steps performed. At the end, the user can choose to generate a internal library with the identified compounds to be uploaded into NIST MS Search software.
+#' @keywords metadata in-house database preprocessing spectra spectrum peakpicking grouping RI rt
 #' @export
 #' @param myDir Path to working directory. Default to none.
 #' @param sample_dir Path to sample directory. Default to none.
@@ -25,6 +25,9 @@
 #' @param replicate Character or Logical. If FALSE, there is no replicate informations in the metadata table. Otherwise, inform the name in the metadata column containing replicate information. If NULL, the user will be asked. Default to NULL.
 #' @param removeCompounds Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.
 #' @param mergeCompounds Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.
+#' @param info Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL. Only required if lib_build = TRUE or NULL.
+#' @param pre_anno Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.
+#' @param Ri Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL. Only if lib_build = TRUE or NULL.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message dlg_list
@@ -46,7 +49,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL, info = NULL, Ri = NULL, pre_anno = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (pictures == TRUE) {
@@ -124,45 +127,57 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # update annotated spectra and plot images
   message (paste0('Annotating the spectra ...'))
-  quiet(annot <- annot_images(pslist, myDir, pictures, pic_extension = pic_extension))
+  quiet(annot <- annot_images(pslist, myDir, pictures, pic_extension = pic_extension, pre_anno = pre_anno))
   apslist <- annot$apslist
   pre_anno <- annot$r
 
-  # normalize, choose peaks and plot images
-  message (paste0('Normalizing data...'))
-  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds, group))
+  # normalize, choose peaks and plot images, only if more than one sample
 
-  if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
+  if (nrow(metadata) > 1) {
+    message (paste0('Normalizing data...'))
+    quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds, group))
+  
 
-  message (paste0('Statistics pictures...'))
-  if (pictures == TRUE & nrow(metadata) > 1) {
-      # plot volcanos
-      okay <- 1
-      while (okay == 1) {
-        quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
-        okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Repeat?")
-      }
-      okay <- 1
-      while (okay == 1) {
-        quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
-        okay <- menu(c("Repeat", "Next"), graphics = TRUE, title = "Repeat?")
-      }
+    if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
 
-    # plot PCA
-    quiet(PCA_general(n, metadata, myDir, colors, pic_extension = pic_extension, example))
-    quiet(PCA_identified(n, metadata, myDir, colors, pic_extension = pic_extension, example))
+    message (paste0('Statistics pictures...'))
 
-    # plot heatmaps
-    quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension, replicate = replicate))
+    if (pictures == TRUE & nrow(metadata) > 1) {
+      pic <- dlg_list(c('Volcano - level 1', 'Volcano - level 2', 'PCA - All spectra', 'PCA - Identified spectra only', 'Heatmaps', 'All', 'None'), multiple = TRUE, title = "Statistics pictures:")$res
+        # plot volcanos
+        okay <- 1
+        if ('Volcano - level 1' %in% pic | 'All' %in% pic) { # Volcano level 2 can only be made if volcano - level 1 is too
+          while (okay == 1) {
+            quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
+            okay <- menu(c("Repeat", "Next", ""), graphics = TRUE, title = "Repeat?")
+          }
+          okay <- 1
+          if ('Volcano - level 2' %in% pic | 'All' %in% pic) {
+            while (okay == 1) {
+              quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
+              okay <- menu(c("Repeat", "No"), graphics = TRUE, title = "Repeat Volcanos?")
+            }
+          }
+        }
+
+      # plot PCA
+      if ('PCA - All spectra' %in% pic | 'All' %in% pic) {quiet(PCA_general(n, metadata, myDir, colors, pic_extension = pic_extension, example = example))}
+      if ('PCA - Identified spectra only' %in% pic | 'All' %in% pic) {quiet(PCA_identified(n, metadata, myDir, colors, pic_extension = pic_extension, example = example))}
+
+      # plot heatmaps
+      if ('Heatmaps' %in% pic | 'All' %in% pic) {quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension, replicate = replicate))}
+    }
+  } else {
+    n <- NULL
   }
 
   dlg_message("Processing done!")$res
 
   # check create_database first
-  #if (is.null(lib_build)) {lib_build <- dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res}
-  #if (lib_build == TRUE | lib_build == 'yes') {
-  #  create_database(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode)
-  #}
+  if (is.null(lib_build)) {lib_build <- dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res}
+  if (lib_build == TRUE | lib_build == 'yes') {
+    create_database(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode, info = info, Ri = Ri)
+  }
 
   return(list(myDir = myDir, metadata = metadata, apslist = apslist, raw_data = raw_data, xdata4 = xdata4, anIC = anIC, colors = colors, quantification_table = n))
 }

@@ -50,3 +50,5 @@ GC_dataProcess(
 )
 ```
 Set 'pictures = TRUE' to generate pictures along the code.
+
+For more information, see the package [vignette](vignettes/workData.Rmd).

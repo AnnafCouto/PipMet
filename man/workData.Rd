@@ -26,7 +26,10 @@ workData(
   RI = NULL,
   replicate = NULL,
   mergeCompounds = NULL,
-  removeCompounds = NULL
+  removeCompounds = NULL,
+  info = NULL,
+  Ri = NULL,
+  pre_anno = NULL
 )
 }
 \arguments{
@@ -73,12 +76,18 @@ workData(
 \item{mergeCompounds}{Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.}
 
 \item{removeCompounds}{Logical. If TRUE, the user may choose from a pop-up identified compounds to remove from the quantification table. If NULL, the user will be asked. Default to 'NULL'.}
+
+\item{info}{Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL. Only required if lib_build = TRUE or NULL.}
+
+\item{Ri}{Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL. Only if lib_build = TRUE or NULL.}
+
+\item{pre_anno}{Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 }
 \description{
-Main function for GC data processing.
+Main function for GC data processing. It read files in '.mzXML' and '.mzML' formats, apply algorithms for for peacking, grouping, retention time correction and filling missing peaks. The next step proposes spectra based on retention time window and correlation information. After annotation, the function performs quantification by normalizing data and apply t test and principal components analysis, plotting pictures for the evaluation of the steps performed. At the end, the user can choose to generate a internal library with the identified compounds to be uploaded into NIST MS Search software.
 }
 \examples{
 \donttest{
@@ -92,4 +101,13 @@ result <- workData(
 }
 }
 }
+\keyword{RI}
+\keyword{database}
+\keyword{grouping}
+\keyword{in-house}
 \keyword{metadata}
+\keyword{peakpicking}
+\keyword{preprocessing}
+\keyword{rt}
+\keyword{spectra}
+\keyword{spectrum}

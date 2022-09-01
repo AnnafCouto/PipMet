@@ -12,7 +12,7 @@
 #' @param ions List with sublist mz = mz (numeric) of the monitored ion and rt = retention time of monitored ion (numeric). To the 'rt' will be added and subtracted 5 seconds. Default to null.
 #' @param filter Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
-#' @param group Character. Name from 'metadata' column names to group the samples. Default to 'group'.
+#' @param group Character. Name from 'metadata' column names to group the samples. Default to NULL.
 #' @return A 'xcmsSet' object with detected, grouped and filled peaks with retention time corrected.
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
@@ -26,12 +26,12 @@
 #' load(system.file("extdata", "raw_data.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' load(system.file("extdata", "colors.RData", package = "PipMet"))
-#' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, pictures = FALSE, example = TRUE)
+#' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, group = 'group')
 #' }
 #' }
-process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions = NULL, pictures = TRUE, example = FALSE, filter = NULL, pic_extension = c('.tiff', '.png'), group = 'group') {
+process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions = NULL, pictures = TRUE, example = FALSE, filter = NULL, pic_extension = c('.tiff', '.png'), group = NULL) {
 
-  #message (paste0('Processing ', lenght (raw_data$files), ' files...'))
+  message (paste0('Processing ', length (raw_data$files), ' files...'))
   # peak picking
   message (paste0('Detecting peaks...'))
   mfp <- MatchedFilterParam(fwhm = 5, binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)
