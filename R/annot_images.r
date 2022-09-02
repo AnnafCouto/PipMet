@@ -17,10 +17,14 @@
 #' \donttest{
 #' \dontrun{
 #' load(system.file("extdata", "pslist.RData", package = "PipMet"))
-#' annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, pre_anno = system.file("extdata", "pre_anno.csv", package = "PipMet"))
+#' annot <- annot_images(pslist, 
+#'                       myDir = "~/", 
+#'                       pictures = FALSE, 
+#'                       pre_anno = system.file("extdata", "pre_anno.csv",  
+#'                       package = "PipMet"))
 #' }
 #' }
-annot_images <- function(pslist, myDir, pictures = TRUE, pic_extension = c('.tiff', '.png'), pre_anno) {
+annot_images <- function(pslist = NULL, myDir = '~/', pictures = TRUE, pic_extension = c('.tiff', '.png'), pre_anno = NULL) {
   if (!is.null(pre_anno)) {
     if (is_path(pre_anno)) {
       r <- read.csv(pre_anno, sep = ",", na.string = c("NA", ""))
