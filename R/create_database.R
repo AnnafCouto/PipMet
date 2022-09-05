@@ -63,7 +63,7 @@ create_database <- function(apslist, column_set = NULL, prog = NULL, ion_mode = 
       }
       dataInfo[i, "PubChem ID"] <- get_cid(dataInfo[i, 1])$cid
       f <- pc_prop(dataInfo[i, "PubChem ID"])
-      if (!is.na(f["CID"])) {
+      if (!is.na(f["ChemSpiderID"])) {
         dataInfo[i, "formula"] <- f[1, "MolecularFormula"]
         dataInfo[i, "InChIKey"] <- f[1, "InChIKey"]
         dataInfo[i, "exact.mass"] <- f[1, "MonoisotopicMass"]
@@ -116,7 +116,7 @@ create_database <- function(apslist, column_set = NULL, prog = NULL, ion_mode = 
       result[[i]]$Ion_mode <- ion_mode
     }
     result[[i]]$Date <- as.character(Sys.Date())
-    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog)
+    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog, "; RI ", Ri, " :", result[[i]]$RI <- dataInfo[i, "RI"])
   }
   names(result) <- names
   metaMS::write.msp(result, file = paste0("Database_", Sys.Date(), ".msp"), newFile = TRUE)

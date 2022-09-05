@@ -5,11 +5,11 @@
 \title{Annotation images}
 \usage{
 annot_images(
-  pslist,
-  myDir,
+  pslist = NULL,
+  myDir = "~/",
   pictures = TRUE,
   pic_extension = c(".tiff", ".png"),
-  pre_anno
+  pre_anno = NULL
 )
 }
 \arguments{
@@ -33,7 +33,11 @@ This function creates network, hierarchy and heatmap plots of the spectra (annot
 \donttest{
 \dontrun{
 load(system.file("extdata", "pslist.RData", package = "PipMet"))
-annot <- annot_images(pslist, myDir = "~/", pictures = FALSE, pre_anno = system.file("extdata", "pre_anno.csv", package = "PipMet"))
+annot <- annot_images(pslist, 
+                      myDir = "~/", 
+                      pictures = FALSE, 
+                      pre_anno = system.file("extdata", "pre_anno.csv",  
+                      package = "PipMet"))
 }
 }
 }
