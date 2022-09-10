@@ -17,7 +17,9 @@ workLib(
   column_set = NULL,
   instrument_type = NULL,
   cores = 1,
-  Ri = NULL
+  Ri = NULL,
+  RI = NULL,
+  Ri_info = NULL
 )
 }
 \arguments{
@@ -46,6 +48,10 @@ workLib(
 \item{cores}{Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.}
 
 \item{Ri}{Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL.}
+
+\item{RI}{Path to retention index information .csv file. Only if Ri_info == 'From file'. Default to NULL. If NULL the user will be asked.}
+
+\item{Ri_info}{Character. If the user wants to add retention information or not. Supported are 'From file', 'Retrieve from NIST', 'No RI information'. Default to NULL}
 }
 \description{
 Main function for GC-MS standards processing for internal library development.

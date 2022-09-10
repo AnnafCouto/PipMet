@@ -15,7 +15,9 @@
 #' @param ion_mode Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.
 #' @param instrument_type Character. Instrument of acquisition. Default to NULL. If NULL, the user will be asked.
 #' @param cores Numeric. Number of cores to be used in Snow Param. Default to NULL. If NULL, the user will be asked. Set cores = 0 to Serial Param.
+#' @param Ri_info Character. If the user wants to add retention information or not. Supported are 'From file', 'Retrieve from NIST', 'No RI information'. Default to NULL
 #' @param Ri Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL.
+#' @param RI Path to retention index information .csv file. Only if Ri_info == 'From file'. Default to NULL. If NULL the user will be asked.
 #' @importFrom methods as
 #' @importFrom ddpcr quiet
 #' @importFrom utils choose.dir menu read.csv write.csv
@@ -43,7 +45,7 @@
 #' )
 #' }
 #' }
-workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE, parallel = NULL, ion_mode = NULL, prog = NULL, column_set = NULL, instrument_type = NULL, cores = 1, Ri = NULL) {
+workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE, parallel = NULL, ion_mode = NULL, prog = NULL, column_set = NULL, instrument_type = NULL, cores = 1, Ri = NULL, RI = NULL, Ri_info = NULL) {
 
  # ask for parallelization mode
   if (is.null (parallel)) {
@@ -93,7 +95,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
       if (metd == "yes") {
         lib_metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
         if (!"file" %in% colnames(lib_metadata)) {
-          lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$sample, extension)
+          lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$compound, extension)
         } else {
           for (i in 1:nrow(lib_metadata)) { # check if they are just filenames or filepath (they need to be path)
             if (!is_path(lib_metadata$file [i])) {lib_metadata$file [i] <- paste0(sample_dir, "/", basename (lib_metadata$file [i]))}
@@ -132,7 +134,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
 
   # remove empty lines/columns from lib_metadata
   lib_metadata <- Filter(function(x) !all(is.na(x)), lib_metadata) # remove empty columns
-  lib_metadata <- lib_metadata[!apply(is.na(lib_metadata), 1, all), ] # remove empty rows
+  lib_metadata <- lib_metadata[-which(is.na(lib_metadata$compound=='')),]
 
   # begin processing
 
@@ -170,19 +172,27 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
   names(pslist) <- names(anIC) <- names(an) <- names(anF) <- names(xset) <- names(xdata) <- names(raw_data) <- lib_metadata[, "compound"]
 
   # get information on retention index, column and temperature program
-  if (is.null (Ri)) {Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index")$res}
+  if (is.null (Ri_info)) {Ri_info <- dlg_list(c("From file", 'Retrieve from NIST', 'No RI information'), multiple = FALSE, title = "Retention time index: ")$res}
+  if (!Ri_info == 'No Ri information') {if (is.null (Ri)) {Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index")$res}}
+  if (Ri_info == 'From file') {
+    RI <- read.csv(choose.files())
+  }
+  if (is_path(RI)) {
+    RI <- read.csv(RI)
+  }
   if (is.null (column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res}
   if (is.null (prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res}
   if (is.null (instrument_type)) {instrument_type <- dlg_input("Type of instrument of acquisition", "GC-EI-Q")$res}
-  
 
-  message ('Retrieving RI from CAS numbers, if available...')
-  # retrieve RI from CAS numbers (from NIST database), if RI is not present
-  lib_metadata[, "RI_"] <- NA
-  for (i in 1:nrow(lib_metadata)) {
-    lib_metadata[i, "CAS"] <- gsub(pattern = "-", replacement = "", lib_metadata[i, "CAS"]) # remove hifens from CAS
-    if (is.na(lib_metadata[i, "RI_"])) {
-      quiet(lib_metadata[i, "RI_"] <- mean(nist_ri(as.cas(lib_metadata[i, "CAS"]), from = "cas", type = Ri, polarity = column_set, temp_prog = prog)$RI))
+  if (Ri_info=='Retrieve from NIST') {
+    message ('Retrieving RI from CAS numbers, if available...')
+    # retrieve RI from CAS numbers (from NIST database), if RI is not present
+    lib_metadata[, "RI_"] <- NA
+    for (i in 1:nrow(lib_metadata)) {
+      lib_metadata[i, "CAS"] <- gsub(pattern = "-", replacement = "", lib_metadata[i, "CAS"]) # remove hifens from CAS
+      if (is.na(lib_metadata[i, "RI_"])) {
+        quiet(lib_metadata[i, "RI_"] <- mean(nist_ri(as.cas(lib_metadata[i, "CAS"]), from = "cas", type = Ri, polarity = column_set, temp_prog = prog)$RI))
+      }
     }
   }
 
@@ -203,7 +213,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
       result[[ii]]$Name <- paste0(pslist[[i]][[ii]]@id, " - Candidate to ", names(pslist)[i])
       result[[ii]]$id <- pslist[[i]][[ii]]@id
       result[[ii]]$rt <- pslist[[i]][[ii]]@rt
-      result[[ii]]$RI <- lib_metadata$RI_[[i]]
+      result[[ii]]$RI <- lib_metadata$RI [[i]]
     }
     metaMS::write.msp(result, paste0(names(pslist)[i], "_", Sys.Date(), ".msp"), newFile = TRUE)
   }
@@ -252,7 +262,9 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
     result[[i]]$Class <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "class"]
     result[[i]]$Date <- as.character(Sys.Date())
     result[[i]]$Instrument_type <- instrument_type
-    result[[i]]$Comments <- paste0(" Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog, "; ", "ChemSpiderID: ", lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "ChemSpiderID"], "; linear RI: ", lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI_"])
+    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ",
+                                   "ProgramType: ", prog, "; ",
+                                   "RI: ", Ri)
     result[[i]]$Ion_mode <- ion_mode
     if ("RI" %in% colnames(lib_metadata)) {
       result[[i]]$RI <- lib_metadata[grep(names(ppslist)[i], lib_metadata[, 1], value = FALSE), "RI"]
@@ -263,7 +275,15 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
   }
   names(result) <- names(ppslist)
   setwd(myDir)
+
+  if (Ri_info == 'From file') {
+    message ('Calculating retention index...')
+    result <- addRI(result, RI)
+  }
+
   metaMS::write.msp(result, paste0("Library_", libname, ".msp"), newFile = TRUE)
 
   dlg_message("Done! Internal library development finalized. A '.msp' file was created in your directory for conversion to NIST MS Search Library.")
 }
+
+
