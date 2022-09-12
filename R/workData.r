@@ -122,7 +122,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
       result <- addRI(result, RI)
       write.msp(result, "spectra.msp", newFile = TRUE)
       dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
-      rm(spectra, result)
+      #rm(spectra, result)
     }
 
   # update annotated spectra and plot images
