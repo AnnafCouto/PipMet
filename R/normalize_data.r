@@ -326,13 +326,13 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, pic_extensio
 
       n_1 <- cbind(n_1[, 1:(5 + nrow(metadata))], y_1[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
       write.csv(n_1, "Normalized_quantification_withoutOutliers.csv", row.names = FALSE, na = "")
-      a <- ggplot(y_1, aes(x = y[, nrow(metadata) + 1])) +
+      a <- ggplot(y_1, aes(x = y_1[, nrow(metadata) + 1])) +
         geom_histogram() +
         ggtitle("Variance Distribution") +
         xlab("Variance") +
         ylab("Frequency") +
         theme(rect = element_rect(fill = "transparent")) # histograma da variância. O ideal é que tenha pouca variância alta
-      b <- ggplot(y_1, aes(x = y[, nrow(metadata) + 2])) +
+      b <- ggplot(y_1, aes(x = y_1[, nrow(metadata) + 2])) +
         geom_histogram() +
         ggtitle("Standard Deviation") +
         xlab("Standard Deviation") +
@@ -372,6 +372,28 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, pic_extensio
       }
       n_2 <- cbind(n_2[, 1:(5 + nrow(metadata))], y_2[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
       write.csv(n_2, paste0("Normalized_quantification_varianceUpTo", th, ".csv"), row.names = FALSE, na = "")
+      a <- ggplot(y_2, aes(x = y_2[, nrow(metadata) + 1])) +
+        geom_histogram() +
+        ggtitle("Variance Distribution") +
+        xlab("Variance") +
+        ylab("Frequency") +
+        theme(rect = element_rect(fill = "transparent")) # histograma da variância. O ideal é que tenha pouca variância alta
+      b <- ggplot(y_2, aes(x = y_2[, nrow(metadata) + 2])) +
+        geom_histogram() +
+        ggtitle("Standard Deviation") +
+        xlab("Standard Deviation") +
+        ylab("Frequency") +
+        theme(rect = element_rect(fill = "transparent")) # histograma do desvio padrão.
+      # png
+      if ('.png' %in% pic_extension) {
+      png("variance_dp_withoutOutliers.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      gridExtra::grid.arrange(a, b, ncol = 1)
+      dev.off()}
+      # tiff
+      if ('.tiff' %in% pic_extension) {
+      tiff("variance_dp_withoutOutliers.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
+      gridExtra::grid.arrange(a, b, ncol = 1)
+      dev.off()}
     }
     okay <- menu(c("OK, keep going", "No, re-do normalization"), graphics = TRUE, title = "Are the results ok?")
   }
