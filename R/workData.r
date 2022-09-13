@@ -28,6 +28,7 @@
 #' @param info Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL. Only required if lib_build = TRUE or NULL.
 #' @param pre_anno Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.
 #' @param Ri Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL. Only if lib_build = TRUE or NULL.
+#' @param sample_names Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message dlg_list
@@ -49,7 +50,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL, info = NULL, Ri = NULL, pre_anno = NULL) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL, info = NULL, Ri = NULL, pre_anno = NULL, sample_names = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (pictures == TRUE) {
@@ -144,28 +145,28 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
     if (pictures == TRUE & nrow(metadata) > 1) {
       pic <- dlg_list(c('Volcano - level 1', 'Volcano - level 2', 'PCA - All spectra', 'PCA - Identified spectra only', 'Heatmaps', 'All', 'None'), multiple = TRUE, title = "Statistics pictures:")$res
-        # plot volcanos
+      # plot volcanos
+      okay <- 1
+      if ('Volcano - level 1' %in% pic | 'All' %in% pic) { # Volcano level 2 can only be made if volcano - level 1 is too
+        while (okay == 1) {
+          quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
+          okay <- menu(c("Repeat", "Next", ""), graphics = TRUE, title = "Repeat?")
+        }
         okay <- 1
-        if ('Volcano - level 1' %in% pic | 'All' %in% pic) { # Volcano level 2 can only be made if volcano - level 1 is too
+        if ('Volcano - level 2' %in% pic | 'All' %in% pic) {
           while (okay == 1) {
-            quiet(volDir <- try(vol_lvl1(n, metadata, myDir, pic_extension = pic_extension)))
-            okay <- menu(c("Repeat", "Next", ""), graphics = TRUE, title = "Repeat?")
-          }
-          okay <- 1
-          if ('Volcano - level 2' %in% pic | 'All' %in% pic) {
-            while (okay == 1) {
-              quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
-              okay <- menu(c("Repeat", "No"), graphics = TRUE, title = "Repeat Volcanos?")
-            }
+            quiet(x <- try(vol_lvl2(n, metadata, myDir, volDir, pic_extension = pic_extension)))
+            okay <- menu(c("Repeat", "No"), graphics = TRUE, title = "Repeat Volcanos?")
           }
         }
+      }
 
       # plot PCA
       if ('PCA - All spectra' %in% pic | 'All' %in% pic) {quiet(PCA_general(n, metadata, myDir, colors, pic_extension = pic_extension, example = example))}
       if ('PCA - Identified spectra only' %in% pic | 'All' %in% pic) {quiet(PCA_identified(n, metadata, myDir, colors, pic_extension = pic_extension, example = example))}
 
       # plot heatmaps
-      if ('Heatmaps' %in% pic | 'All' %in% pic) {quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension, replicate = replicate))}
+      if ('Heatmaps' %in% pic | 'All' %in% pic) {quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension, replicate = replicate, sample_names = NULL))}
     }
   } else {
     n <- NULL

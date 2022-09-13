@@ -26,6 +26,7 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
   mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
   rownames(mat) <- n[, 1]
+  mat[is.na(mat)] <- 0
 
   ### ask for user inputs
   setwd(myDir)

@@ -13,6 +13,7 @@
 #' @param example Logical. If example = TRUE, the metadata and other needed files will be loaded from package files.
 #' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
+#' @param sample_names Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.
 #' @importFrom grDevices dev.off png tiff rainbow
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
@@ -37,7 +38,7 @@
 #' rm(read)
 #' }
 #' }
-read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, pic_extension = c('.tiff', '.png')) {
+read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, pic_extension = c('.tiff', '.png'), sample_names = NULL) {
   if (!example == TRUE) {
 
     # ask user about samples and folders path and create a new folder named after a "Project"
@@ -147,6 +148,7 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
   raw_data <- readMSData(metadata$file, pdata = new("NAnnotatedDataFrame", metadata), mode = "onDisk")
 
   if (pictures == TRUE) {
+    if (is.null(sample_names)) {sample_names <- dlg_list(names(metadata), multiple = FALSE, title = "Name sample as:")$res}
     # images of pre-processing
     if (!dir.exists("Visualization_results") == TRUE) {
       dir.create("Visualization_results")
@@ -202,7 +204,8 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
       cl <- do.call(cbind, lapply(tic_bin, intensity))
       cl[cl == 0] <- NA
       cormat <- cor(log2(cl), use = "pairwise.complete.obs")
-      colnames(cormat) <- rownames(cormat) <- metadata[, 'sample']
+      colnames(cormat) <- rownames(cormat) <- metadata[, sample_names]
+      # colnames(cormat) <- rownames(cormat) <- metadata[, 'sample']
       # for each set of colors (conditions of experiment)
       for (i in 1:length(colors)) {
         ann <- data.frame(colors[[i]][[1]])
