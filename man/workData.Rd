@@ -29,7 +29,8 @@ workData(
   removeCompounds = NULL,
   info = NULL,
   Ri = NULL,
-  pre_anno = NULL
+  pre_anno = NULL,
+  sample_names = NULL
 )
 }
 \arguments{
@@ -82,6 +83,8 @@ workData(
 \item{Ri}{Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL. Only if lib_build = TRUE or NULL.}
 
 \item{pre_anno}{Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.}
+
+\item{sample_names}{Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.}
 }
 \value{
 A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table

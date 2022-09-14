@@ -13,7 +13,8 @@ read_data(
   extension = NULL,
   pictures = TRUE,
   example = FALSE,
-  pic_extension = c(".tiff", ".png")
+  pic_extension = c(".tiff", ".png"),
+  sample_names = NULL
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ read_data(
 \item{example}{Logical. If example = TRUE, the metadata and other needed files will be loaded from package files.}
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
+
+\item{sample_names}{Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.}
 }
 \value{
 A list of list of colors, metadata table, a OnDiskMSnExp object and the path to the directory of work.

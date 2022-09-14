@@ -10,7 +10,8 @@ heatmap(
   myDir,
   colors,
   pic_extension = c(".tiff", ".png"),
-  replicate = NULL
+  replicate = NULL,
+  sample_names = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ heatmap(
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
 \item{replicate}{Character or Logical. If FALSE, there is no replicate informations in the metadata table. Otherwise, inform the name in the metadata column containing replicate information. If NULL, the user will be asked. Default to NULL.}
+
+\item{sample_names}{Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.}
 }
 \value{
 None.
