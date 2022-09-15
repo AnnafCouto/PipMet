@@ -134,7 +134,14 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
 
   # remove empty lines/columns from lib_metadata
   lib_metadata <- Filter(function(x) !all(is.na(x)), lib_metadata) # remove empty columns
-  lib_metadata <- lib_metadata[-which(is.na(lib_metadata$compound=='')),]
+  c <- vector()
+  for (i in 1:nrow(lib_metadata)) {
+    if(is.na(lib_metadata$compound[i])) {
+      c <- c(c,i)
+    }
+  }
+  if(!class(c)=='logical') {lib_metadata <- lib_metadata[-c,]}
+  
 
   # begin processing
 
