@@ -92,7 +92,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
     # library metadata set up
     if (is.null(lib_metadata)) {
       metd <- dlg_message("Metadata table already exists?", "yesno")$res
-      if (metd == "yes") {
+      if (metd == "yes") {  # metadata already exists
         lib_metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
         if (!"file" %in% colnames(lib_metadata)) {
           lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$compound, extension)
@@ -101,7 +101,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
             if (!is_path(lib_metadata$file [i])) {lib_metadata$file [i] <- paste0(sample_dir, "/", basename (lib_metadata$file [i]))}
           }
         }
-      } else {
+      } else {  # metadata doesn't exist
         files <- list.files(sample_dir, full.names = TRUE, pattern = extension, recursive = TRUE)
         lib_metadata <- matrix(nrow = length(files), ncol = 10)
         colnames(lib_metadata) <- c("compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey")
@@ -115,6 +115,22 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
           lib_metadata <- read.csv("lib_metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
         }
         lib_metadata <- read.csv("lib_metadata.csv", na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
+      }
+    }
+    if (!is.null(lib_metadata)) { # if lib_metadata is provided
+      if (is_path(lib_metadata)) {  # if metadata if a path to lib_metadata file
+        lib_metadata <- read.csv(lib_metadata, na.string = c("NA", ""), colClasses = "character", sep = ",")
+        if (!"file" %in% colnames(lib_metadata)) {
+          lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$compound, extension)
+        } else {
+          for (i in 1:nrow(lib_metadata)) { # check if they are just filenames or filepath (they need to be path)
+            if (!is_path(lib_metadata$file [i])) {lib_metadata$file [i] <- paste0(sample_dir, "/", basename (lib_metadata$file [i]))}
+          }
+        }
+      }
+      while (!class(lib_metadata)== 'data.frame'|class(lib_metadata)== 'matrix') {  # lib_metadata may also be a data.frame or matrix. if none, ask for lib_metadata again
+        dlg_message("Library metadata format not supported. Upload a .csv file with, at least, 'compound', 'rt' and 'file' columns!")$res
+        lib_metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
       }
     }
     # if example = TRUE
@@ -182,11 +198,14 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
   if (is.null (Ri_info)) {Ri_info <- dlg_list(c("From file", 'Retrieve from NIST', 'No RI information'), multiple = FALSE, title = "Retention time index: ")$res}
   if (!Ri_info == 'No Ri information') {if (is.null (Ri)) {Ri <- dlg_list(c("kovats", "linear", "alkane", "lee"), multiple = FALSE, title = "Retention time index")$res}}
   if (Ri_info == 'From file') {
-    RI <- read.csv(choose.files())
+    if (is.null (RI)) {
+      RI <- read.csv(choose.files())
+    }
+    if (is_path(RI)) {
+      RI <- read.csv(RI)
+    }
   }
-  if (is_path(RI)) {
-    RI <- read.csv(RI)
-  }
+  
   if (is.null (column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE)$res}
   if (is.null (prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE)$res}
   if (is.null (instrument_type)) {instrument_type <- dlg_input("Type of instrument of acquisition", "GC-EI-Q")$res}
