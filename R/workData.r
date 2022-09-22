@@ -121,7 +121,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
       RI <- read.csv(RI)
       message ('Calculating retention index...')
       result <- addRI(result, RI)
-      write.msp(result, "spectra.msp", newFile = TRUE)
+      write.msp(result, "spectra_RI.msp", newFile = TRUE)
       dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
       #rm(spectra, result)
     }
