@@ -129,6 +129,12 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
       }
     }
 
+    for (i in x) {
+      if (length(unique(metadata[,i]))>10) {
+        x <- x[-which(x == i)]
+      }
+    }
+
     # colors for each column in metadata except 'sample' and 'tec_rep'
     colors <- vector(mode = "list", length = length(x))
     names(colors) <- x
