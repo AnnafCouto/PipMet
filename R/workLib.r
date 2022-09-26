@@ -222,10 +222,14 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
     }
   }
 
-  message (paste0('Writing ', length(pslist), ' spectra for manual validation...'))
   # create .msp structure and files
-  dir.create("spectra")
+  message (paste0('Writing ', length(pslist), ' spectra for manual validation...'))
+  
+  if (!dir.exists("spectra")) {
+    dir.create("spectra")
+  }
   setwd("spectra")
+
   for (i in 1:length(pslist)) {
     spectra <- list()
     for (ii in 1:length(pslist[[i]])) {

@@ -139,8 +139,11 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds, group))
   
 
-    if (is.null(replicate)) {replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
-
+    if (is.null(replicate)) {
+      if (!'tec_rep' %in% colnames(metadata)) {
+        replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
+        } else {replicate <- 'tec_rep'}
+    
     message (paste0('Statistics pictures...'))
 
     if (pictures == TRUE & nrow(metadata) > 1) {

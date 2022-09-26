@@ -83,7 +83,9 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
       geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
       geom_hline(yintercept = -log10(0.05), col = "red") +
       ggtitle(label = paste0(opt[1], " X ", opt[2])) +
-      theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black"))
+      theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
+      guides(color = guide_legend(title = "Relative abundance"))
+
     # png
     if ('.png' %in% pic_extension) {
     png("volcano.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -107,7 +109,9 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
       geom_text_repel() +
       theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
       xlab("Log2 Mean Fold Change") +
-      ylab("-Log10 pValue")
+      ylab("-Log10 pValue") +
+      guides(color = guide_legend(title = "Relative abundance"))
+
     # png
     if ('.png' %in% pic_extension) {
     png("volcano_identified.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")

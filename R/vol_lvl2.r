@@ -84,7 +84,8 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
     geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
     geom_hline(yintercept = -log10(0.05), col = "red") +
     ggtitle(label = paste0(opt[1], ": ", opt2[1], " X ", opt2[2])) +
-    theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black"))
+    theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
+    guides(color = guide_legend(title = "Relative abundance"))
 
   # tiff
   if ('.tiff' %in% pic_extension) {
@@ -110,7 +111,8 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
     geom_text_repel() +
     theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
     xlab("Log2 Mean Fold Change") +
-    ylab("-Log10 pValue")
+    ylab("-Log10 pValue") +
+    guides(color = guide_legend(title = "Relative abundance"))
 
   # tiff
   if ('.tiff' %in% pic_extension) {
@@ -123,6 +125,7 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
   png("volcano_ident.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
   gridExtra::grid.arrange(b)
   dev.off()}
+  write.csv(de, file = 'Significance_compounds_vol_lvl2.csv', row.names=FALSE)
   setwd(volDir)
 
   ### second comparison
@@ -170,7 +173,8 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
     geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
     geom_hline(yintercept = -log10(0.05), col = "red") +
     ggtitle(label = paste0(opt[2], ": ", opt2[1], " X ", opt2[2])) +
-    theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black"))
+    theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
+    guides(color = guide_legend(title = "Relative abundance"))
 
   # tiff
   if ('.tiff' %in% pic_extension) {
@@ -195,7 +199,8 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c('.tiff', '.pn
     geom_text_repel() +
     theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
     xlab("Log2 Mean Fold Change") +
-    ylab("-Log10 pValue")
+    ylab("-Log10 pValue") +
+    guides(color = guide_legend(title = "Relative abundance"))
 
   # tiff
   if ('.tiff' %in% pic_extension) {
