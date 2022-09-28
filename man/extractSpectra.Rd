@@ -9,7 +9,7 @@ extractSpectra(x, min_peaks = 5)
 \arguments{
 \item{x}{A 'CAMERA' xsAnnotate object.}
 
-\item{min_peaks}{Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum.}
+\item{min_peaks}{Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.}
 }
 \description{
 This is a modified function from CluMSID package to extract the spectra from a CAMERA object output.

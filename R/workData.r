@@ -28,6 +28,7 @@
 #' @param info Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL. Only required if lib_build = TRUE or NULL.
 #' @param pre_anno Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.
 #' @param Ri Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL. Only if lib_build = TRUE or NULL.
+#' @param min_peaks Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.
 #' @param sample_names Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
@@ -50,7 +51,7 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL, info = NULL, Ri = NULL, pre_anno = NULL, sample_names = NULL) {
+workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL, info = NULL, Ri = NULL, pre_anno = NULL, min_peaks = 5, sample_names = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (pictures == TRUE) {
@@ -90,7 +91,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # ask informations and read files
   message ('Reading files...')
-  quiet(read <- read_data(peakMonitor = peakMonitor, ions = ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example, pic_extension = pic_extension))
+  quiet(read <- read_data(peakMonitor = peakMonitor, ions = ions, sample_dir = sample_dir, metadata = metadata, extension = extension, myDir = myDir, pictures = pictures, example = example, pic_extension = pic_extension, sample_names = sample_names))
   colors <- read[[1]]
   metadata <- read[[2]]
   raw_data <- read[[3]]
@@ -104,7 +105,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # define spectra and create .msp files
   message (paste0('Grouping peaks into spectra...'))
-  quiet(spectra <- getSpectra(xdata4, raw_data, colors, column_set = column_set, prog = prog, ion_mode = ion_mode, plot_eic = plot_eic))
+  quiet(spectra <- getSpectra(xdata4, raw_data, min_peaks, colors, column_set = column_set, prog = prog, ion_mode = ion_mode, plot_eic = plot_eic))
   anIC <- spectra[[1]]
   result <- spectra[[3]]
   pslist <- spectra[[2]]
@@ -134,11 +135,10 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
 
   # normalize, choose peaks and plot images, only if more than one sample
 
-  if (nrow(metadata) > 1) {
-    message (paste0('Normalizing data...'))
-    quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds, group))
+  message (paste0('Normalizing data...'))
+  quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension, derivatization, mergeCompounds, removeCompounds, group))
   
-
+  if (nrow(metadata) > 1 & nrow(pre_anno) > 1) {
     if (is.null(replicate)) {
       if (!'tec_rep' %in% colnames(metadata)) {
         replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
@@ -171,8 +171,6 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
       # plot heatmaps
       if ('Heatmaps' %in% pic | 'All' %in% pic) {quiet(heatmap(n, metadata, myDir, colors, pic_extension = pic_extension, replicate = replicate, sample_names = NULL))}
     }
-  } else {
-    n <- NULL
   }
 
   dlg_message("Processing done!")$res

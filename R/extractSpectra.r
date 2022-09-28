@@ -2,7 +2,7 @@
 #'
 #' This is a modified function from CluMSID package to extract the spectra from a CAMERA object output.
 #' @param x A 'CAMERA' xsAnnotate object.
-#' @param min_peaks Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum.
+#' @param min_peaks Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.
 #' @importFrom methods as new is
 #' @importFrom Biobase rowMax
 #' @importFrom stats median

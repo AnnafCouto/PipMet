@@ -4,6 +4,7 @@
 #' @export
 #' @param xdata4 A 'xcmsSet' or 'XCMSnExp' object.
 #' @param raw_data A 'XCMSnExp' object.
+#' @param min_peaks Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.
 #' @param colors A list with colors generated from "read_data()".
 #' @param column_set Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.
 #' @param prog Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.
@@ -31,7 +32,7 @@
 #' }
 #' }
 
-getSpectra <- function(xdata4, raw_data, colors, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE) {
+getSpectra <- function(xdata4, raw_data, min_peaks = 5, colors, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE) {
   if (class(xdata4)[1] == "XCMSnExp") {
     xset <- as(xdata4, "xcmsSet")
   } else {
@@ -50,7 +51,7 @@ getSpectra <- function(xdata4, raw_data, colors, column_set = NULL, prog = NULL,
   rm(anF)
 
   # extract spectra with minimum of 5 peaks
-  pslist <- extractSpectra(anIC)
+  pslist <- extractSpectra(anIC, min_peaks)
 
   # create 'pre_anno.csv' where the user annotates the spectra
   # contains id and retention time of each spectra

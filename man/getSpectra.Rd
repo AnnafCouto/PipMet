@@ -7,6 +7,7 @@
 getSpectra(
   xdata4,
   raw_data,
+  min_peaks = 5,
   colors,
   column_set = NULL,
   prog = NULL,
@@ -18,6 +19,8 @@ getSpectra(
 \item{xdata4}{A 'xcmsSet' or 'XCMSnExp' object.}
 
 \item{raw_data}{A 'XCMSnExp' object.}
+
+\item{min_peaks}{Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.}
 
 \item{colors}{A list with colors generated from "read_data()".}
 

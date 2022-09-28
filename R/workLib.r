@@ -156,7 +156,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
       c <- c(c,i)
     }
   }
-  if(!class(c)=='logical') {lib_metadata <- lib_metadata[-c,]}
+  if(!is(c, 'logical')) {lib_metadata <- lib_metadata[-c,]}
   
 
   # begin processing

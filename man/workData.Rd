@@ -30,6 +30,7 @@ workData(
   info = NULL,
   Ri = NULL,
   pre_anno = NULL,
+  min_peaks = 5,
   sample_names = NULL
 )
 }
@@ -83,6 +84,8 @@ workData(
 \item{Ri}{Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL. Only if lib_build = TRUE or NULL.}
 
 \item{pre_anno}{Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.}
+
+\item{min_peaks}{Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.}
 
 \item{sample_names}{Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.}
 }

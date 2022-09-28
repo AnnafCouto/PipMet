@@ -49,7 +49,7 @@ annot_images <- function(pslist = NULL, myDir = '~/', pictures = TRUE, pic_exten
   }
   apslist <- addAnnotations(featlist = pslist, annolist = r)
 
-  if (pictures == TRUE) {
+  if (pictures == TRUE & nrow(r) > 5) {
     pseudodistmat <- distanceMatrix(apslist, mz_tolerance = 0.02) ### calculates distance matrix; takes a while
 
     # creates a folder for images
