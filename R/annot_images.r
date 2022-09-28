@@ -40,6 +40,9 @@ annot_images <- function(pslist = NULL, myDir = '~/', pictures = TRUE, pic_exten
       r <- read.csv("pre_anno.csv", sep = ";", na.string = c("NA", ""), dec = ",")
     }
   }
+  if (sum(is.na(r$id))>0) {
+  r <- r[-which(is.na(r$id)),]
+  }
   r[is.na(r)] <- ""
 
   ### add annotations from 'pre_anno.csv' file (if there is annotation)
