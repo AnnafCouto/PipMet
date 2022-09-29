@@ -141,8 +141,9 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
   if (nrow(metadata) > 1 & nrow(pre_anno) > 1) {
     if (is.null(replicate)) {
       if (!'tec_rep' %in% colnames(metadata)) {
-        replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res}
-        } else {replicate <- 'tec_rep'}
+        replicate <- dlg_list(c(colnames(metadata), 'No information'), multiple = FALSE, title = "Replicate column:")$res
+      }
+    } else {replicate <- 'tec_rep'}
     
     message (paste0('Statistics pictures...'))
 
