@@ -113,7 +113,7 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
         # tiff
         if ('.tiff' %in% pic_extension) {
           tiff(paste0(names(colors)[i], "_boxplotLog2Postprocessed.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-          par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1)
+          par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1, xpd=TRUE)
           boxplot(ints,
             varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
             ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
@@ -122,20 +122,23 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
           text(seq_along(metadata$sample), par("usr")[3],
             labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
           )
+          legend("right", inset=c(-0.23, 0), legend = names(colors[[i]][[2]]), , box.lty = 0, col = colors[[i]][[2]], fill = colors[[i]][[2]],bg = "transparent")
+
           dev.off()
         }
         # png
         if ('.png' %in% pic_extension) {
           png(paste0(names(colors)[i], "_boxplotLog2Postprocessed.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-          par(mar = c(7, 5, 3, 1) + .1, cex.axis = 1)
+          par(mar = c(7, 5, 3, 8) + .1, cex.axis = 1, xpd=TRUE)
           boxplot(ints,
-            varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
-            ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
+                  varwidth = TRUE, col = colors[[i]][[2]][colors[[i]][[1]]],
+                  ylab = expression(log[2] ~ intensity), main = "Peak intensities", las = 3, xaxt = "n"
           )
           grid(nx = NA, ny = NULL)
           text(seq_along(metadata$sample), par("usr")[3],
-            labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.7
+               labels = metadata$sample, srt = 45, adj = c(1.1, 1.1), xpd = TRUE, cex = 0.65
           )
+          legend("right", inset=c(-0.23, 0), legend = names(colors[[i]][[2]]), , box.lty = 0, col = colors[[i]][[2]], fill = colors[[i]][[2]],bg = "transparent")
           dev.off()
         }
       }
