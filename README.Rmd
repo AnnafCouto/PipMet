@@ -25,9 +25,18 @@ The PipMet package was developed to process begin-to-end metabolomic-based GC-MS
 
 You can install the released version of PipMet from [GitHub](https://github.com) with:
 
-``` r
+``` {r, eval = FALSE}
 devtools::install_github("AnnafCouto/PipMet")
 ```
+
+The user may also install the package through Bioconductor repository:
+
+``` {r, eval = FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("PipMet")
+``` r
 
 ## Example
 

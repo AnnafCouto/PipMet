@@ -1,6 +1,6 @@
 ---
 title: "GC-MS Internal library creation with PipMet"
-author: "Anna Clara Couto"
+author: "Anna Clara Couto and Tatiani Brenelli de Lima"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 website: "https://github.com/AnnafCouto"
 output:

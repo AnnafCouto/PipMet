@@ -30,7 +30,12 @@
 #'                  Ri = 'kovats')
 #' }
 #' }
-create_database <- function(apslist, column_set = NULL, prog = NULL, ion_mode = NULL, info = NULL, Ri = NULL) {
+create_database <- function(apslist, 
+                            column_set = NULL, 
+                            prog = NULL, 
+                            ion_mode = NULL, 
+                            info = NULL, 
+                            Ri = NULL) {
 
   # get only annotated spectra
   pslist <- list()

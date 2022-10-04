@@ -29,7 +29,17 @@
 #' xdata4 <- process(raw_data, metadata, myDir = "~/", colors, group = 'group')
 #' }
 #' }
-process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions = NULL, pictures = TRUE, example = FALSE, filter = NULL, pic_extension = c('.tiff', '.png'), group = NULL) {
+process <- function(raw_data, 
+                    metadata, 
+                    myDir, 
+                    colors, 
+                    peakMonitor = FALSE, 
+                    ions = NULL, 
+                    pictures = TRUE, 
+                    example = FALSE, 
+                    filter = NULL, 
+                    pic_extension = c('.tiff', '.png'), 
+                    group = NULL) {
 
   message (paste0('Processing ', length (raw_data$files), ' files...'))
   # peak picking

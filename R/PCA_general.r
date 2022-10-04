@@ -25,7 +25,13 @@
 #' PCA_general(n, metadata, myDir = "~/", colors)
 #' }
 #'}
-PCA_general <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png'), example = FALSE) {
+PCA_general <- function(n, 
+                        metadata, 
+                        myDir, 
+                        colors, 
+                        pic_extension = c('.tiff', '.png'), 
+                        example = FALSE) {
+  
   mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
   mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
   rownames(mat) <- n[, 1]

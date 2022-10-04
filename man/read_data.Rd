@@ -46,7 +46,6 @@ This function creates a sheet for the user to fill with the experiment design in
 }
 \examples{
 \donttest{
-\dontrun{
 read <- read_data(
   pictures = FALSE,
   example = TRUE
@@ -56,7 +55,7 @@ metadata <- read[[2]]
 raw_data <- read[[3]]
 myDir <- read[[4]]
 rm(read)
-}
+
 }
 }
 \keyword{metadata}

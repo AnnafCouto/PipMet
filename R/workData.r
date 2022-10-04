@@ -51,7 +51,32 @@
 #' )
 #' }
 #' }
-workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, filter = NULL, peakMonitor = NULL, pic_extension = c('.tiff', '.png'), parallel = NULL, group = NULL, derivatization = NULL, cores = 1, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = NULL, lib_build = NULL, RI = NULL, replicate = NULL, mergeCompounds = NULL, removeCompounds = NULL, info = NULL, Ri = NULL, pre_anno = NULL, min_peaks = 5, sample_names = NULL) {
+workData <- function(myDir = NULL, 
+                    sample_dir = NULL, 
+                    metadata = NULL, 
+                    extension = NULL, 
+                    pictures = TRUE, 
+                    example = FALSE, 
+                    filter = NULL, 
+                    peakMonitor = NULL, 
+                    pic_extension = c('.tiff', '.png'), 
+                    parallel = NULL, 
+                    group = NULL, 
+                    derivatization = NULL, 
+                    cores = 1, 
+                    column_set = NULL, 
+                    prog = NULL, 
+                    ion_mode = NULL, 
+                    plot_eic = NULL, 
+                    lib_build = NULL, 
+                    RI = NULL, 
+                    replicate = NULL, 
+                    mergeCompounds = NULL, 
+                    removeCompounds = NULL, 
+                    info = NULL, Ri = NULL, 
+                    pre_anno = NULL, 
+                    min_peaks = 5, 
+                    sample_names = NULL) {
 
   # ask for monitoring ions infos - CHECAR SE FUNCIONA
   if (pictures == TRUE) {

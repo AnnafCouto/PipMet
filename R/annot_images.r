@@ -24,7 +24,12 @@
 #'                       package = "PipMet"))
 #' }
 #' }
-annot_images <- function(pslist = NULL, myDir = '~/', pictures = TRUE, pic_extension = c('.tiff', '.png'), pre_anno = NULL) {
+annot_images <- function(pslist = NULL, 
+                        myDir = '~/', 
+                        pictures = TRUE, 
+                        pic_extension = c('.tiff', '.png'), 
+                        pre_anno = NULL) {
+  
   if (!is.null(pre_anno)) {
     if (is_path(pre_anno)) {
       r <- read.csv(pre_anno, sep = ",", na.string = c("NA", ""))

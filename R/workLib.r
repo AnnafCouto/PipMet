@@ -45,7 +45,21 @@
 #' )
 #' }
 #' }
-workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadata = NULL, extension = NULL, example = FALSE, parallel = NULL, ion_mode = NULL, prog = NULL, column_set = NULL, instrument_type = NULL, cores = 1, Ri = NULL, RI = NULL, Ri_info = NULL) {
+workLib <- function(myDir = NULL, 
+                    libname = NULL, 
+                    sample_dir = NULL, 
+                    lib_metadata = NULL, 
+                    extension = NULL, 
+                    example = FALSE, 
+                    parallel = NULL, 
+                    ion_mode = NULL, 
+                    prog = NULL, 
+                    column_set = NULL, 
+                    instrument_type = NULL, 
+                    cores = 1, 
+                    Ri = NULL, 
+                    RI = NULL, 
+                    Ri_info = NULL) {
 
  # ask for parallelization mode
   if (is.null (parallel)) {

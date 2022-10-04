@@ -42,7 +42,16 @@
 #' )
 #' }
 #' }
-normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, pic_extension = c('.tiff', '.png'), derivatization = NULL, mergeCompounds = NULL, removeCompounds = NULL, group = NULL) {
+normalize_data <- function(anIC, 
+                          pslist, 
+                          metadata, 
+                          myDir, 
+                          pre_anno, 
+                          pic_extension = c('.tiff', '.png'), 
+                          derivatization = NULL, 
+                          mergeCompounds = NULL, 
+                          removeCompounds = NULL, 
+                          group = NULL) {
 
   if (!is.null(pre_anno)) {
     if (is_path(pre_anno)) {

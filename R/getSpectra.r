@@ -32,8 +32,16 @@
 #' }
 #' }
 
-getSpectra <- function(xdata4, raw_data, min_peaks = 5, colors, column_set = NULL, prog = NULL, ion_mode = NULL, plot_eic = FALSE) {
-  if (class(xdata4)[1] == "XCMSnExp") {
+getSpectra <- function(xdata4, 
+                      raw_data, 
+                      min_peaks = 5, 
+                      colors, 
+                      column_set = NULL, 
+                      prog = NULL, 
+                      ion_mode = NULL, 
+                      plot_eic = FALSE) {
+  
+  if (is(xdata4[1], "XCMSnExp")) {
     xset <- as(xdata4, "xcmsSet")
   } else {
     xset <- xdata4

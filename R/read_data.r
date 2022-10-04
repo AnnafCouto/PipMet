@@ -26,7 +26,6 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
 #' \donttest{
-#' \dontrun{
 #' read <- read_data(
 #'   pictures = FALSE,
 #'   example = TRUE
@@ -36,9 +35,19 @@
 #' raw_data <- read[[3]]
 #' myDir <- read[[4]]
 #' rm(read)
+#' 
 #' }
-#' }
-read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir = NULL, metadata = NULL, extension = NULL, pictures = TRUE, example = FALSE, pic_extension = c('.tiff', '.png'), sample_names = NULL) {
+read_data <- function(peakMonitor = NULL,
+                      ions = NULL, 
+                      myDir = NULL, 
+                      sample_dir = NULL, 
+                      metadata = NULL, 
+                      extension = NULL, 
+                      pictures = TRUE, 
+                      example = FALSE, 
+                      pic_extension = c('.tiff', '.png'), 
+                      sample_names = NULL) {
+  
   if (!example == TRUE) {
 
     # ask user about samples and folders path and create a new folder named after a "Project"
