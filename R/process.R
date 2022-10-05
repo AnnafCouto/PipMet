@@ -76,7 +76,7 @@ process <- function(raw_data,
     if (example == FALSE) {
       if (is.null(group)) {
         # ask condition to compare from the metadata table
-        group <- menu(colnames(metadata), graphics = TRUE, title = "Condition to group: ")
+        group <- dlg_list(colnames(metadata), multiple = FALSE, title = "Condition to group from:")$res
       }
       #group <- dlg_list(colnames(metadata), multiple = FALSE, title = "Choose conditions (from metadata table) to group samples: ")$res
     } else {

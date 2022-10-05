@@ -26,6 +26,7 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @examples
 #' \donttest{
+#' \dontrun{
 #' read <- read_data(
 #'   pictures = FALSE,
 #'   example = TRUE
@@ -36,7 +37,7 @@
 #' myDir <- read[[4]]
 #' rm(read)
 #' 
-#' }
+#' }}
 read_data <- function(peakMonitor = NULL,
                       ions = NULL, 
                       myDir = NULL, 
@@ -54,7 +55,10 @@ read_data <- function(peakMonitor = NULL,
     if (is.null(sample_dir) | missing(sample_dir)) {
       sample_dir <- choose.dir(default = getwd(), caption = "Please, select the Samples directory, should be C:/Users/_/Samples")
     }
+    setwd(sample_dir)
+    sample_dir <- getwd()
     setwd("~/")
+
     if (is.null(myDir) | missing(myDir)) {
       myDir <- dlgInput("Name your project", Sys.info()["user"])$res
       dir.create(myDir, showWarnings = FALSE)
@@ -80,11 +84,14 @@ read_data <- function(peakMonitor = NULL,
         metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
         if (!"file" %in% colnames(metadata)) {
           metadata$file <- paste0(sample_dir, "/", metadata$sample, extension)
+          setwd(myDir)
         } else {
           for (i in 1:nrow(metadata)) { # check if they are just filenames or filepath (they need to be path)
             if (!is_path(metadata$file [i])) {
               setwd(sample_dir)
-              metadata$file [i] <- file_path_as_absolute(metadata$file [i])
+              metadata$file [i] <- file_path_as_absolute(basename(metadata$file [i]))
+            } else {
+              metadata$file [i] <- paste0(sample_dir, '/', basename(metadata$file[i]))
             }
           }
           setwd(myDir)

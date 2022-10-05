@@ -41,7 +41,7 @@ getSpectra <- function(xdata4,
                       ion_mode = NULL, 
                       plot_eic = FALSE) {
   
-  if (is(xdata4[1], "XCMSnExp")) {
+  if (is(xdata4, "XCMSnExp")) {
     xset <- as(xdata4, "xcmsSet")
   } else {
     xset <- xdata4

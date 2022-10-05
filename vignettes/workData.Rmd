@@ -19,7 +19,9 @@ output:
     number_sections: yes
 website: https://github.com/AnnafCouto
 vignette: |
-  %\VignetteIndexEntry{GC-MS Data Processing with PipMet} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{GC-MS Data Processing with PipMet} 
+  %\VignetteEncoding{UTF-8} 
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 <img src="logo.png" width=200 height=200 style="position:absolute;top:0px;right:100px;" />
