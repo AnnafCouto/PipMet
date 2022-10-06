@@ -1,6 +1,6 @@
 Package: PipMet
 Title: Pipeline for Metabolomics-based GC-MS Data Processing
-Version: 1.0.0.0000
+Version: 1.1.0
 Authors@R: 
     c(person("Anna", "Couto",, "annaa.freitas@gmail.com", role = c("aut", "cre"),), 
 	person ("Tatiani", "Lima",, "tatiani.lima@lnbr.cnpem", role = "aut", comment = c(ORCID = "0000-0003-4869-0592")), 

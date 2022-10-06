@@ -432,6 +432,13 @@ And the creation of the in-house database is concluded (Figure 2.36).
 knitr::include_graphics('28.png')
 ```
 
+
+## Session Information
+
+```{r}
+sessionInfo()
+```
+
 ---
 
 # References

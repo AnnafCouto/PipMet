@@ -151,6 +151,13 @@ After the validation, a final .msp spectra is written, named after the name choo
 knitr::include_graphics('e.png')
 ``` 
 
+## Session Information
+
+```{r}
+sessionInfo()
+```
+
+
 ---
 
 # References

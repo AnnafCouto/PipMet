@@ -142,7 +142,7 @@ workLib <- function(myDir = NULL,
           }
         }
       }
-      while (!class(lib_metadata)== 'data.frame'|class(lib_metadata)== 'matrix') {  # lib_metadata may also be a data.frame or matrix. if none, ask for lib_metadata again
+      while (!is(lib_metadata, 'data.frame') | !is(lib_metadata, 'matrix')) {  # lib_metadata may also be a data.frame or matrix. if none, ask for lib_metadata again
         dlg_message("Library metadata format not supported. Upload a .csv file with, at least, 'compound', 'rt' and 'file' columns!")$res
         lib_metadata <- read.csv(choose.files(), na.string = c("NA", ""), colClasses = "character", sep = ",")
       }
