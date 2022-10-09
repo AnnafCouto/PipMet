@@ -119,7 +119,7 @@ process <- function(raw_data,
         f = chromPeaks(xdata3)[, "sample"]
       )
       names(ints) <- metadata$sample
-      for (i in 1:length(colors)) {
+      for (i in seq_len(length(colors))) {
         # tiff
         if ('.tiff' %in% pic_extension) {
           tiff(paste0(names(colors)[i], "_boxplotLog2Postprocessed.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -155,7 +155,7 @@ process <- function(raw_data,
 
       # chromatogram postprocessed
       bpc_after <- chromatogram(xdata3, aggregationFun = "max", include = "none")
-      for (i in 1:length(colors)) {
+      for (i in seq_len(length(colors))) {
         # tiff
         if ('.tiff' %in% pic_extension) {        
           tiff(paste0(names(colors)[i], "_postprocessedChromatogram.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -185,9 +185,9 @@ process <- function(raw_data,
         }
         setwd("Monitoring ions")
 
-        for (ii in 1:length(ions)) {
+        for (ii in seq_len(length(ions))) {
           crom <- chromatogram(xdata3, rt = c(ions[[ii]][["rt"]] - 5, ions[[ii]][["rt"]] + 5), mz = ions[[ii]][["mz"]], include = "none")
-          for (i in 1:length(colors)) {
+          for (i in seq_len(length(colors))) {
             # tiff
             if ('.tiff' %in% pic_extension) {
               tiff(paste0(names(colors)[i], "_", ii, "_postPross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")

@@ -111,7 +111,7 @@ workLib <- function(myDir = NULL,
         if (!"file" %in% colnames(lib_metadata)) {
           lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$compound, extension)
         } else {
-          for (i in 1:nrow(lib_metadata)) { # check if they are just filenames or filepath (they need to be path)
+          for (i in seq_len(nrow(lib_metadata))) { # check if they are just filenames or filepath (they need to be path)
             if (!is_path(lib_metadata$file [i])) {lib_metadata$file [i] <- paste0(sample_dir, "/", basename (lib_metadata$file [i]))}
           }
         }
@@ -137,7 +137,7 @@ workLib <- function(myDir = NULL,
         if (!"file" %in% colnames(lib_metadata)) {
           lib_metadata$file <- paste0(sample_dir, "/", lib_metadata$compound, extension)
         } else {
-          for (i in 1:nrow(lib_metadata)) { # check if they are just filenames or filepath (they need to be path)
+          for (i in seq_len(nrow(lib_metadata))) { # check if they are just filenames or filepath (they need to be path)
             if (!is_path(lib_metadata$file [i])) {lib_metadata$file [i] <- paste0(sample_dir, "/", basename (lib_metadata$file [i]))}
           }
         }
@@ -152,7 +152,7 @@ workLib <- function(myDir = NULL,
     sample_dir <- system.file("extdata", package = "PipMet")
     lib_metadata <- read.csv(system.file("extdata", "lib_metadata.csv", package = "PipMet"), na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
     extension <- ".mzML"
-    for (i in 1:nrow(lib_metadata)) {
+    for (i in seq_len(nrow(lib_metadata))) {
       lib_metadata$file [i] <- system.file("extdata", lib_metadata$file [i], package = "PipMet")
     }
     myDir <- dlgInput("Name your project", "PipMet_example")$res
@@ -165,7 +165,7 @@ workLib <- function(myDir = NULL,
   # remove empty lines/columns from lib_metadata
   lib_metadata <- Filter(function(x) !all(is.na(x)), lib_metadata) # remove empty columns
   c <- vector()
-  for (i in 1:nrow(lib_metadata)) {
+  for (i in seq_len(nrow(lib_metadata))) {
     if(is.na(lib_metadata$compound[i])) {
       c <- c(c,i)
     }
@@ -181,7 +181,7 @@ workLib <- function(myDir = NULL,
   # read and filter files to a 5s window
   message (paste0('Reading ', length(unique(lib_metadata$file)), ' files...'))
   raw_data <- list()
-  for (i in 1:nrow(lib_metadata)) {
+  for (i in seq_len(nrow(lib_metadata))) {
     quiet(raw_data[[i]] <- readMSData(lib_metadata$file[i], mode = "onDisk"))
     quiet(raw_data[[i]] <- filterRt(raw_data[[i]], c(as.numeric(lib_metadata[i, "rt"]) - 5, as.numeric(lib_metadata[i, "rt"]) + 5)))
   }
@@ -228,7 +228,7 @@ workLib <- function(myDir = NULL,
     message ('Retrieving RI from CAS numbers, if available...')
     # retrieve RI from CAS numbers (from NIST database), if RI is not present
     lib_metadata[, "RI_"] <- NA
-    for (i in 1:nrow(lib_metadata)) {
+    for (i in seq_len(nrow(lib_metadata))) {
       lib_metadata[i, "CAS"] <- gsub(pattern = "-", replacement = "", lib_metadata[i, "CAS"]) # remove hifens from CAS
       if (is.na(lib_metadata[i, "RI_"])) {
         quiet(lib_metadata[i, "RI_"] <- mean(nist_ri(as.cas(lib_metadata[i, "CAS"]), from = "cas", type = Ri, polarity = column_set, temp_prog = prog)$RI))
@@ -244,16 +244,16 @@ workLib <- function(myDir = NULL,
   }
   setwd("spectra")
 
-  for (i in 1:length(pslist)) {
+  for (i in seq_len(length(pslist))) {
     spectra <- list()
-    for (ii in 1:length(pslist[[i]])) {
+    for (ii in seq_len(length(pslist))) {
       x <- cbind(pslist[[i]][[ii]]@spectrum[, 1], (pslist[[i]][[ii]]@spectrum[, 2] / max(pslist[[i]][[ii]]@spectrum[, 2]))) # padronizo dividindo todas as intensidades de um mesmo espectro pela maior intensidade no mesmo (fica tipo 1 e 0,X ou seja, porcentagens)
       x <- data.frame(x)
       colnames(x) <- c("mz", "into")
       spectra[[ii]] <- x
     }
     result <- construct.msp(spectra, extra.info = NULL)
-    for (ii in 1:length(result)) {
+    for (ii in seq_len(length(result))) {
       result[[ii]]$Name <- paste0(pslist[[i]][[ii]]@id, " - Candidate to ", names(pslist)[i])
       result[[ii]]$id <- pslist[[i]][[ii]]@id
       result[[ii]]$rt <- pslist[[i]][[ii]]@rt
@@ -273,8 +273,8 @@ workLib <- function(myDir = NULL,
 
   done <- 2
   while (done == 2) {
-    for (i in 1:length(pslist)) {
-      id <- dlg_list(c(1:length(pslist[[i]]), "None"), multiple = FALSE, title = names(pslist)[[i]])$res
+    for (i in seq_len(length(pslist))) {
+      id <- dlg_list(c(seq(length(pslist[[i]])), "None"), multiple = FALSE, title = names(pslist)[[i]])$res
       if (id == "None") {
         ppslist[[i]] <- "NA"
       } else {
@@ -287,7 +287,7 @@ workLib <- function(myDir = NULL,
   message (paste0('Writing ', length(ppslist), ' validated spectra...'))
   # generate final .msp file
   spectra <- list()
-  for (i in 1:length(ppslist)) {
+  for (i in seq_len(length(ppslist))) {
     x <- cbind(ppslist[[i]]@spectrum[, 1], (ppslist[[i]]@spectrum[, 2] / max(ppslist[[i]]@spectrum[, 2]))) # padronizo dividindo todas as intensidades de um mesmo espectro pela maior intensidade no mesmo (fica tipo 1 e 0,X ou seja, porcentagens)
     x <- data.frame(x)
     colnames(x) <- c("mz", "into")
@@ -296,7 +296,7 @@ workLib <- function(myDir = NULL,
   }
   result <- metaMS::construct.msp(spectra, extra.info = NULL)
   lib_metadata[is.na(lib_metadata)] <- ""
-  for (i in 1:length(result)) {
+  for (i in seq_len(length(result))) {
     result[[i]]$id <- ppslist[[i]]@id
     result[[i]]$rt <- ppslist[[i]]@rt
     result[[i]]$Name <- names(ppslist)[i]

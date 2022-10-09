@@ -1,6 +1,7 @@
 #' Extract Spectra
 #'
 #' This is a modified function from CluMSID package to extract the spectra from a CAMERA object output.
+#' Not meant to be called by the user.
 #' @param x A 'CAMERA' xsAnnotate object.
 #' @param min_peaks Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.
 #' @importFrom methods as new is
@@ -8,7 +9,6 @@
 #' @importFrom stats median
 #' @importClassesFrom CluMSID pseudospectrum
 #' @keywords pseudoespectra CAMERA spectra spectrum.
-#' @export
 #' @examples
 #' \donttest{
 #' \dontrun{

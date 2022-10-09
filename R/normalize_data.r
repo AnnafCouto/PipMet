@@ -92,7 +92,7 @@ normalize_data <- function(anIC,
     }
 
 
-    for (i in 1:nrow(quant)) {
+    for (i in seq_len(nrow(quant))) {
       temp <- anIC@pspectra[[as.integer(quant[i, 1])]]
       if (derivatization == 'Trimethylsilyl' && 73 %in% round(pslist[[i]]@spectrum[, 1])) { # if derivatization='Trimethylsilyl', ion m/z 73 is present
         x <- sort(pslist[[i]]@spectrum[-which(round(pslist[[i]]@spectrum[, 1]) == 73), 2], decreasing = TRUE) # remove m/z 73 from possibilities of representative ion
@@ -163,7 +163,7 @@ normalize_data <- function(anIC,
       x <- as.data.frame(mat)
       x[x == 0] <- NA
       x[x > 0 & x < 1] <- 0
-      write.table(x[, 1:nrow(metadata)], "data.tsv", sep = "\t", col.names = TRUE, row.names = FALSE, quote = FALSE)
+      write.table(x[, seq_len(nrow(metadata))], "data.tsv", sep = "\t", col.names = TRUE, row.names = FALSE, quote = FALSE)
       write.table(metadata, "design.tsv", sep = "\t", col.names = TRUE, row.names = FALSE, quote = FALSE)
 
       # set up for NormalyzerDE
@@ -229,12 +229,12 @@ normalize_data <- function(anIC,
       # if everything is ok, use only first ion for the rest of statistics
       y <- data.frame()
       for (ii in 6:(5 + nrow(metadata))) {
-        for (i in 1:(nrow(n))) {
+        for (i in seq_len(nrow(n))) {
           y[i, (ii - 5)] <- as.double(n[i, ii]) / as.double(n[i, (ii + nrow(metadata))])
         }
       }
-      y[, nrow(metadata) + 1] <- apply(y[, 1:nrow(metadata)], MARGIN = 1, FUN = var, na.rm = TRUE)
-      y[, nrow(metadata) + 2] <- apply(y[, 1:nrow(metadata)], MARGIN = 1, FUN = sd, na.rm = TRUE)
+      y[, nrow(metadata) + 1] <- apply(y[, seq_len(nrow(metadata))], MARGIN = 1, FUN = var, na.rm = TRUE)
+      y[, nrow(metadata) + 2] <- apply(y[, seq_len(nrow(metadata))], MARGIN = 1, FUN = sd, na.rm = TRUE)
       rownames(y) <- n$id
       colnames(y) <- c(metadata$sample, "Variance", "sd")
       a <- ggplot(y, aes(x = y[, nrow(metadata) + 1])) +
@@ -310,7 +310,7 @@ normalize_data <- function(anIC,
       dev.off()}
 
       # set up quantification data
-      n <- cbind(n[, 1:(5 + nrow(metadata))], y[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
+      n <- cbind(n[, seq_len(nrow(metadata)+5)], y[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
       write.csv(n, "Normalized_quantification.csv", row.names = FALSE, na = "")
 
       res <- menu(c("Conclude normalization", "Re-do normalization", "Remove all outliers", "Remove spectra with variance bigger than defined"), graphics = TRUE, title = "Choose the best normalization")
@@ -339,7 +339,7 @@ normalize_data <- function(anIC,
         boxplot(y_1$sd, main = "Standard Deviation", horizontal = TRUE)
         dev.off()}
 
-        n_1 <- cbind(n_1[, 1:(5 + nrow(metadata))], y_1[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
+        n_1 <- cbind(n_1[, seq_len(nrow(metadata)+5)], y_1[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
         write.csv(n_1, "Normalized_quantification_withoutOutliers.csv", row.names = FALSE, na = "")
         a <- ggplot(y_1, aes(x = y_1[, nrow(metadata) + 1])) +
           geom_histogram() +
@@ -385,7 +385,7 @@ normalize_data <- function(anIC,
           boxplot(y_2$sd, main = "Standard Deviation", horizontal = TRUE)
           dev.off()
         }
-        n_2 <- cbind(n_2[, 1:(5 + nrow(metadata))], y_2[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
+        n_2 <- cbind(n_2[, seq_len(nrow(metadata)+5)], y_2[, c("Variance", "sd")]) # as everything is ok, use only first most intense ions for representative
         write.csv(n_2, paste0("Normalized_quantification_varianceUpTo", th, ".csv"), row.names = FALSE, na = "")
         a <- ggplot(y_2, aes(x = y_2[, nrow(metadata) + 1])) +
           geom_histogram() +

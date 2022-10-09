@@ -18,19 +18,7 @@
 #' @importFrom metaMS construct.msp write.msp
 #' @importFrom utils memory.limit
 #' @importFrom svDialogs dlg_message dlg_input dlg_list
-#' @examples
-#' \donttest{
-#' \dontrun{
-#' load(system.file("extdata", "xdata4.RData", package = "PipMet"))
-#' load(system.file("extdata", "raw_data.RData", package = "PipMet"))
-#' load(system.file("extdata", "colors.RData", package = "PipMet"))
-#' spectra <- getSpectra(xdata4, 
-#'                       raw_data, colors, 
-#'                       column_set = 'non-polar', 
-#'                       prog = 'ramp', 
-#'                       ion_mode = 'positive')
-#' }
-#' }
+
 
 getSpectra <- function(xdata4, 
                       raw_data, 
@@ -71,13 +59,13 @@ getSpectra <- function(xdata4,
 
   # creates a .msp file for spectra
   spectra <- list()
-  for (i in 1:length(pslist)) {
+  for (i in seq_len(length(pslist))) {
     x <- data.frame(cbind(pslist[[i]]@spectrum[, 1], (pslist[[i]]@spectrum[, 2] / max(pslist[[i]]@spectrum[, 2])))) # standardazing intensities by dividing the intensity of each peak from a spectrum by the maximum intensity of that spectra.
     colnames(x) <- c("mz", "into")
     spectra[[i]] <- x
   }
   result <- construct.msp(spectra, extra.info = NULL)
-  for (i in 1:length(result)) {
+  for (i in seq_len(length(result))) {
     result[[i]]$id <- pslist[[i]]@id
     result[[i]]$rt <- pslist[[i]]@rt
     result[[i]]$Name <- paste0("Unknown ", pslist[[i]]@id)
@@ -93,11 +81,11 @@ getSpectra <- function(xdata4,
   if (plot_eic == "yes" | plot_eic == TRUE) {
     z <- 'group'
     rt <- list()
-    for (i in 1:length(pslist)) {
+    for (i in seq_len(length(pslist))) {
       rt[[i]] <- as.numeric(pslist[[i]]@rt)
     }
     pdf("EIC_XIC.pdf")
-    for (i in 1:length(rt)) {
+    for (i in seq_len(length(rt))) {
       message (paste0('Printing spectra n.',i,'...'))
       par(mfrow = c(2, 1))
       specplot(pslist[[i]])
@@ -119,5 +107,5 @@ getSpectra <- function(xdata4,
   }
 
 
-  return(list(anIC = anIC, pslist = pslist, result = result, ion_mode = ion_mode))
+  return(list(anIC = anIC, pslist = pslist, result = result, ion_mode = ion_mode, column_set = column_set, prog = prog))
 }

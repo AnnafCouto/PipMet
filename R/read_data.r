@@ -86,7 +86,7 @@ read_data <- function(peakMonitor = NULL,
           metadata$file <- paste0(sample_dir, "/", metadata$sample, extension)
           setwd(myDir)
         } else {
-          for (i in 1:nrow(metadata)) { # check if they are just filenames or filepath (they need to be path)
+          for (i in seq_len(nrow(metadata))) { # check if they are just filenames or filepath (they need to be path)
             if (!is_path(metadata$file [i])) {
               setwd(sample_dir)
               metadata$file [i] <- file_path_as_absolute(basename(metadata$file [i]))
@@ -103,7 +103,7 @@ read_data <- function(peakMonitor = NULL,
         metadata[, "file"] <- files
         metadata[, "sample"] <- sub(basename(files), pattern = extension, replacement = "", fixed = TRUE)
         setwd(sample_dir)
-        for (i in 1:nrow(metadata)) {
+        for (i in seq_len(nrow(metadata))) {
           metadata[i, 'file'] <- file_path_as_absolute (metadata[i, 'file'])
         }
         setwd(myDir)
@@ -123,7 +123,7 @@ read_data <- function(peakMonitor = NULL,
   } else { # if example == TRUE
     metadata <- read.csv(system.file("extdata", "metadata.csv", package = "PipMet"), na.string = c("NA", ""), colClasses = "character", sep = ",", dec = ".")
     extension <- '.mzXML'
-    for (i in 1:nrow(metadata)) {
+    for (i in seq_len(nrow(metadata))) {
       metadata$file [i] <- system.file("extdata", metadata$file [i], package = "PipMet")
     }
     sample_dir <- system.file("extdata", package = "PipMet")
@@ -154,7 +154,7 @@ read_data <- function(peakMonitor = NULL,
     # colors for each column in metadata except 'sample' and 'tec_rep'
     colors <- vector(mode = "list", length = length(x))
     names(colors) <- x
-    for (i in 1:length(x)) {
+    for (i in seq_len(length(x))) {
       if (length(unique(metadata[, x[[i]]])) <= 9) {
         colors[[i]] <- list(metadata[, x[i]], paste0(RColorBrewer::brewer.pal(length(unique(metadata[, x[[i]]])), "Set1")[1:length(unique(metadata[, x[[i]]]))], "60"))
       } else {
@@ -182,7 +182,7 @@ read_data <- function(peakMonitor = NULL,
     tic <- chromatogram(raw_data, aggregationFun = "sum")
 
     # chromatograms
-    for (i in 1:length(colors)) {
+    for (i in seq_len(length(colors))) {
       # tiff
       if ('.tiff' %in% pic_extension) {
         tiff(paste0(names(colors)[i], "_chromatograms.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -207,7 +207,7 @@ read_data <- function(peakMonitor = NULL,
 
     # boxplot of total ion current - FIX
     # tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
-    # for (i in 1:length(colors)) {
+    # for (i in seq_len(length(colors))) {
     #  tic_por_arquivo <- split(tic(raw_data), f = fromFile(raw_data))
     #  # tiff
     #  tiff(paste0(names(colors)[i], "_ticBoxplot.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
@@ -229,7 +229,7 @@ read_data <- function(peakMonitor = NULL,
       colnames(cormat) <- rownames(cormat) <- metadata[, sample_names]
       # colnames(cormat) <- rownames(cormat) <- metadata[, 'sample']
       # for each set of colors (conditions of experiment)
-      for (i in 1:length(colors)) {
+      for (i in seq_len(length(colors))) {
         ann <- data.frame(colors[[i]][[1]])
         colnames(ann) <- names(colors)[i]
         rownames(ann) <- metadata[, 'sample']
@@ -258,9 +258,9 @@ read_data <- function(peakMonitor = NULL,
       }
       setwd("Monitoring ions")
 
-      for (ii in 1:length(ions)) {
+      for (ii in seq_len(length(ions))) {
         crom <- chromatogram(raw_data, rt = c(as.numeric(ions[[ii]][["rt"]] - 5), as.numeric(ions[[ii]][["rt"]] + 5)), mz = as.numeric(ions[[ii]][["mz"]]))
-        for (i in 1:length(colors)) {
+        for (i in seq_len(length(colors))) {
           # tiff
           if ('.tiff' %in% pic_extension) {
             tiff(paste0(names(colors)[i], "_", ii, "_prePross_EIC.tiff"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")

@@ -56,7 +56,7 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
   m[m == ""] <- NA
   rownames(mat_scaled) <- m
 
-  for (i in 1:length(colors)) {
+  for (i in seq_len(length(colors))) {
     ann <- data.frame(colors[[i]][[1]])
     colnames(ann) <- names(colors)[i]
     rownames(ann) <- metadata$sample
@@ -83,7 +83,7 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
   m[m == ""] <- NA
   rownames(mat_scaled) <- m
 
-  for (i in 1:length(colors)) {
+  for (i in seq_len(length(colors))) {
     if ('.png' %in% pic_extension) {
       png(paste0('named_', sample_names,'grouped_', names(colors)[i],"_heatmap_scaled_geral.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
       pheatmap(mat_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, fontsize_row = 4, show_rownames = FALSE, border_color = "NA")
@@ -107,7 +107,7 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
   colnames(mat_ident_scaled) <- metadata$sample
   rownames(mat_ident_scaled) <- n[-which(is.na(n[, 3])), 3]
 
-  for (i in 1:length(colors)) {
+  for (i in seq_len(length(colors))) {
     ann <- data.frame(colors[[i]][[1]])
     colnames(ann) <- names(colors)[i]
     rownames(ann) <- metadata[, 'sample']
@@ -136,7 +136,7 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
   colnames(mat_ident_scaled) <- metadata[,sample_names]
   rownames(mat_ident_scaled) <- n[-which(is.na(n[, 3])), 3]
 
-  for (i in 1:length(colors)) {
+  for (i in seq_len(length(colors))) {
     if ('.png' %in% pic_extension) {
       png(paste0('named_', sample_names,"heatmap_scaled_ident_", names(colors)[i],"_.png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")
       pheatmap(mat_ident_scaled, cluster_rows = FALSE, main = "Heatmap of samples by spectra\n", fontsize_col = 5, border_color = "NA", fontsize_row = 4)  
@@ -157,7 +157,7 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
     colnames(nhmedia) <- unique(metadata [,replicate])
     for (i in unique(metadata [,replicate])) {
       x <- grep(i, metadata [,replicate])
-      for (ii in 1:nrow(mat)) {
+      for (ii in seq_len(nrow(mat))) {
         nhmedia[ii, i] <- sum(mat[ii, x]) / length(x)
       }
     }
@@ -183,7 +183,7 @@ heatmap <- function(n, metadata, myDir, colors, pic_extension = c('.tiff', '.png
     for (i in unique(metadata [,replicate])) {
       x <- grep(i, metadata [,replicate])
       if (length(x) > 1) {
-        for (ii in 1:nrow(mat_ident)) {
+        for (ii in seq_len(nrow(mat_ident))) {
           nhmedia_ident[ii, i] <- sum(mat_ident[ii, x]) / length(x)
         }
       } else {

@@ -13,6 +13,7 @@ extractSpectra(x, min_peaks = 5)
 }
 \description{
 This is a modified function from CluMSID package to extract the spectra from a CAMERA object output.
+Not meant to be called by the user.
 }
 \examples{
 \donttest{

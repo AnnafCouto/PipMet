@@ -53,7 +53,7 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
 
     # calculate t test
     rawpvalue <- matrix(nrow = nrow(mat), ncol = 1)
-    for (i in 1:nrow(mat)) {
+    for (i in seq_len(nrow(mat))) {
       rawpvalue[[i]] <- t.test(as.numeric(mat[i, first]), as.numeric(mat[i, sec]))$p.value
     }
 
@@ -63,7 +63,7 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
     foldchange <- firstCond - secCond
     de <- as.data.frame(cbind(foldchange, rawpvalue))
     colnames(de) <- c("foldchange", "rawpvalue")
-    for (i in 1:nrow(n)) {
+    for (i in seq_len(nrow(n))) {
       if (is.na(n[i, 3])) {
         de$spcId[i] <- n[i, 1]
       } else {

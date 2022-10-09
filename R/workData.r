@@ -11,6 +11,7 @@
 #' @param example Logical. If example = TRUE, the metadata and other needed files will be loaded from package files.
 #' @param filter Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.
 #' @param peakMonitor Logical. Are there peak to monitor throuhout the workflow? If NULL, the user will be asked. Default to NULL.
+#' @param Ri Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL.
 #' @param parallel Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.
 #' @param pic_extension Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').
 #' @param group Character. Name from 'metadata' column names to group the samples. Default to 'group'.
@@ -27,14 +28,13 @@
 #' @param mergeCompounds Logical. If TRUE, the user may choose from a pop-up what compounds identified should be representated as one with intensities summed. Exemple: derivatizations derivatives. If NULL, the user will be asked. Default to 'NULL'.
 #' @param info Logical. If TRUE, the user cann add more information to the creatin of the database, such as CAS number, PubMed and ChemSpider ID and InChiKey, among others. If NULL, the user will be asked. Default to NULL. Only required if lib_build = TRUE or NULL.
 #' @param pre_anno Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.
-#' @param Ri Character. Retention index calculation method. Supported are 'lee', 'linear', 'kovats' and 'alcane'. If NULL, the user will be asked. Default ot NULL. Only if lib_build = TRUE or NULL.
 #' @param min_peaks Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.
 #' @param sample_names Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.
 #' @return A list containing (1) the path of working folder, (2) the metadata table, (3) the annotated pseudospectra list, (4) a OnDiskMSnExp object, (5) a XCMSnExp or xcmsSet object, (6) a xsAnnotate object, (7) a list of colors used and (8) the normalized instensities quantification table
 #' @importFrom methods as new
 #' @importFrom svDialogs dlgInput dlg_message dlg_list
 #' @importFrom ddpcr quiet
-#' @importFrom utils choose.dir menu read.csv write.csv write.table
+#' @importFrom utils choose.dir menu read.csv write.csv write.table choose.files
 #' @importFrom metaMS addRI write.msp
 #' @importFrom parallel detectCores
 #' @importFrom BiocParallel register SerialParam SnowParam MulticoreParam
@@ -73,7 +73,8 @@ workData <- function(myDir = NULL,
                     replicate = NULL, 
                     mergeCompounds = NULL, 
                     removeCompounds = NULL, 
-                    info = NULL, Ri = NULL, 
+                    info = NULL, 
+                    Ri = NULL, 
                     pre_anno = NULL, 
                     min_peaks = 5, 
                     sample_names = NULL) {
@@ -134,23 +135,11 @@ workData <- function(myDir = NULL,
   anIC <- spectra[[1]]
   result <- spectra[[3]]
   pslist <- spectra[[2]]
-  ion_mode <- spectra[[4]]
 
   dlg_message("Annotatation step: The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
 
-  # add retention index info if needed
-    if (is.null(RI)) {RI <- dlg_message("Add retention index information?", "yesno")$res}
-    if (RI == TRUE | RI == 'yes') {
-      RI <- read.csv(choose.files())
-    }
-    if (is_path(RI)) {
-      RI <- read.csv(RI)
-      message ('Calculating retention index...')
-      result <- addRI(result, RI)
-      write.msp(result, "spectra_RI.msp", newFile = TRUE)
-      dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
-      #rm(spectra, result)
-    }
+  # calculate RI
+  calculateRI (result, RI)
 
   # update annotated spectra and plot images
   message (paste0('Annotating the spectra ...'))
@@ -204,7 +193,7 @@ workData <- function(myDir = NULL,
   # check create_database first
   if (is.null(lib_build)) {lib_build <- dlg_message("Would you like to create a in-house database with the identified spectra?", type = "yesno")$res}
   if (lib_build == TRUE | lib_build == 'yes') {
-    create_database(apslist, column_set = column_set, prog = prog, ion_mode = ion_mode, info = info, Ri = Ri)
+    create_database(apslist, column_set = spectra$column_set, prog = spectra$prog, ion_mode = spectra$ion_mode, info = info, Ri = Ri)
   }
 
   return(list(myDir = myDir, metadata = metadata, apslist = apslist, raw_data = raw_data, xdata4 = xdata4, anIC = anIC, colors = colors, quantification_table = n))

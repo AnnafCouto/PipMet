@@ -40,9 +40,9 @@ PCA_identified <- function(n, metadata, myDir, colors, pic_extension = c('.tiff'
 
   # all samples togheter
   # set for PCA calculations
-  pc <- prcomp(t(na.omit(mat[, 1:nrow(metadata)])), center = TRUE)
+  pc <- prcomp(t(na.omit(mat[, seq_len(nrow(metadata))])), center = TRUE)
   pcSummary <- summary(pc)
-  for (i in 1:length(colors)) {
+  for (i in seq_len(length(colors))) {
 
     # png
     if ('.png' %in% pic_extension) {
@@ -98,7 +98,7 @@ PCA_identified <- function(n, metadata, myDir, colors, pic_extension = c('.tiff'
   
   # get intensities only from selected columns (samples)
   z <- vector()
-  for (i in 1:length(subgroup)) {
+  for (i in seq_len(length(subgroup))) {
     z <- c(z, which (metadata[,group] == subgroup[[i]]))
   }
   mat_selected <- mat [,z]
@@ -109,7 +109,7 @@ PCA_identified <- function(n, metadata, myDir, colors, pic_extension = c('.tiff'
     dir.create(group)
   }
   setwd(group)
-  for (i in 1:length(colors)) {
+  for (i in seq_len(length(colors))) {
     # png
     if ('.png' %in% pic_extension) {
       png(paste0("PCAselected_", names(colors)[[i]], ".png"), units = "cm", width = 16, height = 16, res = 900, bg = "NA")

@@ -17,6 +17,7 @@
 #' @importFrom webchem get_cid pc_prop cts_convert nist_ri
 #' @importFrom methods .hasSlot
 #' @importFrom pracma isempty
+#' @importFrom ddpcr quiet
 #' @importFrom stringr str_to_lower
 #' @examples
 #' \donttest{
@@ -41,9 +42,9 @@ create_database <- function(apslist,
   pslist <- list()
   count <- 1
   names <- vector()
-  for (i in 1:length(apslist)) {
+  for (i in seq_along(apslist)) {
     if (!isempty(apslist[[i]]@annotation)) {
-      pslist[count] <- apslist[[i]]
+      quiet(pslist[count] <- apslist[[i]])
       count <- count + 1
       names <- c(names, apslist[[i]]@annotation)
     }
@@ -55,14 +56,14 @@ create_database <- function(apslist,
     dataInfo <- matrix(nrow = length(pslist), ncol = 10)
     colnames(dataInfo) <- c("Name", "formula", "exact.mass", "rt", "CAS", "ChemSpider", "InChIKey", "PubChem ID", "Class", "RI")
     dataInfo <- as.data.frame(dataInfo)
-    for (i in 1:length(pslist)) {
+    for (i in seq_len(length(pslist))) {
       dataInfo[i, 1] <- pslist[[i]]@annotation
       dataInfo[i, "rt"] <- pslist[[i]]@rt
     }
     write.csv(dataInfo, 'dataInfo.csv', row.names = FALSE, na = "")
     dlg_message('A "dataInfo.csv" file was written in the project folder. Please fill out the fields and press "ok".', 'ok')$res
     dataInfo <- read.csv("dataInfo.csv", na = "", check.names = FALSE)
-    for (i in 1:length(pslist)) {
+    for (i in seq_len(length(pslist))) {
       if (.hasSlot(pslist[[i]], 'RI') == TRUE) {
         dataInfo[i, "RI"] <- pslist[[i]]@RI
       }
@@ -81,7 +82,7 @@ create_database <- function(apslist,
       if (is.null (column_set)) {column_set <- dlg_list(c("polar", "non-polar"), multiple = FALSE, title = 'Column setup:')$res}
       if (is.null (prog)) {prog <- dlg_list(c("isothermal", "ramp", "custom"), multiple = FALSE, title = 'Temperature program:')$res}
       x <- dlg_list(c("CAS", "Name", "InChIKey"), multiple = FALSE, title = "Search for retention index based on:")$res
-      for (i in 1:length(pslist)) {
+      for (i in seq_len(length(pslist))) {
         if (!is.na(dataInfo[i, x])) {
           dataInfo[i, "RI"] <- mean(nist_ri(dataInfo[i, x], from = str_to_lower(x), type = Ri, polarity = column_set, temp_prog = prog)$RI)
         } else {
@@ -98,7 +99,7 @@ create_database <- function(apslist,
 
   # create spectra in .msp file format
   spectra <- list()
-  for (i in 1:length(pslist)) {
+  for (i in seq_len(length(pslist))) {
     x <- cbind(pslist[[i]]@spectrum[, 1], (pslist[[i]]@spectrum[, 2] / max(pslist[[i]]@spectrum[, 2]))) # pslistronizo dividindo todas as intensidades de um mesmo espectro pela maior intensidade no mesmo (fica tipo 1 e 0,X ou seja, porcentagens)
     x <- data.frame(x)
     colnames(x) <- c("mz", "into")
@@ -106,7 +107,7 @@ create_database <- function(apslist,
     rm(x)
   }
   result <- metaMS::construct.msp(spectra, extra.info = NULL)
-  for (i in 1:length(result)) {
+  for (i in seq_along(result)) {
     if (info == 'yes') {
       result[[i]]$rt <- dataInfo[i, "rt"]
       result[[i]]$Name <- dataInfo[i, "Name"]
@@ -119,9 +120,11 @@ create_database <- function(apslist,
       result[[i]]$Class <- dataInfo[i, "Class"]
       result[[i]]$RI <- dataInfo[i, "RI"]
       result[[i]]$Ion_mode <- ion_mode
+      result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog, "; RI ", Ri, " :", result[[i]]$RI <- dataInfo[i, "RI"])
     }
+    if (.hasSlot(pslist[[1]], 'RI')== TRUE) {result[[i]]$RI <- pslist[[i]]@RI}
     result[[i]]$Date <- as.character(Sys.Date())
-    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog, "; RI ", Ri, " :", result[[i]]$RI <- dataInfo[i, "RI"])
+    result[[i]]$Comments <- paste0("Column class: ", paste0("Standard ", column_set), "; ", "ProgramType: ", prog)
   }
   names(result) <- names
   metaMS::write.msp(result, file = paste0("Database_", Sys.Date(), ".msp"), newFile = TRUE)
