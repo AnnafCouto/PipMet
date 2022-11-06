@@ -13,41 +13,60 @@
 #' @export
 
 
-calculateRI <- function (RI = NULL, result) {
-	if (is.null(RI)) {
-	    RI <- dlg_message("Add retention index information?", "yesno")$res
-	    if(RI == 'yes') {RI <- TRUE}
-	    if(RI == 'no') {RI <- FALSE}
-	}
-	if (RI == TRUE) {
-	    again <- 'yes'
-	    while (again == 'yes') {
-	        res <- 'yes'
-	        ri_file <- choose.files()
-	        if (isEmpty(ri_file)==TRUE & res == 'yes'){
-	            while (res == 'yes' & isEmpty(ri_file)==TRUE){
-	                res <- dlg_message("File incorrect or not selected. Add retention index information?", "yesno")$res
-	                if (res=='yes') {ri_file <- choose.files()} else {again <- 'no'}
-	            }
-	        }
-	        if (isEmpty(ri_file)==FALSE) {RI <- ri_file}
+calculateRI <- function(RI = NULL, result) {
+  if (is.null(RI)) {
+    RI <- dlg_message("Add retention index information?", "yesno")$res
+    if (RI == "yes") {
+      RI <- TRUE
+    }
+    if (RI == "no") {
+      RI <- FALSE
+    }
+  }
+  if (RI == TRUE) {
+    again <- "yes"
+    while (again == "yes") {
+      res <- "yes"
+      ri_file <- choose.files()
+      if (isEmpty(ri_file) == TRUE & res == "yes") {
+        while (res == "yes" & isEmpty(ri_file) == TRUE) {
+          res <- dlg_message(
+            "File incorrect or not selected. Add retention index information?",
+            "yesno"
+          )$res
+          if (res == "yes") {
+            ri_file <- choose.files()
+          } else {
+            again <- "no"
+          }
+        }
+      }
+      if (isEmpty(ri_file) == FALSE) {
+        RI <- ri_file
+      }
 
-	        if (is_path(RI)) {
-	            RI <- read.csv(RI)
-	            if ("rt" %in% colnames(RI) & "RI" %in% colnames(RI)) {
-	                message ('Calculating retention index...')
-	                quiet(x <- try(result <- addRI(result, RI)))
-	                if (is(x, 'try-error')) {
-	                	again <- dlg_message('File does not meet all requirements for RI calculations. Try again?', "yesno")$res
-	                } else {
-			            write.msp(result, "spectra_RI.msp", newFile = TRUE)
-			            dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
-			        	again <- 'no'
-			        }
-	            } else {
-	                again <- dlg_message("File must have 'rt' and 'RI' columns. Try again?", "yesno")$res
-	            }
-	        }
-	    }
-	}
+      if (is_path(RI)) {
+        RI <- read.csv(RI)
+        if ("rt" %in% colnames(RI) & "RI" %in% colnames(RI)) {
+          message("Calculating retention index...")
+          quiet(x <- try(result <- addRI(result, RI)))
+          if (is(x, "try-error")) {
+            again <- dlg_message(
+              "File does not meet all requirements for RI calculations. Try again?",
+              "yesno"
+            )$res
+          } else {
+            write.msp(result, "spectra_RI.msp", newFile = TRUE)
+            dlg_message("The retention index for the spectra was calculated and added to the .msp file.")
+            again <- "no"
+          }
+        } else {
+          again <- dlg_message(
+            "File must have 'rt' and 'RI' columns. Try again?",
+            "yesno"
+          )$res
+        }
+      }
+    }
+  }
 }

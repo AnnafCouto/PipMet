@@ -47,16 +47,16 @@ This function normalize data.
 \examples{
 \donttest{
 \dontrun{
-pre_anno <- read.csv(system.file("extdata", "pre_anno.csv", package = "PipMet"))
-load(system.file("extdata", "pslist.RData", package = "PipMet"))
-load(system.file("extdata", "anIC.RData", package = "PipMet"))
-load(system.file("extdata", "metadata.RData", package = "PipMet"))
+pre_anno <- read.csv(system.file('extdata', 'pre_anno.csv', package = 'PipMet'))
+load(system.file('extdata', 'pslist.RData', package = 'PipMet'))
+load(system.file('extdata', 'anIC.RData', package = 'PipMet'))
+load(system.file('extdata', 'metadata.RData', package = 'PipMet'))
 normalized <- normalize_data(
   anIC,
   pslist,
   metadata,
-  myDir = "~/",
-  pre_anno = system.file("extdata", "pre_anno.csv", package = "PipMet"),
+  myDir = '~/',
+  pre_anno = system.file('extdata', 'pre_anno.csv', package = 'PipMet'),
   derivatization = 'Trimethylsilyl',
   mergeCompounds = FALSE,
   removeCompounds = FALSE,

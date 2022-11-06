@@ -53,7 +53,7 @@ workData(
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
-\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.}
+\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are 'Serial Param', 'Snow Param', 'MultiCore Param'. For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.}
 
 \item{group}{Character. Name from 'metadata' column names to group the samples. Default to 'group'.}
 
@@ -63,7 +63,7 @@ workData(
 
 \item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
 
-\item{prog}{Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.}
+\item{prog}{Character. Configuration of temperature in data acquisition: 'isothermal', 'ramp', 'custom'. If NULL the user will be asked. Default to NULL.}
 
 \item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
 
@@ -99,8 +99,8 @@ Main function for GC data processing. It read files in '.mzXML' and '.mzML' form
 \donttest{
 \dontrun{
 result <- workData(
-  extension = ".mzXML",
-  myDir = "~/",
+  extension = '.mzXML',
+  myDir = '~/',
   example = TRUE,
   pictures = TRUE 
 )

@@ -29,17 +29,17 @@ workLib(
 
 \item{sample_dir}{Path to sample directory. Default to none.}
 
-\item{lib_metadata}{Path to .csv file containing metadata. "compound", "formula", "exact.mass", "rt", "file", "CAS", "ChemSpider", "class", "RI", "InChIKey" columns must be included. Default to none.}
+\item{lib_metadata}{Path to .csv file containing metadata. 'compound', 'formula', 'exact.mass', 'rt', 'file', 'CAS', 'ChemSpider', 'class', 'RI', 'InChIKey' columns must be included. Default to none.}
 
 \item{extension}{Extension of mass spectrometry files to read. Only accepted '.mzML' and '.mzXML'. Default to none.}
 
 \item{example}{Logical. If is example, pop-ups won't appear.}
 
-\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are "Serial Param", "Snow Param", "MultiCore Param". For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.}
+\item{parallel}{Character. Sort of parallelization for code to perfom. Supported are 'Serial Param', 'Snow Param', 'MultiCore Param'. For more information, check the BiocParallel R package. Default to NULL. If parallel = NULL, the user will be asked.}
 
 \item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
 
-\item{prog}{Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.}
+\item{prog}{Character. Configuration of temperature in data acquisition: 'isothermal', 'ramp', 'custom'. If NULL the user will be asked. Default to NULL.}
 
 \item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
 
@@ -60,10 +60,10 @@ Main function for GC-MS standards processing for internal library development.
 \donttest{
 \dontrun{
 workLib(
-  sample_dir = system.file("extdata", package = "PipMet"),
-  lib_metadata = system.file("extdata", "lib_metadata.csv", package = "PipMet"),
-  extension = ".mzXML",
-  myDir = "~/",
+  sample_dir = system.file('extdata', package = 'PipMet'),
+  lib_metadata = system.file('extdata', 'lib_metadata.csv', package = 'PipMet'),
+  extension = '.mzXML',
+  myDir = '~/',
   example = TRUE
 )
 }

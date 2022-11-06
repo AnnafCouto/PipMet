@@ -25,7 +25,7 @@ process(
 
 \item{myDir}{Path to the directory of work.}
 
-\item{colors}{A list with colors generated from "read_data()".}
+\item{colors}{A list with colors generated from 'read_data()'.}
 
 \item{peakMonitor}{Logical. Are there peak to monitor throuhout the workflow? Default to FALSE.}
 
@@ -50,10 +50,10 @@ This function computes the second step of workflow (peak picking, RT correction 
 \examples{
 \donttest{
 \dontrun{
-load(system.file("extdata", "raw_data.RData", package = "PipMet"))
-load(system.file("extdata", "metadata.RData", package = "PipMet"))
-load(system.file("extdata", "colors.RData", package = "PipMet"))
-xdata4 <- process(raw_data, metadata, myDir = "~/", colors, group = 'group')
+load(system.file('extdata', 'raw_data.RData', package = 'PipMet'))
+load(system.file('extdata', 'metadata.RData', package = 'PipMet'))
+load(system.file('extdata', 'colors.RData', package = 'PipMet'))
+xdata4 <- process(raw_data, metadata, myDir = '~/', colors, group = 'group')
 }
 }
 }

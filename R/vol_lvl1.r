@@ -16,45 +16,47 @@
 #' @examples
 #' \donttest{
 #' \dontrun{
-#' load(system.file("extdata", "n.RData", package = "PipMet"))
-#' load(system.file("extdata", "metadata.RData", package = "PipMet"))
-#' volcano_dir <- vol_lvl1(n, metadata, myDir = "~/")
+#' load(system.file('extdata', 'n.RData', package = 'PipMet'))
+#' load(system.file('extdata', 'metadata.RData', package = 'PipMet'))
+#' volcano_dir <- vol_lvl1(n, metadata, myDir = '~/')
 #' }
 #' }
-vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
-    mat <- n[, 6:ncol(n)] # remove aditional information from the normalized table of spectra
+vol_lvl1 <- function(n, metadata, myDir, pic_extension = c(".tiff", ".png")) {
+    mat <- n[, 6:ncol(n)]  # remove aditional information from the normalized table of spectra
     mat <- apply(mat, MARGIN = 2, FUN = as.numeric)
     rownames(mat) <- n[, 1]
     mat[is.na(mat)] <- 0
 
     setwd(myDir)
     if (!dir.exists("Statistics") == TRUE) {
-      dir.create("Statistics")
+        dir.create("Statistics")
     }
     setwd("Statistics")
     if (!dir.exists("Volcanos") == TRUE) {
-      dir.create("Volcanos")
+        dir.create("Volcanos")
     }
     setwd("Volcanos")
 
     volDir <- getwd()
 
     dlg_message("Volcano level one. Choose a condition to compare and two characteristics within that group. The resulting volcano will represent 'Condition: A X B'.")$res
-    x <- menu(names(metadata), graphics = TRUE, title = "Condition to compare:") # ask condition to compare from the metadata table
-    opt <- select.list(as.character(unique(metadata[, as.integer(x)])), preselect = NULL, multiple = TRUE, title = "Select two characteristic to compare", graphics = TRUE) # from that condition, which characteristics to compare
+    x <- menu(names(metadata), graphics = TRUE, title = "Condition to compare:")  # ask condition to compare from the metadata table
+    opt <- select.list(as.character(unique(metadata[, as.integer(x)])), preselect = NULL,
+        multiple = TRUE, title = "Select two characteristic to compare", graphics = TRUE)  # from that condition, which characteristics to compare
     first <- grep(opt[1], metadata[, (as.integer(x))], fixed = TRUE)
     sec <- grep(opt[2], metadata[, (as.integer(x))], fixed = TRUE)
 
     # create folder for comparison
     if (!dir.exists(paste0(opt[1], " X ", opt[2])) == TRUE) {
-      dir.create(paste0(opt[1], " X ", opt[2]))
+        dir.create(paste0(opt[1], " X ", opt[2]))
     }
     setwd(paste0(opt[1], " X ", opt[2]))
 
     # calculate t test
     rawpvalue <- matrix(nrow = nrow(mat), ncol = 1)
     for (i in seq_len(nrow(mat))) {
-      rawpvalue[[i]] <- t.test(as.numeric(mat[i, first]), as.numeric(mat[i, sec]))$p.value
+        rawpvalue[[i]] <- t.test(as.numeric(mat[i, first]), as.numeric(mat[i,
+            sec]))$p.value
     }
 
     # calculates foldchange and plot histogram
@@ -64,12 +66,12 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
     de <- as.data.frame(cbind(foldchange, rawpvalue))
     colnames(de) <- c("foldchange", "rawpvalue")
     for (i in seq_len(nrow(n))) {
-      if (is.na(n[i, 3])) {
-        de$spcId[i] <- n[i, 1]
-      } else {
-        de$spcId[i] <- n[i, 3]
-      }
-    } # add annotation if present
+        if (is.na(n[i, 3])) {
+            de$spcId[i] <- n[i, 1]
+        } else {
+            de$spcId[i] <- n[i, 3]
+        }
+    }  # add annotation if present
 
     # add identification for relative abundance (Unchanged, Up or Down)
     de$Relative_abundance <- "Unchanged"
@@ -78,52 +80,54 @@ vol_lvl1 <- function(n, metadata, myDir, pic_extension = c('.tiff', '.png')) {
 
     # plot volcanos without identification
     a <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance)) +
-      geom_point() +
-      theme_minimal() +
-      geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
-      geom_hline(yintercept = -log10(0.05), col = "red") +
-      ggtitle(label = paste0(opt[1], " X ", opt[2])) +
-      theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
-      guides(color = guide_legend(title = "Relative abundance"))
+        geom_point() + theme_minimal() + geom_vline(xintercept = c(-0.6, 0.6),
+        col = "red") + geom_hline(yintercept = -log10(0.05), col = "red") + ggtitle(label = paste0(opt[1],
+        " X ", opt[2])) + theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5,
+        color = "black")) + guides(color = guide_legend(title = "Relative abundance"))
 
     # png
-    if ('.png' %in% pic_extension) {
-    png("volcano.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    gridExtra::grid.arrange(a)
-    dev.off()}
+    if (".png" %in% pic_extension) {
+        png("volcano.png", units = "cm", width = 16, height = 16, res = 900,
+            bg = "NA")
+        gridExtra::grid.arrange(a)
+        dev.off()
+    }
     # tiff
-    if ('.tiff' %in% pic_extension) {
-    tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    gridExtra::grid.arrange(a)
-    dev.off()}
+    if (".tiff" %in% pic_extension) {
+        tiff("volcano.tiff", units = "cm", width = 16, height = 16, res = 900,
+            bg = "NA")
+        gridExtra::grid.arrange(a)
+        dev.off()
+    }
 
     # plot volcanos with identification
     de$delabel <- NA
-    de$delabel[de$Relative_abundance != "Unchanged"] <- de$spcId[de$Relative_abundance != "Unchanged"]
-    b <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance, label = de$delabel)) +
-      geom_point() +
-      ggtitle(label = paste0(opt[1], " X ", opt[2])) +
-      theme_minimal() +
-      geom_vline(xintercept = c(-0.6, 0.6), col = "red") +
-      geom_hline(yintercept = -log10(0.05), col = "red") +
-      geom_text_repel() +
-      theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5, color = "black")) +
-      xlab("Log2 Mean Fold Change") +
-      ylab("-Log10 pValue") +
-      guides(color = guide_legend(title = "Relative abundance"))
+    de$delabel[de$Relative_abundance != "Unchanged"] <- de$spcId[de$Relative_abundance !=
+        "Unchanged"]
+    b <- ggplot(data = de, aes(x = foldchange, y = -log10(rawpvalue), col = de$Relative_abundance,
+        label = de$delabel)) + geom_point() + ggtitle(label = paste0(opt[1],
+        " X ", opt[2])) + theme_minimal() + geom_vline(xintercept = c(-0.6, 0.6),
+        col = "red") + geom_hline(yintercept = -log10(0.05), col = "red") + geom_text_repel() +
+        theme(rect = element_rect(fill = "transparent"), plot.title = element_text(hjust = 0.5,
+            color = "black")) + xlab("Log2 Mean Fold Change") + ylab("-Log10 pValue") +
+        guides(color = guide_legend(title = "Relative abundance"))
 
     # png
-    if ('.png' %in% pic_extension) {
-    png("volcano_identified.png", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    gridExtra::grid.arrange(b)
-    dev.off()}
+    if (".png" %in% pic_extension) {
+        png("volcano_identified.png", units = "cm", width = 16, height = 16,
+            res = 900, bg = "NA")
+        gridExtra::grid.arrange(b)
+        dev.off()
+    }
     # tiff
-    if ('.tiff' %in% pic_extension) {
-    tiff("volcano_identified.tiff", units = "cm", width = 16, height = 16, res = 900, bg = "NA")
-    gridExtra::grid.arrange(b)
-    dev.off()}
+    if (".tiff" %in% pic_extension) {
+        tiff("volcano_identified.tiff", units = "cm", width = 16, height = 16,
+            res = 900, bg = "NA")
+        gridExtra::grid.arrange(b)
+        dev.off()
+    }
 
-    write.csv(de, file = 'Significance_compounds_vol_lvl1.csv')
+    write.csv(de, file = "Significance_compounds_vol_lvl1.csv")
 
     # set to main folder
     setwd(myDir)

@@ -18,7 +18,7 @@ create_database(
 
 \item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
 
-\item{prog}{Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.}
+\item{prog}{Character. Configuration of temperature in data acquisition: 'isothermal', 'ramp', 'custom'. If NULL the user will be asked. Default to NULL.}
 
 \item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
 
@@ -35,7 +35,7 @@ Function for creating a in-house database from processed GC-MS experiment files.
 \examples{
 \donttest{
 \dontrun{
-load(system.file("extdata", "apslist.RData", package = "PipMet"))
+load(system.file('extdata', 'apslist.RData', package = 'PipMet'))
 create_database(apslist, 
                  column_set = 'non-polar', 
                  prog = 'ramp', 

@@ -32,12 +32,12 @@ This function creates network, hierarchy and heatmap plots of the spectra (annot
 \examples{
 \donttest{
 \dontrun{
-load(system.file("extdata", "pslist.RData", package = "PipMet"))
+load(system.file('extdata', 'pslist.RData', package = 'PipMet'))
 annot <- annot_images(pslist, 
-                      myDir = "~/", 
+                      myDir = '~/', 
                       pictures = FALSE, 
-                      pre_anno = system.file("extdata", "pre_anno.csv",  
-                      package = "PipMet"))
+                      pre_anno = system.file('extdata', 'pre_anno.csv',  
+                      package = 'PipMet'))
 }
 }
 }

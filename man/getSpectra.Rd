@@ -22,11 +22,11 @@ getSpectra(
 
 \item{min_peaks}{Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.}
 
-\item{colors}{A list with colors generated from "read_data()".}
+\item{colors}{A list with colors generated from 'read_data()'.}
 
 \item{column_set}{Character. Polarity of column used for the chromatography: 'polar', 'non-polar'. If NULL, the user will be asked. Default to NULL.}
 
-\item{prog}{Character. Configuration of temperature in data acquisition: "isothermal", "ramp", "custom". If NULL the user will be asked. Default to NULL.}
+\item{prog}{Character. Configuration of temperature in data acquisition: 'isothermal', 'ramp', 'custom'. If NULL the user will be asked. Default to NULL.}
 
 \item{ion_mode}{Character. Ion mode acquisition 'positive' or 'negative'. If NULL, the user will be asked. Default to NULL.}
 

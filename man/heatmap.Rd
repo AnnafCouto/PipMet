@@ -21,7 +21,7 @@ heatmap(
 
 \item{myDir}{Path to the directory of work.}
 
-\item{colors}{A list with colors generated from "read_data()".}
+\item{colors}{A list with colors generated from 'read_data()'.}
 
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
@@ -38,10 +38,10 @@ This function plots heatmaps dos metabólitos.
 \examples{
 \donttest{
 \dontrun{
-load(system.file("extdata", "n.RData", package = "PipMet"))
-load(system.file("extdata", "metadata.RData", package = "PipMet"))
-load(system.file("extdata", "colors.RData", package = "PipMet"))
-heatmap(n, metadata, myDir = "~/", colors, replicate = 'group')
+load(system.file('extdata', 'n.RData', package = 'PipMet'))
+load(system.file('extdata', 'metadata.RData', package = 'PipMet'))
+load(system.file('extdata', 'colors.RData', package = 'PipMet'))
+heatmap(n, metadata, myDir = '~/', colors, replicate = 'group')
 }
 }
 }
