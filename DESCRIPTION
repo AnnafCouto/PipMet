@@ -1,6 +1,6 @@
 Package: PipMet
 Title: Pipeline for Metabolomics-based GC-MS Data Processing
-Version: 1.1.0
+Version: 0.99.0
 Authors@R: 
     c(person("Anna", "Couto",, "annaa.freitas@gmail.com", role = c("aut", "cre"),), 
 	person ("Tatiani", "Lima",, "tatiani.lima@lnbr.cnpem", role = "aut", comment = c(ORCID = "0000-0003-4869-0592")), 
@@ -13,11 +13,13 @@ Description: Package for processing mass spectrometry-based metabolomics files.
 	     package can process standard compounds analysis files for internal library
 	     development.
 License: GPL (>= 3) + file LICENSE
+BugReports: https://github.com/AnnafCouto/PipMet/issues
+URL: https://github.com/AnnafCouto/PipMet
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports: xcms, MSnbase, CluMSID, metaMS, ggplot2, BiocParallel, svDialogs, tcltk, RColorBrewer, tools, pheatmap, ddpcr, CAMERA, NormalyzerDE, gridExtra, methods, ggrepel, stats, Biobase, utils, grDevices, graphics, webchem, ProtGenerics, fritools, stringr, pracma, parallel
 Depends: R (>= 4.2.0)
-biocViews: MassSpectrometry, Metabolomics, Software, Network
+biocViews: Metabolomics
 VignetteBuilder: knitr
 Suggests: knitr, rmarkdown
