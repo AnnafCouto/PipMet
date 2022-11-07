@@ -17,6 +17,7 @@
 #' @importFrom grDevices dev.off png tiff rainbow
 #' @importFrom graphics boxplot legend par
 #' @importFrom methods as new
+#' @importFrom stringr str_c
 #' @importFrom utils choose.dir menu read.csv write.csv write.table choose.files
 #' @importFrom svDialogs dlgInput dlg_message dlg_list
 #' @importFrom fritools is_path
@@ -166,7 +167,7 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
         for (i in seq_len(length(x))) {
             if (length(unique(metadata[, x[[i]]])) <= 9) {
                 colors[[i]] <- list(metadata[, x[i]], paste0(RColorBrewer::brewer.pal(length(unique(metadata[,
-                  x[[i]]])), "Set1")[1:length(unique(metadata[, x[[i]]]))], "60"))
+                  x[[i]]])), "Set1")[seq_len(unique(metadata[, x[[i]]]))], "60"))
             } else {
                 colors[[i]] <- list(metadata[, x[i]], rainbow(length(unique(metadata[,
                   x[[i]]]))))
@@ -177,7 +178,7 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
     }
 
     # read data into R
-    message(paste0("Reading ", nrow(metadata), " files..."))
+    message(str_c("Reading ", nrow(metadata), " files..."))
     raw_data <- readMSData(metadata$file, pdata = new("NAnnotatedDataFrame",
         metadata), mode = "onDisk")
 

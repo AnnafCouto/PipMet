@@ -33,7 +33,7 @@ process(
 
 \item{pictures}{Logical. If pictures should be plotted or not. Default to TRUE.}
 
-\item{example}{Logical. If is example, pop-ups won't appear.}
+\item{example}{Logical. If is example, pop-ups won't appear and images won't be generated.}
 
 \item{filter}{Numeric. Intensity threshold for the peak detection. Default to NULL. When NULL, the user will be asked for a number. Set filter = 0 for no intensity filtering.}
 
@@ -49,11 +49,9 @@ This function computes the second step of workflow (peak picking, RT correction 
 }
 \examples{
 \donttest{
-\dontrun{
-load(system.file('extdata', 'raw_data.RData', package = 'PipMet'))
-load(system.file('extdata', 'metadata.RData', package = 'PipMet'))
-load(system.file('extdata', 'colors.RData', package = 'PipMet'))
-xdata4 <- process(raw_data, metadata, myDir = '~/', colors, group = 'group')
-}
+load(system.file("extdata", "raw_data.RData", package = "PipMet"))
+load(system.file("extdata", "metadata.RData", package = "PipMet"))
+load(system.file("extdata", "colors.RData", package = "PipMet"))
+xdata4 <- process(raw_data, metadata, myDir = NULL, colors, example = TRUE, group = "group")
 }
 }

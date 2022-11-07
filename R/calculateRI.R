@@ -11,8 +11,11 @@
 #' @importFrom utils read.csv choose.files
 #' @importFrom fritools is_path
 #' @export
-
-
+#' @examples
+#' \donttest{
+#' spectra <- extractSpectra(RI = FALSE)
+#' }
+#'
 calculateRI <- function(RI = NULL, result) {
   if (is.null(RI)) {
     RI <- dlg_message("Add retention index information?", "yesno")$res

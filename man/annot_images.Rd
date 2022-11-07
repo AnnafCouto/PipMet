@@ -9,7 +9,8 @@ annot_images(
   myDir = "~/",
   pictures = TRUE,
   pic_extension = c(".tiff", ".png"),
-  pre_anno = NULL
+  pre_anno = NULL,
+  example = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ annot_images(
 \item{pic_extension}{Character. Pictures format to generate. Supported = '.tiff', '.png'. Default to c('.tiff', '.png').}
 
 \item{pre_anno}{Path to pre_anno.csv annotation file or pre_anno table. If NULL, the pre_anno.csv in the folder will be read. Default to NULL.}
+
+\item{example}{Default to FALSE.}
 }
 \value{
 A list with (1) 'pseudoespectrum' object annotated resulted from 'addAnnotations' (CluMSID package) and (2) a table with annotation.
@@ -31,13 +34,13 @@ This function creates network, hierarchy and heatmap plots of the spectra (annot
 }
 \examples{
 \donttest{
-\dontrun{
-load(system.file('extdata', 'pslist.RData', package = 'PipMet'))
-annot <- annot_images(pslist, 
-                      myDir = '~/', 
-                      pictures = FALSE, 
-                      pre_anno = system.file('extdata', 'pre_anno.csv',  
-                      package = 'PipMet'))
-}
+load(system.file("extdata", "pslist.RData", package = "PipMet"))
+annot <- annot_images(pslist,
+  example = TRUE,
+  pictures = FALSE,
+  pre_anno = system.file("extdata", "pre_anno.csv",
+    package = "PipMet"
+  )
+)
 }
 }

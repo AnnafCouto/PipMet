@@ -11,17 +11,19 @@ extractSpectra(x, min_peaks = 5)
 
 \item{min_peaks}{Numeric. Minimal number of peaks a spectrum must have to be considered a viable spectrum. Default to 5.}
 }
+\value{
+None.
+}
 \description{
 This is a modified function from CluMSID package to extract the spectra from a CAMERA object output.
 Not meant to be called by the user.
 }
 \examples{
 \donttest{
-\dontrun{
-load(system.file('extdata', 'anIC.RData', package = 'PipMet'))
+load(system.file("extdata", "anIC.RData", package = "PipMet"))
 spectra <- extractSpectra(anIC)
 }
-}
+
 }
 \keyword{CAMERA}
 \keyword{pseudoespectra}

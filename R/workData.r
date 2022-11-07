@@ -120,7 +120,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     group <- processed$group
 
     # define spectra and create .msp files
-    message(paste0("Grouping peaks into spectra..."))
+    message("Grouping peaks into spectra...")
     quiet(spectra <- getSpectra(xdata4, raw_data, min_peaks, colors, column_set = column_set,
         prog = prog, ion_mode = ion_mode, plot_eic = plot_eic))
     anIC <- spectra[[1]]
@@ -133,15 +133,15 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     calculateRI(result, RI)
 
     # update annotated spectra and plot images
-    message(paste0("Annotating the spectra ..."))
+    message("Annotating spectra ...")
     quiet(annot <- annot_images(pslist, myDir, pictures, pic_extension = pic_extension,
-        pre_anno = pre_anno))
+        pre_anno = pre_anno, example = example))
     apslist <- annot$apslist
     pre_anno <- annot$r
 
     # normalize, choose peaks and plot images, only if more than one sample
 
-    message(paste0("Normalizing data..."))
+    message("Normalizing data...")
     quiet(n <- normalize_data(anIC, pslist, metadata, myDir, pre_anno, pic_extension = pic_extension,
         derivatization, mergeCompounds, removeCompounds, group))
 
@@ -155,7 +155,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
             replicate <- "tec_rep"
         }
 
-        message(paste0("Statistics pictures..."))
+        message("Statistics pictures...")
 
         if (pictures == TRUE & nrow(metadata) > 1) {
             pic <- dlg_list(c("Volcano - level 1", "Volcano - level 2", "PCA - All spectra",

@@ -53,6 +53,9 @@ workLib(
 
 \item{Ri_info}{Character. If the user wants to add retention information or not. Supported are 'From file', 'Retrieve from NIST', 'No RI information'. Default to NULL}
 }
+\value{
+None.
+}
 \description{
 Main function for GC-MS standards processing for internal library development.
 }

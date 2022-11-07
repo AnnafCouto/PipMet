@@ -3,6 +3,7 @@
 #' Main function for GC-MS standards processing for internal library development.
 #' @keywords standards, library, internal
 #' @export
+#' @return None.
 #' @param myDir Path to working directory. Default to none.
 #' @param libname Character. Name of the library. Default to NULL. If NULL the user will be asked.
 #' @param sample_dir Path to sample directory. Default to none.
@@ -20,6 +21,7 @@
 #' @param RI Path to retention index information .csv file. Only if Ri_info == 'From file'. Default to NULL. If NULL the user will be asked.
 #' @importFrom methods as
 #' @importFrom ddpcr quiet
+#' @importFrom stringr str_c
 #' @importFrom utils choose.dir menu read.csv write.csv
 #' @importFrom metaMS addRI write.msp construct.msp
 #' @importFrom MSnbase readMSData
@@ -207,7 +209,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
     }
 
     # read and filter files to a 5s window
-    message(paste0("Reading ", length(unique(lib_metadata$file)), " files..."))
+    message(str_c("Reading ", length(unique(lib_metadata$file)), " files..."))
     raw_data <- list()
     for (i in seq_len(nrow(lib_metadata))) {
         quiet(raw_data[[i]] <- readMSData(lib_metadata$file[i], mode = "onDisk"))
@@ -216,7 +218,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
     }
 
     # peak picking
-    message(paste0("Preprocessing ", length(unique(lib_metadata$file)), " files..."))
+    message(str_c("Preprocessing ", length(unique(lib_metadata$file)), " files..."))
     quiet(xdata <- lapply(raw_data, FUN = findChromPeaks, param = MatchedFilterParam(fwhm = 5,
         binSize = 0.5, steps = 2, mzdiff = 0.5, snthresh = 2, max = 500)))
 
@@ -285,7 +287,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
     }
 
     # create .msp structure and files
-    message(paste0("Writing ", length(pslist), " spectra for manual validation..."))
+    message(str_c("Writing ", length(pslist), " spectra for manual validation..."))
 
     if (!dir.exists("spectra")) {
         dir.create("spectra")
@@ -342,7 +344,7 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
         done <- menu(c("Continue", "Repeat"), graphics = TRUE, title = "Validation done!")
     }
 
-    message(paste0("Writing ", length(ppslist), " validated spectra..."))
+    message(str_c("Writing ", length(ppslist), " validated spectra..."))
     # generate final .msp file
     spectra <- list()
     for (i in seq_len(length(ppslist))) {

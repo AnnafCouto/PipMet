@@ -18,3 +18,9 @@ None
 This function calculatesRI.
 Not meant to be called by the user.
 }
+\examples{
+\donttest{
+spectra <- extractSpectra(RI = FALSE)
+}
+
+}

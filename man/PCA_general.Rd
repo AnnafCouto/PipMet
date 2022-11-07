@@ -38,7 +38,7 @@ This function plots PCA.
 load(system.file('extdata', 'n.RData', package = 'PipMet'))
 load(system.file('extdata', 'colors.RData', package = 'PipMet'))
 load(system.file('extdata', 'metadata.RData', package = 'PipMet'))
-PCA_general(n, metadata, myDir = '~/', colors)
+PCA_general(n, metadata, colors = colors, example = TRUE)
 }
 }
 }

@@ -11,7 +11,8 @@ heatmap(
   colors,
   pic_extension = c(".tiff", ".png"),
   replicate = NULL,
-  sample_names = NULL
+  sample_names = NULL,
+  example = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ heatmap(
 \item{replicate}{Character or Logical. If FALSE, there is no replicate informations in the metadata table. Otherwise, inform the name in the metadata column containing replicate information. If NULL, the user will be asked. Default to NULL.}
 
 \item{sample_names}{Character. Name of metadata column to name the samples. Default to NULL. If NULL, the user will be asked.}
+
+\item{example}{Only for software testing. No pictures will be created.}
 }
 \value{
 None.
@@ -37,11 +40,9 @@ This function plots heatmaps dos metabólitos.
 }
 \examples{
 \donttest{
-\dontrun{
-load(system.file('extdata', 'n.RData', package = 'PipMet'))
-load(system.file('extdata', 'metadata.RData', package = 'PipMet'))
-load(system.file('extdata', 'colors.RData', package = 'PipMet'))
-heatmap(n, metadata, myDir = '~/', colors, replicate = 'group')
-}
+load(system.file("extdata", "n.RData", package = "PipMet"))
+load(system.file("extdata", "metadata.RData", package = "PipMet"))
+load(system.file("extdata", "colors.RData", package = "PipMet"))
+heatmap(n, metadata, colors = colors, replicate = "group", example = TRUE)
 }
 }

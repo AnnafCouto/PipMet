@@ -128,7 +128,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, pic_extensio
                 if (length(z) >= 2) {
                   # the user must choose at least two compounds to merge
                   y <- vector()
-                  for (i in 1:length(unique(z))) {
+                  for (i in seq_along(unique(z))) {
                     y <- rbind(y, quant[which(quant[, "Compound Name"] == unique(z)[i]),
                       ])
                   }
@@ -247,7 +247,7 @@ normalize_data <- function(anIC, pslist, metadata, myDir, pre_anno, pic_extensio
             if (norms[bestNormMat] == "VSN") {
                 mat <- performVSNNormalization(mat)
             }
-            n <- as.data.frame(cbind(quant[, 1:5], mat))
+            n <- as.data.frame(cbind(quant[, seq_len(5)], mat))
 
             # normalize by another criteria (ex: mass, number of cells)
             g <- dlg_message("Normalize by mass/numer of cells/etc?", "yesno")$res

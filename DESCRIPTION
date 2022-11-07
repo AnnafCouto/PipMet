@@ -20,6 +20,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports: xcms, MSnbase, CluMSID, metaMS, ggplot2, BiocParallel, svDialogs, tcltk, RColorBrewer, tools, pheatmap, ddpcr, CAMERA, NormalyzerDE, gridExtra, methods, ggrepel, stats, Biobase, utils, grDevices, graphics, webchem, ProtGenerics, fritools, stringr, pracma, parallel
 Depends: R (>= 4.2.0)
-biocViews: Metabolomics
+biocViews: Metabolomics, MassSpectrometry, Network
 VignetteBuilder: knitr
 Suggests: knitr, rmarkdown

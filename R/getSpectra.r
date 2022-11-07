@@ -12,6 +12,7 @@
 #' @param plot_eic Logical. Plot the EIC of each of the 6 most intense m/z in the spectra. Default to FALSE.
 #' @return A list with 'xsAnnotate' object with peaks grouped by retention time and correlation peaks information, a 'pseudospectrum' object, a spectra list in .msp format and the ion mode of data acquisition ('negative' or 'positive').
 #' @importFrom grDevices dev.off pdf
+#' @importFrom stringr str_c
 #' @importFrom methods as
 #' @importFrom CAMERA xsAnnotate groupFWHM groupCorr
 #' @importFrom CluMSID writeFeaturelist specplot
@@ -98,7 +99,7 @@ getSpectra <- function(xdata4, raw_data, min_peaks = 5, colors, column_set = NUL
     }
     pdf("EIC_XIC.pdf")
     for (i in seq_len(length(rt))) {
-      message(paste0("Printing spectra n.", i, "..."))
+      message(str_c("Printing spectra n.", i, "..."))
       par(mfrow = c(2, 1))
       specplot(pslist[[i]])
       x <- paste0("Unknown ", pslist[[i]]@id)
@@ -115,7 +116,7 @@ getSpectra <- function(xdata4, raw_data, min_peaks = 5, colors, column_set = NUL
       par(mfrow = c(2, 3))
       f <- pslist[[i]]@spectrum[order(pslist[[i]]@spectrum[, 2], decreasing = TRUE)]
       # sort(pslist[[i]]@spectrum[, 1], decreasing = TRUE)
-      for (ii in 1:6) {
+      for (ii in seq_len(6)) {
         crom <- chromatogram(raw_data, rt = c(rt[[i]] - 5, rt[[i]] +
           5), mz = c(as.numeric(f[[ii]]) - 0.6, as.numeric(f[[ii]]) +
           0.6))
