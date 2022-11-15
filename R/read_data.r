@@ -167,7 +167,7 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
         for (i in seq_len(length(x))) {
             if (length(unique(metadata[, x[[i]]])) <= 9) {
                 colors[[i]] <- list(metadata[, x[i]], paste0(RColorBrewer::brewer.pal(length(unique(metadata[,
-                  x[[i]]])), "Set1")[seq_len(unique(metadata[, x[[i]]]))], "60"))
+                  x[[i]]])), "Set1")[seq_along(unique(metadata[, x[[i]]]))], "60"))
             } else {
                 colors[[i]] <- list(metadata[, x[i]], rainbow(length(unique(metadata[,
                   x[[i]]]))))

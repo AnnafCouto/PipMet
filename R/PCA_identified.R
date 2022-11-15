@@ -43,7 +43,7 @@ PCA_identified <- function(n, metadata, myDir, colors, pic_extension = c(
     setwd("PCA_identified")
   }
 
-  # all samples togheter set for PCA calculations
+  # all samples together set for PCA calculations
   pc <- prcomp(t(na.omit(mat[, seq_len(nrow(metadata))])), center = TRUE)
   pcSummary <- summary(pc)
   for (i in seq_len(length(colors))) {
