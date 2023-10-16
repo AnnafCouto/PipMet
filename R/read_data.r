@@ -128,7 +128,7 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
                   colClasses = "character", sep = ",")
                 if (length(colnames(metadata))<=1) {
                     metadata <- read.csv(choose.files(), na.string = c("NA", ""),
-                        colClasses = "character", sep = ";")
+                        colClasses = "character", sep = ";")^}
             }
         }
     } else {
