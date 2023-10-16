@@ -126,6 +126,9 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
                 dlg_message("It seems to existx empty columns/rows in you metadata file. Please, delete and press 'OK'.")$res
                 metadata <- read.csv(choose.files(), na.string = c("NA", ""),
                   colClasses = "character", sep = ",")
+                if (length(colnames(metadata))<=1) {
+                    metadata <- read.csv(choose.files(), na.string = c("NA", ""),
+                        colClasses = "character", sep = ";")
             }
         }
     } else {
