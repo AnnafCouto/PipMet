@@ -1,2 +1,8 @@
-Changes in version 0.99.0 (2022-11-06)
-+ Submitted to Bioconductor
+\# PipMet 1.0.0
+
+
+
+\* Initial release of PipMet.
+
+
+

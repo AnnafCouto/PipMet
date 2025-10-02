@@ -127,10 +127,7 @@ process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions
       }
 
       # boxplot of log2 intensities per sample
-      ints <- split(log2(chromPeaks(xdata3)[, "into"]), f = chromPeaks(xdata3)[
-        ,
-        "sample"
-      ])
+      ints <- split(log2(chromPeaks(xdata3)[, "into"]), f = chromPeaks(xdata3)[,"sample"])
       names(ints) <- metadata$sample
       for (i in seq_len(length(colors))) {
         # tiff

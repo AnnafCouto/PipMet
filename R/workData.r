@@ -130,7 +130,7 @@ workData <- function(myDir = NULL, sample_dir = NULL, metadata = NULL, extension
     dlg_message("Annotatation step: The files 'pre_anno.csv' and 'spectra.msp' were created in you directory. Upload the file 'spectra.msp' in NIST MS Search and annotate the spectra in the file 'pre_anno', in the column 'Annotation', according to the spectra 'id'. After, press 'ok'.")$res
 
     # calculate RI
-    calculateRI(result, RI)
+    calculateRI(RI, result)
 
     # update annotated spectra and plot images
     message("Annotating spectra ...")

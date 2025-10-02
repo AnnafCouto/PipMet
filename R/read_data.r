@@ -182,7 +182,7 @@ read_data <- function(peakMonitor = NULL, ions = NULL, myDir = NULL, sample_dir 
 
     # read data into R
     message(str_c("Reading ", nrow(metadata), " files..."))
-    raw_data <- readMSData(metadata$file, pdata = new("NAnnotatedDataFrame",
+    raw_data <- readMSData(metadata$file, pdata = new("AnnotatedDataFrame",
         metadata), mode = "onDisk")
 
     if (pictures == TRUE) {

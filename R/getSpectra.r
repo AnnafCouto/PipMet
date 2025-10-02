@@ -43,8 +43,8 @@ getSpectra <- function(xdata4, raw_data, min_peaks = 5, colors, column_set = NUL
   # extract spectra with minimum of 5 peaks
   pslist <- extractSpectra(anIC, min_peaks)
 
-  # create 'pre_anno.csv' where the user annotates the spectra contains
-  # id and retention time of each spectra
+  # create 'pre_anno.csv' where the user annotates the spectra
+  # contains id and retention time of each spectra
   writeFeaturelist(pslist)
 
   # get information about data acquisition
@@ -87,7 +87,7 @@ getSpectra <- function(xdata4, raw_data, min_peaks = 5, colors, column_set = NUL
   # generated spectrum
   if (is.null(plot_eic)) {
     plot_eic <- dlg_message(
-      "Plot spectra, with EIC of each of the 6 most intense m/z?",
+      "Plot spectra, with EIC of each of the 6 most intense m/z? (It might take a while)",
       "yesno"
     )$res
   }

@@ -33,7 +33,7 @@ calculateRI <- function(RI = NULL, result) {
       ri_file <- choose.files()
       if (isEmpty(ri_file) == TRUE & res == "yes") {
         while (res == "yes" & isEmpty(ri_file) == TRUE) {
-          res <- dlg_message(
+          RI <- res <- dlg_message(
             "File incorrect or not selected. Add retention index information?",
             "yesno"
           )$res

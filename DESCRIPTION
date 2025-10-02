@@ -1,8 +1,8 @@
 Package: PipMet
 Title: Pipeline for Metabolomics-based GC-MS Data Processing
-Version: 0.99.0
+Version: 1.0.0
 Authors@R: 
-    c(person("Anna", "Couto",, "annaa.freitas@gmail.com", role = c("aut", "cre"),), 
+    c(person("Anna", "Couto",, "annaa.freitas@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0009-0006-6216-7035")), 
 	person ("Tatiani", "Lima",, "tatiani.lima@lnbr.cnpem", role = "aut", comment = c(ORCID = "0000-0003-4869-0592")), 
 	person ("CNPEM","Brazilian National Center for Research in Energy and Materials",,"diretoriageral@cnpem.br", role = "cph",)) 
 Description: Package for processing mass spectrometry-based metabolomics files. 
@@ -17,7 +17,7 @@ BugReports: https://github.com/AnnafCouto/PipMet/issues
 URL: https://github.com/AnnafCouto/PipMet
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: xcms, MSnbase, CluMSID, metaMS, ggplot2, BiocParallel, svDialogs, tcltk, RColorBrewer, tools, pheatmap, ddpcr, CAMERA, NormalyzerDE, gridExtra, methods, ggrepel, stats, Biobase, utils, grDevices, graphics, webchem, ProtGenerics, fritools, stringr, pracma, parallel
 Depends: R (>= 4.2.0)
 biocViews: Metabolomics, MassSpectrometry, Network
