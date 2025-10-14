@@ -20,7 +20,8 @@ Not meant to be called by the user.
 }
 \examples{
 \donttest{
-spectra <- extractSpectra(RI = FALSE)
+result <- metaMS::read.msp((system.file("extdata", "spectra.msp", package = "PipMet")))
+calculateRI(RI= FALSE, result)
 }
 
 }

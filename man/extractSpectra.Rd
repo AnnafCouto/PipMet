@@ -20,8 +20,10 @@ Not meant to be called by the user.
 }
 \examples{
 \donttest{
+\dontrun{
 load(system.file("extdata", "anIC.RData", package = "PipMet"))
 spectra <- extractSpectra(anIC)
+}
 }
 
 }

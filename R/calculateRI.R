@@ -5,7 +5,7 @@
 #' @param RI Logical (should the software calculate RI), NULL (user will be asked) or path (to the RI file containing 'rt' and 'RI' columns).
 #' @param result A list of spectra.
 #' @return None
-#' @importFrom metaMS addRI write.msp
+#' @importFrom metaMS addRI write.msp read.msp
 #' @importFrom ddpcr quiet
 #' @importFrom svDialogs dlg_message
 #' @importFrom utils read.csv choose.files
@@ -13,9 +13,10 @@
 #' @export
 #' @examples
 #' \donttest{
-#' spectra <- extractSpectra(RI = FALSE)
+#' result <- metaMS::read.msp((system.file("extdata", "spectra.msp", package = "PipMet")))
+#' calculateRI(RI= FALSE, result)
 #' }
-#'
+#' 
 calculateRI <- function(RI = NULL, result) {
   if (is.null(RI)) {
     RI <- dlg_message("Add retention index information?", "yesno")$res

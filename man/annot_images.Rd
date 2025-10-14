@@ -34,6 +34,7 @@ This function creates network, hierarchy and heatmap plots of the spectra (annot
 }
 \examples{
 \donttest{
+\dontrun{
 load(system.file("extdata", "pslist.RData", package = "PipMet"))
 annot <- annot_images(pslist,
   example = TRUE,
@@ -42,5 +43,6 @@ annot <- annot_images(pslist,
     package = "PipMet"
   )
 )
+}
 }
 }

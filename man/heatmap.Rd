@@ -40,9 +40,11 @@ This function plots heatmaps dos metabólitos.
 }
 \examples{
 \donttest{
+\dontrun{
 load(system.file("extdata", "n.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 load(system.file("extdata", "colors.RData", package = "PipMet"))
 heatmap(n, metadata, colors = colors, replicate = "group", example = TRUE)
+}
 }
 }

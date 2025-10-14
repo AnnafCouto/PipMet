@@ -3,6 +3,3 @@
 
 
 \* Initial release of PipMet.
-
-
-

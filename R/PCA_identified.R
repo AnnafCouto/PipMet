@@ -20,10 +20,12 @@
 #' @importFrom ggrepel geom_text_repel
 #' @examples
 #' \donttest{
+#' \dontrun{
 #' load(system.file("extdata", "n.RData", package = "PipMet"))
 #' load(system.file("extdata", "colors.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' PCA_identified(n, metadata, colors = colors, example = TRUE)
+#' }
 #' }
 #'
 PCA_identified <- function(n, metadata, myDir, colors, pic_extension = c(

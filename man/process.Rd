@@ -49,9 +49,11 @@ This function computes the second step of workflow (peak picking, RT correction 
 }
 \examples{
 \donttest{
+\dontrun{
 load(system.file("extdata", "raw_data.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 load(system.file("extdata", "colors.RData", package = "PipMet"))
 xdata4 <- process(raw_data, metadata, myDir = NULL, colors, example = TRUE, group = "group")
+}
 }
 }

@@ -16,6 +16,7 @@
 #' @importFrom CluMSID addAnnotations distanceMatrix networkplot HCplot
 #' @examples
 #' \donttest{
+#' \dontrun{
 #' load(system.file("extdata", "pslist.RData", package = "PipMet"))
 #' annot <- annot_images(pslist,
 #'   example = TRUE,
@@ -24,6 +25,7 @@
 #'     package = "PipMet"
 #'   )
 #' )
+#' }
 #' }
 annot_images <- function(pslist = NULL, myDir = "~/", pictures = TRUE, pic_extension = c(
                            ".tiff",

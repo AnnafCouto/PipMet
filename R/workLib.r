@@ -52,26 +52,28 @@ workLib <- function(myDir = NULL, libname = NULL, sample_dir = NULL, lib_metadat
     column_set = NULL, instrument_type = NULL, cores = 1, Ri = NULL, RI = NULL,
     Ri_info = NULL) {
 
-    # ask for parallelization mode
+  # parallel setup
+
+  setupParallel <- function(parallel, cores) {
     if (is.null(parallel)) {
-        parallel <- dlg_list(c("Serial Param", "Snow Param", "MultiCore Param"),
-            multiple = FALSE, title = "Parallelization mode:")$res
+      parallel <- svDialogs::dlg_list(c("Serial Param", "Snow Param", "MultiCore Param"),
+                                     multiple = FALSE, title = "Parallelization mode:")$res
     }
-    # parallel <- menu(c('Serial Param (disable)', 'Snow Param', 'MultiCore
-    # Param'), graphics = TRUE, title = 'Choose parallelization mode:')
-    if (parallel == "Serial Param") {
-        register(SerialParam(), default = TRUE)
-    }
+    if (parallel == "Serial Param") {BiocParallel::register(BiocParallel::SerialParam(), default = TRUE)}
     if (parallel == "Snow Param") {
-        if (is.null(cores)) {
-            cores <- dlgInput(paste0("Number of cores used (you have ", detectCores(),
-                " cores available):"), detectCores() - 2)$res
-        }
-        register(SnowParam(workers = as.numeric(cores)), default = TRUE)
+      if (is.null(cores)) {
+        cores <- as.numeric(svDialogs::dlgInput(paste0("Number of cores used (you have ", 
+                                                      parallel::detectCores(), " cores available):"), 
+                                               parallel::detectCores() - 2)$res)
+      }
+      BiocParallel::register(BiocParallel::SnowParam(workers = cores), default = TRUE)
     }
-    if (parallel == "MultiCore Param") {
-        register(MulticoreParam(), default = TRUE)
-    }
+    if (parallel == "MultiCore Param") BiocParallel::register(BiocParallel::MulticoreParam(), default = TRUE)
+    return(parallel)
+  }
+  
+  parallel <- setupParallel(parallel, cores)
+
 
     # get directory for samples and project and set library metadata
     if (!example == TRUE) {

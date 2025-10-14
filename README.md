@@ -5,16 +5,41 @@
 
 <!-- badges: start -->
 
-The PipMet package was developed to process begin-to-end
-metabolomic-based GC-MS data, with the automatized generation of
-pictures throughout the processing in high quality. Every input from the
-user is taken through pop-up windows.This package was first developed
-for the Brazilian National Biorenewables Laboratory (LNBR) from the
-Brazilian National Center for Research in Energy and Materials (CNPEM).
+The **PipMet** package was developed to perform end-to-end processing of
+metabolomic-based GC-MS data, with automated generation of high-quality
+figures throughout the workflow. All user inputs are obtained through
+pop-up windows.  
+
 
 <!-- badges: end -->
 
 ## Installation
+
+### Dependencies installation
+
+Before installing `PipMet`, make sure that all required dependencies are
+installed.  
+The following code will automatically check for and install all
+necessary **Bioconductor** and **CRAN** packages:
+
+```r
+# Install BiocManager if necessary
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# Install Bioconductor dependencies
+BiocManager::install(c(
+  "xcms", "MSnbase", "CluMSID", "metaMS", "BiocParallel",
+  "Biobase", "ProtGenerics", "CAMERA", "NormalyzerDE"
+), ask = FALSE, update = TRUE)
+
+# Install CRAN dependencies
+cran_pkgs <- c("svDialogs", "pheatmap", "ddpcr", "webchem", "fritools", "pracma")
+installed <- cran_pkgs %in% rownames(installed.packages())
+if (any(!installed)) install.packages(cran_pkgs[!installed])
+
+```
+### PipMet installation
 
 You can install the released version of PipMet from
 [GitHub](https://github.com) with:
@@ -41,9 +66,8 @@ identification and quantification. The second one, `workLib()` provides
 a workflow for an internal library creation to be uploaded into NIST MS
 Search software for spectra annotation.
 
-The package was thought to be the more friendly-user as possible, even
-though it runs in code lines. Therefore, when information is needed,
-pop-ups will appear so that the user can input them.
+The package was thought to be as friendly-user as possible. Therefore, when information is needed,
+pop-ups will appear to collect input.
 
 ``` r {eval=FALSE}
 library(PipMet)
@@ -66,7 +90,7 @@ workLib(
 )
 ```
 
-Set ‘pictures = TRUE’ to generate pictures along the code.
+Set ‘pictures = TRUE’ to generate pictures throughout the code.
 
 For more information, see the package
 [vignette](vignettes/workData.Rmd).

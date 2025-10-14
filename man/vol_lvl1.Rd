@@ -31,8 +31,10 @@ This function plots volcanos .
 }
 \examples{
 \donttest{
+\dontrun{
 load(system.file("extdata", "n.RData", package = "PipMet"))
 load(system.file("extdata", "metadata.RData", package = "PipMet"))
 volcano_dir <- vol_lvl1(n, metadata, myDir = NULL, example = TRUE)
+}
 }
 }

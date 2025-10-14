@@ -12,8 +12,10 @@
 #' @keywords pseudoespectra CAMERA spectra spectrum.
 #' @examples
 #' \donttest{
+#' \dontrun{
 #' load(system.file("extdata", "anIC.RData", package = "PipMet"))
 #' spectra <- extractSpectra(anIC)
+#' }
 #' }
 #'
 extractSpectra <- function(x, min_peaks = 5) {

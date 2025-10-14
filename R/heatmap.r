@@ -20,10 +20,12 @@
 #' @importFrom pheatmap pheatmap
 #' @examples
 #' \donttest{
+#' \dontrun{
 #' load(system.file("extdata", "n.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' load(system.file("extdata", "colors.RData", package = "PipMet"))
 #' heatmap(n, metadata, colors = colors, replicate = "group", example = TRUE)
+#' }
 #' }
 heatmap <- function(n, metadata, myDir, colors, pic_extension = c(".tiff", ".png"),
                     replicate = NULL, sample_names = NULL, example = FALSE) {

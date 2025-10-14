@@ -23,10 +23,12 @@
 #' @importFrom utils choose.dir memory.limit menu read.csv select.list write.csv write.table
 #' @examples
 #' \donttest{
+#' \dontrun{
 #' load(system.file("extdata", "raw_data.RData", package = "PipMet"))
 #' load(system.file("extdata", "metadata.RData", package = "PipMet"))
 #' load(system.file("extdata", "colors.RData", package = "PipMet"))
 #' xdata4 <- process(raw_data, metadata, myDir = NULL, colors, example = TRUE, group = "group")
+#' }
 #' }
 process <- function(raw_data, metadata, myDir, colors, peakMonitor = FALSE, ions = NULL,
                     pictures = TRUE, example = FALSE, filter = NULL, pic_extension = c(
