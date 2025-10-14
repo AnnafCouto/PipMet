@@ -15,7 +15,7 @@ Description: Package for processing mass spectrometry-based metabolomics files.
 	     performance evaluation and result interpretation. Additionally, the 
 	     package can process standard compounds analysis files for internal library
 	     development.
-License: GPL (>= 3) + file LICENSE
+License: GPL (>= 3)
 BugReports: https://github.com/AnnafCouto/PipMet/issues
 URL: https://github.com/AnnafCouto/PipMet
 Encoding: UTF-8
