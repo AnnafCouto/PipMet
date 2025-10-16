@@ -1,6 +1,6 @@
 Package: PipMet
 Title: Pipeline for Metabolomics-based GC-MS Data Processing
-Version: 1.0.0
+Version: 0.99.0
 Authors@R: 
     c(
         person("Anna", "Couto", email = "annaa.freitas@gmail.com", role = c("aut", "cre"),
@@ -50,21 +50,9 @@ Imports:
     stringr,
     pracma,
     parallel
-Depends: R (>= 4.2.0)
-biocViews: Metabolomics, MassSpectrometry, DataProcessing
+Depends: R (>= 4.5.0)
+biocViews: Metabolomics, MassSpectrometry, Network 
 VignetteBuilder: knitr
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Remotes:
-    bioc::xcms,
-    bioc::MSnbase,
-    bioc::CluMSID,
-    bioc::metaMS,
-    bioc::CAMERA,
-    bioc::NormalyzerDE,
-    bioc::BiocParallel,
-    bioc::ProtGenerics,
-    bioc::Biobase,
-    github::jkirenz/fritools,
-    r-universe::ddpcr,
-    r-universe::webchem
+

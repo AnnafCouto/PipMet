@@ -439,8 +439,6 @@ knitr::include_graphics('28.png')
 sessionInfo()
 ```
 
----
-
 # References
 
 
