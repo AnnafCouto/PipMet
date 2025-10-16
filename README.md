@@ -38,6 +38,9 @@ cran_pkgs <- c("svDialogs", "pheatmap", "ddpcr", "webchem", "fritools", "pracma"
 installed <- cran_pkgs %in% rownames(installed.packages())
 if (any(!installed)) install.packages(cran_pkgs[!installed])
 
+# Install devtools
+install.packages ("devtools")
+
 ```
 ### PipMet installation
 
