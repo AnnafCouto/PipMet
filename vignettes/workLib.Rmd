@@ -157,9 +157,6 @@ knitr::include_graphics('e.png')
 sessionInfo()
 ```
 
-
----
-
 # References
 
 1. NIST. **Library Conversion Tool**. Available in: https://chemdata.nist.gov/mass-spc/ms-search/Library_conversion_tool.html.
