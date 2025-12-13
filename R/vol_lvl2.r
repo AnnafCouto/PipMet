@@ -11,6 +11,7 @@
 #' @importFrom grDevices dev.off pdf png tiff
 #' @importFrom graphics boxplot grid legend par text
 #' @importFrom stats cor sd t.test var
+#' @importFrom sdDialogs dlg_message menu
 #' @importFrom utils menu read.csv select.list write.csv write.table
 #' @import ggplot2
 #' @importFrom ggrepel geom_text_repel
@@ -33,8 +34,6 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c(".tiff", ".pn
     setwd(volDir)
     dlg_message("Volcano level two. First, choose two conditions to compare. The resulting volcanos will represent 'First-condition: Second-condition A X Second-condition B' and 'Second-condition: First-condition C X First condition D'")$res
 
-    # colocar um dlg_message aqui explicando que vc pode escolher pro
-    # vulcano 2 coisa.
     x <- menu(names(metadata), graphics = TRUE, title = "Condition 1")
     y <- menu(names(metadata), graphics = TRUE, title = "Condition 2")
     opt <- select.list(as.character(unique(metadata[, as.integer(x)])), preselect = NULL,
@@ -168,7 +167,7 @@ vol_lvl2 <- function(n, metadata, myDir, volDir, pic_extension = c(".tiff", ".pn
         }
     }
 
-    # wich where changed or not
+    # which were changed or not
     de$Relative_abundance <- "Unchanged"
     de$Relative_abundance[de$foldchange > 0.6 & de$rawpvalue < 0.05] <- "Up"
     de$Relative_abundance[de$foldchange < -0.6 & de$rawpvalue < 0.05] <- "Down"
