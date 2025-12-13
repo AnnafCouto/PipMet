@@ -4,16 +4,16 @@ author: "Anna Clara Couto"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 website: "https://github.com/AnnafCouto"
 output:
-  pdf_document:
-    toc: yes
-  word_document:
-    toc: yes
   html_document:
     toc: yes
     fig_caption: yes
     theme: flatly
     css: styles.css
     template: template.html
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{GC-MS Internal library criation with PipMet}
   %\VignetteEncoding{UTF-8}
