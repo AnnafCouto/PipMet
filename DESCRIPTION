@@ -50,7 +50,7 @@ Imports:
     stringr,
     pracma,
     parallel
-Depends: R (>= 4.5.0)
+Depends: R (>= 4.4.0)
 biocViews: Metabolomics, MassSpectrometry, Network 
 VignetteBuilder: knitr
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
