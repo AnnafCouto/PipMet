@@ -5,8 +5,11 @@ Authors@R:
     c(
         person("Anna", "Couto", email = "annaa.freitas@gmail.com", role = c("aut", "cre"),
                comment = c(ORCID = "0009-0006-6216-7035")),
-        person("Tatiani", "Lima", email = "tatianibl.gmail", role = "aut",
-               comment = c(ORCID = "0000-0003-4869-0592"))
+        person("Tatiani", "Lima", email = "tatianibl@gmail.com", role = "aut",
+               comment = c(ORCID = "0000-0003-4869-0592")),
+        person("Juliana", "Aricetti", role = c("ctb", "dtc"),
+               comment = c(ORCID = "0009-0007-3624-2801")),
+        person("Centro Nacional de Pesquisa em Energia e Materiais", role = c("fnd", "cph"))
     )
 Description: Package for processing mass spectrometry-based metabolomics files. 
 	     The accepted file formats are '.mzXML' and '.mzML'. The processing steps 
