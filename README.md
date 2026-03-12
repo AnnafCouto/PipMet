@@ -98,3 +98,7 @@ Set ‘pictures = TRUE’ to generate pictures throughout the code.
 
 For more information, see the package
 [vignette](vignettes/workData.Rmd).
+
+## License
+This project is licensed under the GPL-3 License. 
+Copyright (c) 2021-2022 Anna Couto and CNPEM.
