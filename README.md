@@ -1,7 +1,11 @@
+# PipMet (Legacy Version)
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+> **Note:** This repository contains the original version of the PipMet package developed during 2021-2022. 
+> For the latest stable version, updated documentation, and the official release associated with the 2026 publication, please visit the official repository: [github.com/PipMet/PipMet](https://github.com/PipMet/PipMet).
 
-# PipMet
+## Publication
+This work is part of the research published in:
+*Brenelli, T. L., Couto, A. C. F., Aricetti, J.. (2026). PipMet: Pipeline for processing GC-MS Metabolomics data and statistical graphics visualization [Link] (https://chemrxiv.org/doi/pdf/10.26434/chemrxiv.15000601/v2)
 
 <!-- badges: start -->
 
